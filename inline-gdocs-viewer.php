@@ -38,21 +38,20 @@ class InlineGoogleSpreadsheetViewerPlugin {
     function csvToHtml ($options, $caption) {
         if (!$options['key']) { return false; }
         $url = "https://spreadsheets.google.com/pub?key={$options['key']}&output=csv";
-        $h  = fopen($url, 'r');
+        if (false === ($h = fopen($url, 'r')) ) { return false; } // bail on error
         $r = array();
         while (($x = fgetcsv($h)) !== false) {
             $r[] = $x;
         }
-        if ($options['strip'] > 0) {
-            for ($i = 0; $i < $options['strip']; $i++) {
-                array_shift($r); // discard
-            }
-        }
+        if ($options['strip'] > 0) { $r = array_slice($r, $options['strip']); } // discard
 
         $ir = 1; // row number counter
         $ic = 1; // column number counter
 
-        $html  = "<table class=\"igsv-table\" summary=\"{$options['summary']}\">";
+        // Prepend a space character onto the 'class' value, if one exists.
+        if (!empty($options['class'])) { $options['class'] = " {$options['class']}"; }
+
+        $html  = "<table id=\"igsv-{$options['key']}\" class=\"igsv-table{$options['class']}\" summary=\"{$options['summary']}\">";
         if (!empty($caption)) {
             $html .= "<caption>$caption</caption>";
         }
@@ -89,6 +88,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
     function displayShortcode ($atts, $content = null) {
         $x = shortcode_atts(array(
             'key'      => false,                // Google Doc ID
+            'class'    => '',                   // Container element's custom class value
             'sheet_id' => false,                // Sheet ID for a Google Spreadsheet, if only one
             'summary'  => 'Google Spreadsheet', // If spreadsheet, value for summary attribute
             'strip'    => 0                     // If spreadsheet, how many rows to omit from top
