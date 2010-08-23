@@ -47,7 +47,7 @@ Additionally, each row (`<tr>`) and cell (`<td>`) is assigned a specific `class`
 Finally, both rows and cells (based on columns) are assigned an additional class of either `odd` or `even`, allowing for easy zebra-striping in [CSS3](http://www.w3.org/TR/css3-selectors/) non-conformant browsers.
 
     .igsv-table tr.odd  { /* styles for odd-numbered rows   (row 1, 3, 5...) */ }
-    .igsv-table tr.even { /* styles for even-numbered rows  (row 1, 3, 5...) */ }
+    .igsv-table tr.even { /* styles for even-numbered rows  (row 2, 4, 6...) */ }
     .igsv-table td.odd  { /* styles for odd-numbered cells  (column 1, 3, 5...) */ }
     .igsv-table td.even { /* styles for even-numbered cells (column 2, 4, 6...) */ }
 
