@@ -20,7 +20,7 @@ Currently, this plugin only supports Google Spreadsheets that are "Published as 
 
 To render the HTML table with additional metadata, you can also do the following:
 
-    [gdoc key="ABCDEFG" class="my-sheet" summary="An example spreadsheet, with a summary."]This is the table's caption.[/godc]
+    [gdoc key="ABCDEFG" class="my-sheet" summary="An example spreadsheet, with a summary."]This is the table's caption.[/gdoc]
 
 The above shortcode will produce HTML that looks something like the following:
 
