@@ -38,8 +38,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
     function csvToHtml ($options, $caption) {
         if (!$options['key']) { return false; }
         $url = "https://spreadsheets.google.com/pub?key={$options['key']}&output=csv";
-        if ($options['sheet_id']) {
-            $url .= "&single=true&gid={$options['sheet_id']}";
+        if ($options['gid']) {
+            $url .= "&single=true&gid={$options['gid']}";
         }
         if (false === ($h = fopen($url, 'r')) ) { return false; } // bail on error
         $r = array();
@@ -92,7 +92,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         $x = shortcode_atts(array(
             'key'      => false,                // Google Doc ID
             'class'    => '',                   // Container element's custom class value
-            'sheet_id' => false,                // Sheet ID for a Google Spreadsheet, if only one
+            'gid'      => false,                // Sheet ID for a Google Spreadsheet, if only one
             'summary'  => 'Google Spreadsheet', // If spreadsheet, value for summary attribute
             'strip'    => 0                     // If spreadsheet, how many rows to omit from top
         ), $atts);
