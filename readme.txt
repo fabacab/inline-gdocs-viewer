@@ -2,7 +2,7 @@
 Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: Google Docs, Google, Spreadsheet, shortcode
-Requires at least: 2.5
+Requires at least: 2.6
 Tested up to: 3.0.1
 Stable tag: trunk
 
@@ -28,6 +28,10 @@ The above shortcode will produce HTML that looks something like the following:
         <caption>This is the table's caption.</caption>
         <!-- ...rest of table code using spreadsheet data here... -->
     </table>
+
+Finally, you can use the `gid` attribute to embed a worksheet other than the first one (the one on the far left). For example, to display a worksheet published at `https://spreadsheets.google.com/pub?key=ABCDEFG&gid=4`, use the following shortcode in your WordPress post or page:
+
+    [gdoc key="ABCDEFG" gid="4"]
 
 == Installation ==
 
@@ -55,6 +59,11 @@ Finally, both rows and cells (based on columns) are assigned an additional class
 You should triple-check that you've published your spreadsheet. Google provides instructions for doing this. Be sure to follow steps 1 and 2 in [Google Spreadsheets Help: Publishing to the Web](http://docs.google.com/support/bin/answer.py?hl=en&answer=47134).
 
 == Change log ==
+
+= Version 0.2 =
+
+* Implements `gid` attribute in shortcode to allow embedding of non-default worksheet.
+* Updates plugin internals; now requires WordPress 2.6 or higher.
 
 = Version 0.1 =
 
