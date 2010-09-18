@@ -38,6 +38,9 @@ class InlineGoogleSpreadsheetViewerPlugin {
     function csvToHtml ($options, $caption) {
         if (!$options['key']) { return false; }
         $url = "https://spreadsheets.google.com/pub?key={$options['key']}&output=csv";
+        if ($options['sheet_id']) {
+            $url .= "&single=true&gid={$options['sheet_id']}";
+        }
         if (false === ($h = fopen($url, 'r')) ) { return false; } // bail on error
         $r = array();
         while (($x = fgetcsv($h)) !== false) {
