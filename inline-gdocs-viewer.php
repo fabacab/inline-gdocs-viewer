@@ -48,6 +48,10 @@ class InlineGoogleSpreadsheetViewerPlugin {
         }
         if ($options['strip'] > 0) { $r = array_slice($r, $options['strip']); } // discard
 
+        // Split into table headers and body.
+        $thead = ((int) $options['header_rows']) ? array_splice($r, 0, $options['header_rows']) : array_splice($r, 0, 1);
+        $tbody = $r;
+
         $ir = 1; // row number counter
         $ic = 1; // column number counter
 
@@ -58,27 +62,21 @@ class InlineGoogleSpreadsheetViewerPlugin {
         if (!empty($caption)) {
             $html .= "<caption>$caption</caption>";
         }
+
         $html .= "<thead>\n";
-        if( !empty($options['thead_rows']) ) {
-
-            $table_head = $r;
-            array_splice($table_head, $options['thead_rows']); // thead rows
-            $table_body = array_slice($r, $options['thead_rows']); // tbody rows
-
-            for($i=0;$i<$options['thead_rows'];$i++) {
-                $html .= '<tr class="row-' . $ir . ' ' . $this->evenOrOdd($ir) . '">';
-                foreach ($table_head[$i] as $v) {
-                    $html .= '<th class="col-' . $ic . ' ' . $this->evenOrOdd($ic) .'"><div>'.$v.'</div></th>';
-                    $ic++;
-                }
-                $html .= "</tr>";
-                $ir++;
-                $ic = 1; // reset column counting
+        foreach ($thead as $v) {
+            $html .= "<tr class=\"row-$ir " . $this->evenOrOdd($ir) . "\">";
+            $ir++;
+            $ic = 1; // reset column counting
+            foreach ($v as $th) {
+                $html .= "<th class=\"col-$ic " . $this->evenOrOdd($ic) . "\"><div>$th</div></td>";
+                $ic++;
             }
+            $html .= "</tr>";
         }
         $html .= "</thead><tbody>";
 
-        foreach ($table_body as $v) {
+        foreach ($tbody as $v) {
             $html .= "<tr class=\"row-$ir " . $this->evenOrOdd($ir) . "\">";
             $ir++;
             $ic = 1; // reset column counting
@@ -106,8 +104,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
             'class'    => '',                   // Container element's custom class value
             'gid'      => false,                // Sheet ID for a Google Spreadsheet, if only one
             'summary'  => 'Google Spreadsheet', // If spreadsheet, value for summary attribute
-            'strip'    => 0,                     // If spreadsheet, how many rows to omit from top
-            'thead_rows' => 1                   // Number of rows in <thead>
+            'strip'    => 0,                    // If spreadsheet, how many rows to omit from top
+            'header_rows' => 1                  // Number of rows in <thead>
         ), $atts);
 
         return $this->csvToHtml($x, $content);

@@ -29,9 +29,13 @@ The above shortcode will produce HTML that looks something like the following:
         <!-- ...rest of table code using spreadsheet data here... -->
     </table>
 
-Finally, you can use the `gid` attribute to embed a worksheet other than the first one (the one on the far left). For example, to display a worksheet published at `https://spreadsheets.google.com/pub?key=ABCDEFG&gid=4`, use the following shortcode in your WordPress post or page:
+You can use the `gid` attribute to embed a worksheet other than the first one (the one on the far left). For example, to display a worksheet published at `https://spreadsheets.google.com/pub?key=ABCDEFG&gid=4`, use the following shortcode in your WordPress post or page:
 
     [gdoc key="ABCDEFG" gid="4"]
+
+The `header_rows` attribute lets you specify how many rows should be rendered as the [table header](http://reference.sitepoint.com/html/thead). For example, to render a worksheet's top 3 rows inside the `<thead>` element, use:
+
+    [gdoc key="ABCDEFG" header_rows="3"]
 
 == Installation ==
 
