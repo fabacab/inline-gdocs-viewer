@@ -1,10 +1,10 @@
 <?php
 /*
-Plugin Name: Inline Google Spreadsheet Viewer [Patch by Max, maxyudin@gmail.com]
+Plugin Name: Inline Google Spreadsheet Viewer
 Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
 Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table.
-Version: 0.2
-Author: Mr. Meitar Moscovitz
+Version: 0.3
+Author: "Mr. Meitar Moscovitz" <meitar@maymay.net>
 Author URI: http://maymay.net/
 */
 
