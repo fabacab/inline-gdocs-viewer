@@ -41,11 +41,9 @@ class InlineGoogleSpreadsheetViewerPlugin {
         if ($options['gid']) {
             $url .= "&single=true&gid={$options['gid']}";
         }
-        if (false === ($h = fopen($url, 'r')) ) { return false; } // bail on error
-        $r = array();
-        while (($x = fgetcsv($h)) !== false) {
-            $r[] = $x;
-        }
+        $resp = wp_remote_get($url);
+        if (is_wp_error($resp)) { return false; } // bail on error
+        $r = (function_exists('str_getcsv')) ? str_getcsv($resp['body']) : $this->str_getcsv($resp['body']);
         if ($options['strip'] > 0) { $r = array_slice($r, $options['strip']); } // discard
 
         // Split into table headers and body.
@@ -93,6 +91,22 @@ class InlineGoogleSpreadsheetViewerPlugin {
 
     function evenOrOdd ($x) {
         return ((int) $x % 2) ? 'odd' : 'even'; // cast to integer just in case
+    }
+
+    /**
+     * Simple CSV parsing, taken directly from PHP manual.
+     * @see http://www.php.net/manual/en/function.str-getcsv.php#100579
+     */
+    function str_getcsv ($input, $delimiter=',', $enclosure='"', $escape=null, $eol=null) {
+        $temp=fopen("php://memory", "rw");
+        fwrite($temp, $input);
+        fseek($temp, 0);
+        $r = array();
+        while (($data = fgetcsv($temp, 4096, $delimiter, $enclosure)) !== false) {
+            $r[] = $data;
+        }
+        fclose($temp);
+        return $r;
     }
 
     /**
