@@ -3,7 +3,7 @@
 Plugin Name: Inline Google Spreadsheet Viewer
 Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
 Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table.
-Version: 0.3
+Version: 0.3.1
 Author: "Mr. Meitar Moscovitz" <meitar@maymay.net>
 Author URI: http://maymay.net/
 */
@@ -13,7 +13,7 @@ Author URI: http://maymay.net/
  */
 
 // Uncomment for assistance from WordPress in debugging.
-define('WP_DEBUG', true);
+//define('WP_DEBUG', true);
 
 // Filesystem path to this plugin.
 define('GDOCS_VIEWER_PATH', WP_PLUGIN_DIR.'/'.dirname(plugin_basename(__FILE__)));
@@ -43,7 +43,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
         }
         $resp = wp_remote_get($url);
         if (is_wp_error($resp)) { return false; } // bail on error
-        $r = (function_exists('str_getcsv')) ? str_getcsv($resp['body']) : $this->str_getcsv($resp['body']);
+        //$r = (function_exists('str_getcsv')) ? str_getcsv($resp['body']) : $this->str_getcsv($resp['body']);
+        $r = $this->str_getcsv($resp['body']); // Yo, why is PHP's built-in str_getcsv() frakking things up?
         if ($options['strip'] > 0) { $r = array_slice($r, $options['strip']); } // discard
 
         // Split into table headers and body.
