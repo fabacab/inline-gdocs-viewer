@@ -1,30 +1,19 @@
 <?php
-/*
-Plugin Name: Inline Google Spreadsheet Viewer
-Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
-Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table.
-Version: 0.3.1
-Author: "Mr. Meitar Moscovitz" <meitar@maymay.net>
-Author URI: http://maymay.net/
-*/
-
 /**
- * @copyright 2010 Meitar Moscovitz
+ * Plugin Name: Inline Google Spreadsheet Viewer
+ * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
+ * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table.
+ * Version: 0.3.2
+ * Author: "Mr. Meitar Moscovitz" <meitar@maymay.net>
+ * Author URI: http://maymay.net/
  */
-
-// Uncomment for assistance from WordPress in debugging.
-//define('WP_DEBUG', true);
-
-// Filesystem path to this plugin.
-define('GDOCS_VIEWER_PATH', WP_PLUGIN_DIR.'/'.dirname(plugin_basename(__FILE__)));
 
 class InlineGoogleSpreadsheetViewerPlugin {
 
-    /**
-     * Constructor.
-     */
-    function InlineGoogleSpreadsheetViewerPlugin () {
-        // empty for now
+    private $shortcode = 'gdoc';
+
+    function __construct () {
+        add_shortcode($this->shortcode, array($this, 'displayShortcode'));
     }
 
     /**
@@ -114,6 +103,20 @@ class InlineGoogleSpreadsheetViewerPlugin {
      * WordPress Shortcode handler.
      */
     function displayShortcode ($atts, $content = null) {
+        wp_enqueue_style(
+            'jquery-datatables',
+            '//ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css'
+        );
+        wp_enqueue_script(
+            'jquery-datatables',
+            '//ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js',
+            'jquery'
+        );
+        wp_enqueue_script(
+            'igsv-datatables',
+            plugins_url(basename(__DIR__) . '/inline-gdocs-viewer.js'),
+            'jquery-datatables'
+        );
         $x = shortcode_atts(array(
             'key'      => false,                // Google Doc ID
             'class'    => '',                   // Container element's custom class value
@@ -121,11 +124,10 @@ class InlineGoogleSpreadsheetViewerPlugin {
             'summary'  => 'Google Spreadsheet', // If spreadsheet, value for summary attribute
             'strip'    => 0,                    // If spreadsheet, how many rows to omit from top
             'header_rows' => 1                  // Number of rows in <thead>
-        ), $atts);
+        ), $atts, $this->shortcode);
 
         return $this->csvToHtml($x, $content);
     }
 }
 
 $inline_gdoc_viewer = new InlineGoogleSpreadsheetViewerPlugin();
-add_shortcode('gdoc', array($inline_gdoc_viewer, 'displayShortcode'));

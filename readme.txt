@@ -2,7 +2,7 @@
 Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: Google Docs, Google, Spreadsheet, shortcode
-Requires at least: 2.7
+Requires at least: 3.3
 Tested up to: 3.8
 Stable tag: trunk
 
@@ -37,6 +37,10 @@ The `header_rows` attribute lets you specify how many rows should be rendered as
 
     [gdoc key="ABCDEFG" header_rows="3"]
 
+As of  version 0.3.2, all tables are progressively enhanced with jQuery DataTables to provide sorting, searching, and pagination functions on the table display itself. If you'd like a specific table not to include this funcitonality, use the `no-datatables` `class` in your shortcode. For instance:
+
+    [gdoc key="ABCDEFG" class="no-datatables"]
+
 == Installation ==
 
 1. Upload `inline-gdocs-viewer.php` to the `/wp-content/plugins/` directory.
@@ -66,6 +70,10 @@ You should triple-check that you've published your spreadsheet. Google provides 
 While you can't strip out columns like you can do with rows, you can [hide columns using CSS](http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/comment-page-2/#comment-294582) with code such as, `.col-4 { display: none; }`, for example.
 
 == Change log ==
+
+= Version 0.3.2 =
+
+* Adds jQuery [DataTables](//datatables.net/) plugin to provide column sorting, searching, and pagination. All tables will have DataTables's features applied. If you'd prefer to stick with the old, static table, use the `no-datatables` `class` when calling it. For instance, `[gdoc key="ABDEFG" class="no-datatables"]`. This also means the plugin now requires WordPress version 3.3 or later.
 
 = Version 0.3.1 =
 
