@@ -71,6 +71,10 @@ While you can't strip out columns like you can do with rows, you can [hide colum
 
 == Change log ==
 
+= Version 0.3.3 =
+
+* Bugfix: Correctly load search/sort/filter JavaScript on some systems where it failed.
+
 = Version 0.3.2 =
 
 * Adds jQuery [DataTables](//datatables.net/) plugin to provide column sorting, searching, and pagination. All tables will have DataTables's features applied. If you'd prefer to stick with the old, static table, use the `no-datatables` `class` when calling it. For instance, `[gdoc key="ABDEFG" class="no-datatables"]`. This also means the plugin now requires WordPress version 3.3 or later.

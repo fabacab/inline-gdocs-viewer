@@ -3,9 +3,9 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table.
- * Version: 0.3.2
- * Author: "Mr. Meitar Moscovitz" <meitar@maymay.net>
- * Author URI: http://maymay.net/
+ * Version: 0.3.3
+ * Author: Meitar Moscovitz <meitar@maymay.net>
+ * Author URI: http://meitarmoscovitz.com/
  */
 
 class InlineGoogleSpreadsheetViewerPlugin {
@@ -114,7 +114,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         );
         wp_enqueue_script(
             'igsv-datatables',
-            plugins_url(basename(__DIR__) . '/inline-gdocs-viewer.js'),
+            plugins_url('inline-gdocs-viewer.js', __FILE__),
             'jquery-datatables'
         );
         $x = shortcode_atts(array(
