@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table.
- * Version: 0.4
+ * Version: 0.4.1
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://meitarmoscovitz.com/
  */
@@ -16,7 +16,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         add_shortcode($this->shortcode, array($this, 'displayShortcode'));
     }
 
-    private function getDocUrl ($key, $gid = 0) {
+    private function getDocUrl ($key, $gid) {
         $url = '';
         // Assume a full link.
         if ('pubhtml' === substr($key, -7) && 'http' === substr($key, 0, 4)) {
@@ -171,7 +171,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
             'header_rows' => 1                  // Number of rows in <thead>
         ), $atts, $this->shortcode);
 
-        $resp = $this->fetchData($this->getDocUrl($x['key']));
+        $resp = $this->fetchData($this->getDocUrl($x['key'], $x['gid']));
         return $this->displayData($resp, $x, $content);
     }
 

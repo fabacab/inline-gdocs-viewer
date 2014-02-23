@@ -73,6 +73,10 @@ While you can't strip out columns like you can do with rows, you can [hide colum
 
 == Change log ==
 
+= Version 0.4.1 =
+
+* Bugfix: Correctly pass `gid` attribute.
+
 = Version 0.4 =
 
 * Feature: Support the "new" Google Spreadsheets through HTML parsing.
