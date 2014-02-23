@@ -3,7 +3,7 @@ Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: Google Docs, Google, Spreadsheet, shortcode
 Requires at least: 3.3
-Tested up to: 3.8
+Tested up to: 3.8.1
 Stable tag: trunk
 
 Embeds a published, public Google Spreadsheet in a WordPress post or page as an HTML table.
@@ -16,7 +16,9 @@ For example, to display the spreadsheet at `https://spreadsheets.google.com/pub?
 
     [gdoc key="ABCDEFG"]
 
-Currently, this plugin only supports Google Spreadsheets that are "Published as a web page" and therefore public. Private Google Docs are not supported (yet).
+Currently, this plugin only supports Google Spreadsheets that are "Published as a web page" and therefore public. Private Google Docs are not supported (yet). Additionally, if you use the "new" Google Spreadsheets, you must use the full URL of your published spreadsheet. For instance, if the URL of your new Google Spreadsheet is `https://docs.google.com/spreadsheets/d/ABCDEFG/pubhtml`, then your shortcode should look like this:
+
+    [gdoc key="https://docs.google.com/spreadsheets/d/ABCDEFG/pubhtml"]
 
 To render the HTML table with additional metadata, you can also do the following:
 
@@ -70,6 +72,11 @@ You should triple-check that you've published your spreadsheet. Google provides 
 While you can't strip out columns like you can do with rows, you can [hide columns using CSS](http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/comment-page-2/#comment-294582) with code such as, `.col-4 { display: none; }`, for example.
 
 == Change log ==
+
+= Version 0.4 =
+
+* Feature: Support the "new" Google Spreadsheets through HTML parsing.
+    * *This feature is experimental and is not recommended for production websites because [Google's "new" Google Spreadsheets are still under active development](https://support.google.com/drive/answer/3543688).* I strongly suggest you continue to use the "old" Google Spreadsheets for any documents with which you use this plugin. More information about [reverting back to the old Google Spreadsheets](https://support.google.com/drive/answer/3544847#workarounds) is available on Google's help page.
 
 = Version 0.3.3 =
 

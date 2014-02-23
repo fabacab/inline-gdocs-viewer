@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table.
- * Version: 0.3.3
+ * Version: 0.4
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://meitarmoscovitz.com/
  */
@@ -12,28 +12,73 @@ class InlineGoogleSpreadsheetViewerPlugin {
 
     private $shortcode = 'gdoc';
 
-    function __construct () {
+    public function __construct () {
         add_shortcode($this->shortcode, array($this, 'displayShortcode'));
     }
 
-    /**
-     * Function csvToHtml grabs CSV data from a URL and returns an HTML table.
-     *
-     * @param $options array Values passed from the shortcode.
-     * @param $caption string Passed via shortcode, should be the table caption.
-     * @return An HTML string if successful, false otherwise.
-     * @see displayShortcode
-     */
-    function csvToHtml ($options, $caption) {
-        if (!$options['key']) { return false; }
-        $url = "https://spreadsheets.google.com/pub?key={$options['key']}&output=csv";
-        if ($options['gid']) {
-            $url .= "&single=true&gid={$options['gid']}";
+    private function getDocUrl ($key, $gid = 0) {
+        $url = '';
+        // Assume a full link.
+        if ('pubhtml' === substr($key, -7) && 'http' === substr($key, 0, 4)) {
+            $url .= $key;
+        } else {
+            $url .= "https://spreadsheets.google.com/pub?key=$key&output=csv";
+            if ($gid) {
+                $url .= "&single=true&gid=$gid";
+            }
         }
+        return $url;
+    }
+
+    private function fetchData ($url) {
         $resp = wp_remote_get($url);
         if (is_wp_error($resp)) { return false; } // bail on error
-        //$r = (function_exists('str_getcsv')) ? str_getcsv($resp['body']) : $this->str_getcsv($resp['body']);
-        $r = $this->str_getcsv($resp['body']); // Yo, why is PHP's built-in str_getcsv() frakking things up?
+        return $resp;
+    }
+
+    private function parseCsv ($csv_str) {
+        return $this->str_getcsv($csv_str); // Yo, why is PHP's built-in str_getcsv() frakking things up?
+    }
+
+    private function parseHtml ($html_str, $gid = 0) {
+        // Fix Google's malformed HTML.
+        $html_str = substr($html_str, strpos($html_str, '<!DOCTYPE html>') + 15);
+        $html_str = '<!DOCTYPE HTML><html>' . $html_str;
+
+        $ret = array();
+
+        $dom = new DOMDocument();
+        $dom->loadHTML($html_str);
+        $tables = $dom->getElementsByTagName('table');
+
+        for ($i = 0; $i < $tables->length; $i++) {
+            $rows = $tables->item($i)->getElementsByTagName('tr');
+            for ($z = 0; $z < $rows->length; $z++) {
+                $ths = $rows->item($z)->getElementsByTagName('th');
+                foreach ($ths as $k => $node) {
+                    $ret[$i][$z][$k] = $node->nodeValue;
+                }
+                $tds = $rows->item($z)->getElementsByTagName('td');
+                foreach ($tds as $k => $node) {
+                    $ret[$i][$z][$k] = $node->nodeValue;
+                }
+            }
+        }
+
+        // The 0'th table is the sheet names, the 1'st is the first sheet's data
+        array_shift($ret);
+        // Only return the correct "sheet."
+        return $ret[$gid];
+    }
+
+    /**
+     * @param $r array Multidimensional array representing table data.
+     * @param $options array Values passed from the shortcode.
+     * @param $caption string Passed via shortcode, should be the table caption.
+     * @return An HTML string of the complete <table> element.
+     * @see displayShortcode
+     */
+    private function dataToHtml ($r, $options, $caption) {
         if ($options['strip'] > 0) { $r = array_slice($r, $options['strip']); } // discard
 
         // Split into table headers and body.
@@ -46,7 +91,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         // Prepend a space character onto the 'class' value, if one exists.
         if (!empty($options['class'])) { $options['class'] = " {$options['class']}"; }
 
-        $html  = "<table id=\"igsv-{$options['key']}\" class=\"igsv-table{$options['class']}\" summary=\"{$options['summary']}\">";
+        $html = "<table id=\"igsv-{$options['key']}\" class=\"igsv-table{$options['class']}\" summary=\"{$options['summary']}\">";
         if (!empty($caption)) {
             $html .= "<caption>$caption</caption>";
         }
@@ -79,7 +124,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         return $html;
     }
 
-    function evenOrOdd ($x) {
+    private function evenOrOdd ($x) {
         return ((int) $x % 2) ? 'odd' : 'even'; // cast to integer just in case
     }
 
@@ -87,7 +132,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
      * Simple CSV parsing, taken directly from PHP manual.
      * @see http://www.php.net/manual/en/function.str-getcsv.php#100579
      */
-    function str_getcsv ($input, $delimiter=',', $enclosure='"', $escape=null, $eol=null) {
+    private function str_getcsv ($input, $delimiter=',', $enclosure='"', $escape=null, $eol=null) {
         $temp=fopen("php://memory", "rw");
         fwrite($temp, $input);
         fseek($temp, 0);
@@ -102,7 +147,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
     /**
      * WordPress Shortcode handler.
      */
-    function displayShortcode ($atts, $content = null) {
+    public function displayShortcode ($atts, $content = null) {
         wp_enqueue_style(
             'jquery-datatables',
             '//ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css'
@@ -118,7 +163,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
             'jquery-datatables'
         );
         $x = shortcode_atts(array(
-            'key'      => false,                // Google Doc ID
+            'key'      => false,                // Google Doc URL or ID
             'class'    => '',                   // Container element's custom class value
             'gid'      => false,                // Sheet ID for a Google Spreadsheet, if only one
             'summary'  => 'Google Spreadsheet', // If spreadsheet, value for summary attribute
@@ -126,7 +171,25 @@ class InlineGoogleSpreadsheetViewerPlugin {
             'header_rows' => 1                  // Number of rows in <thead>
         ), $atts, $this->shortcode);
 
-        return $this->csvToHtml($x, $content);
+        $resp = $this->fetchData($this->getDocUrl($x['key']));
+        return $this->displayData($resp, $x, $content);
+    }
+
+    private function displayData($resp, $atts, $content) {
+        $html = '';
+        $type = explode(';', $resp['headers']['content-type']);
+        switch ($type[0]) {
+            case 'text/html':
+                $gid = ($atts['gid']) ? $atts['gid'] : 0;
+                $r = $this->parseHtml($resp['body'], $gid);
+                break;
+            case 'text/csv':
+            default:
+                $r = $this->parseCsv($resp['body']);
+            break;
+        }
+        $html .= $this->dataToHtml($r, $atts, $content);
+        return $html;
     }
 }
 
