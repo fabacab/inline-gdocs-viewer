@@ -41,10 +41,6 @@ class InlineGoogleSpreadsheetViewerPlugin {
     }
 
     private function parseHtml ($html_str, $gid = 0) {
-        // Fix Google's malformed HTML.
-        $html_str = substr($html_str, strpos($html_str, '<!DOCTYPE html>') + 15);
-        $html_str = '<!DOCTYPE HTML><html>' . $html_str;
-
         $ret = array();
 
         $dom = new DOMDocument();
