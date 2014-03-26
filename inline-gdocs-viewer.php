@@ -117,7 +117,11 @@ class InlineGoogleSpreadsheetViewerPlugin {
         }
         $html .= '</tbody></table>';
 
-        return $html;
+        if (false === $options['linkify'] || 'no' === strtolower($options['linkify'])) {
+            return $html;
+        } else {
+            return make_clickable($html);
+        }
     }
 
     private function evenOrOdd ($x) {
@@ -164,7 +168,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
             'gid'      => false,                // Sheet ID for a Google Spreadsheet, if only one
             'summary'  => 'Google Spreadsheet', // If spreadsheet, value for summary attribute
             'strip'    => 0,                    // If spreadsheet, how many rows to omit from top
-            'header_rows' => 1                  // Number of rows in <thead>
+            'header_rows' => 1,                 // Number of rows in <thead>
+            'linkify'  => true                  // Whether to run make_clickable() on parsed data
         ), $atts, $this->shortcode);
 
         $resp = $this->fetchData($this->getDocUrl($x['key'], $x['gid']));
