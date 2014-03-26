@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, shortcode
 Requires at least: 3.3
 Tested up to: 3.8.1
-Stable tag: trunk
+Stable tag: 0.4.2
 
 Embeds a published, public Google Spreadsheet in a WordPress post or page as an HTML table.
 
@@ -39,9 +39,13 @@ The `header_rows` attribute lets you specify how many rows should be rendered as
 
     [gdoc key="ABCDEFG" header_rows="3"]
 
-As of  version 0.3.2, all tables are progressively enhanced with jQuery [DataTables](https://datatables.net/) to provide sorting, searching, and pagination functions on the table display itself. If you'd like a specific table not to include this functionality, use the `no-datatables` `class` in your shortcode. For instance:
+As of version 0.3.2, all tables are progressively enhanced with jQuery [DataTables](https://datatables.net/) to provide sorting, searching, and pagination functions on the table display itself. If you'd like a specific table not to include this functionality, use the `no-datatables` `class` in your shortcode. For instance:
 
     [gdoc key="ABCDEFG" class="no-datatables"]
+
+As of version 0.4.2, Web addresses and email addresses in your data are turned into links. If this causes problems, you can disable this behavior by specifying `no` to the `linkify` attribute in your shortcode. For instance:
+
+    [godc key="ABCDEFG" linkfy="no"]
 
 == Installation ==
 
@@ -72,6 +76,10 @@ You should triple-check that you've published your spreadsheet. Google provides 
 While you can't strip out columns like you can do with rows, you can [hide columns using CSS](http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/comment-page-2/#comment-294582) with code such as, `.col-4 { display: none; }`, for example.
 
 == Change log ==
+
+= Version 0.4.2 =
+
+* Feature: Detect Web addresses and email addresses and turn them into clickable links. Optionally disable this behavior by adding `linkify="no"` to your shortcode.
 
 = Version 0.4.1 =
 
