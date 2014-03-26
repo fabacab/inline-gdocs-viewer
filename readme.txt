@@ -45,7 +45,7 @@ As of version 0.3.2, all tables are progressively enhanced with jQuery [DataTabl
 
 As of version 0.4.2, Web addresses and email addresses in your data are turned into links. If this causes problems, you can disable this behavior by specifying `no` to the `linkify` attribute in your shortcode. For instance:
 
-    [godc key="ABCDEFG" linkfy="no"]
+    [godc key="ABCDEFG" linkify="no"]
 
 == Installation ==
 
