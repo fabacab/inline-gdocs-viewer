@@ -3,22 +3,24 @@ Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: Google Docs, Google, Spreadsheet, shortcode
 Requires at least: 3.3
-Tested up to: 3.8.1
-Stable tag: 0.4.2
+Tested up to: 3.9
+Stable tag: 0.4.3
 
-Embeds a published, public Google Spreadsheet in a WordPress post or page as an HTML table.
+Embeds a public Google Spreadsheet in a WordPress post or page as an HTML table.
 
 == Description ==
 
-Fetches a published Google Spreadsheet using a `[gdoc key=""]` WordPress shortcode, then renders it as an HTML table, embedded in your blog post or page. The only required parameter is `key`, which specifies the document you'd like to retrieve. Optionally, you can also strip a certain number of rows (e.g., `strip="3"` omits the top 3 rows of the spreadsheet) and you can supply a table `summary`, `<caption>` and customized `class` value.
+Fetches a publicly shared Google Spreadsheet using a `[gdoc key=""]` WordPress shortcode, then renders it as an HTML table, embedded in your blog post or page. The only required parameter is `key`, which specifies the document you'd like to retrieve. Optionally, you can also strip a certain number of rows (e.g., `strip="3"` omits the top 3 rows of the spreadsheet) and you can supply a table `summary`, `<caption>` and customized `class` value.
 
-For example, to display the spreadsheet at `https://spreadsheets.google.com/pub?key=ABCDEFG`, use the following shortcode in your WordPress post or page:
+Your spreadsheet must be shared [using either the "Public on the web" or "Anyone with the link" options](https://support.google.com/drive/?p=visibility_options&hl=en_US). Currently, private Google Spreadsheets or Spreadsheets shared with "Specific people" are not supported.
+
+After setting the appropriate Sharing setting, copy the URL you use to view the Spreadsheet from your browser's address bar into the shortcode. For example, to display the spreadsheet at `https://docs.google.com/spreadsheets/d/ABCDEFG/edit`, use the following shortcode in your WordPress post or page:
+
+    [gdoc key="https://docs.google.com/spreadsheets/d/ABCDEFG/edit"]
+
+If your spreadsheet uses the "old" Google Spreadsheets, you need to [ensure that your spreadsheet is "Published to the Web"](https://docs.google.com/support/bin/answer.py?hl=en&answer=47134) and you need to copy only the "key" out of the URL. For instance, if the URL of your old Google Spreadsheet is `https://docs.google.com/spreadsheets/pub?key=ABCDEFG`, then your shortcode should look like this:
 
     [gdoc key="ABCDEFG"]
-
-Currently, this plugin only supports Google Spreadsheets that are "Published as a web page" and therefore public. Private Google Docs are not supported (yet). Additionally, if you use the "new" Google Spreadsheets, you must use the full URL of your published spreadsheet. For instance, if the URL of your new Google Spreadsheet is `https://docs.google.com/spreadsheets/d/ABCDEFG/pubhtml`, then your shortcode should look like this:
-
-    [gdoc key="https://docs.google.com/spreadsheets/d/ABCDEFG/pubhtml"]
 
 To render the HTML table with additional metadata, you can also do the following:
 
@@ -39,11 +41,11 @@ The `header_rows` attribute lets you specify how many rows should be rendered as
 
     [gdoc key="ABCDEFG" header_rows="3"]
 
-As of version 0.3.2, all tables are progressively enhanced with jQuery [DataTables](https://datatables.net/) to provide sorting, searching, and pagination functions on the table display itself. If you'd like a specific table not to include this functionality, use the `no-datatables` `class` in your shortcode. For instance:
+All tables are progressively enhanced with jQuery [DataTables](https://datatables.net/) to provide sorting, searching, and pagination functions on the table display itself. If you'd like a specific table not to include this functionality, use the `no-datatables` `class` in your shortcode. For instance:
 
     [gdoc key="ABCDEFG" class="no-datatables"]
 
-As of version 0.4.2, Web addresses and email addresses in your data are turned into links. If this causes problems, you can disable this behavior by specifying `no` to the `linkify` attribute in your shortcode. For instance:
+Web addresses and email addresses in your data are turned into links. If this causes problems, you can disable this behavior by specifying `no` to the `linkify` attribute in your shortcode. For instance:
 
     [godc key="ABCDEFG" linkify="no"]
 
@@ -76,6 +78,10 @@ You should triple-check that you've published your spreadsheet. Google provides 
 While you can't strip out columns like you can do with rows, you can [hide columns using CSS](http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/comment-page-2/#comment-294582) with code such as, `.col-4 { display: none; }`, for example.
 
 == Change log ==
+
+= Version 0.4.3 =
+
+* Feature: "New" Google Spreadsheets are now officially supported.
 
 = Version 0.4.2 =
 
