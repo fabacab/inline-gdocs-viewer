@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table.
- * Version: 0.4.3
+ * Version: 0.4.4
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://meitarmoscovitz.com/
  */
@@ -151,15 +151,37 @@ class InlineGoogleSpreadsheetViewerPlugin {
      * WordPress Shortcode handler.
      */
     public function displayShortcode ($atts, $content = null) {
+        // Core DataTables.
         wp_enqueue_style(
             'jquery-datatables',
-            '//ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/css/jquery.dataTables.css'
+            '//cdn.datatables.net/1.10.0/css/jquery.dataTables.css'
         );
         wp_enqueue_script(
             'jquery-datatables',
-            '//ajax.aspnetcdn.com/ajax/jquery.dataTables/1.9.4/jquery.dataTables.min.js',
+            '//cdn.datatables.net/1.10.0/js/jquery.dataTables.js',
             'jquery'
         );
+        // DataTables extensions.
+        wp_enqueue_style(
+            'datatables-colvis',
+            '//cdn.datatables.net/colvis/1.1.0/css/dataTables.colVis.css'
+        );
+        wp_enqueue_script(
+            'datatables-colvis',
+            '//cdn.datatables.net/colvis/1.1.0/js/dataTables.colVis.min.js',
+            'jquery-datatables'
+        );
+        wp_enqueue_style(
+            'datatables-tabletools',
+            '//cdn.datatables.net/tabletools/2.2.1/css/dataTables.tableTools.css'
+        );
+        wp_enqueue_script(
+            'datatables-tabletools',
+            '//cdn.datatables.net/tabletools/2.2.1/js/dataTables.tableTools.min.js',
+            'jquery-datatables'
+        );
+
+        // Plugin initialization.
         wp_enqueue_script(
             'igsv-datatables',
             plugins_url('inline-gdocs-viewer.js', __FILE__),
