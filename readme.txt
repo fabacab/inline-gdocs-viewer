@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, shortcode
 Requires at least: 3.3
 Tested up to: 3.9
-Stable tag: 0.4.4
+Stable tag: 0.4.5
 
 Embeds a public Google Spreadsheet in a WordPress post or page as an HTML table.
 
@@ -78,6 +78,11 @@ You should triple-check that you've published your spreadsheet. Google provides 
 While you can't strip out columns like you can do with rows, you can [hide columns using CSS](http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/comment-page-2/#comment-294582) with code such as, `.col-4 { display: none; }`, for example.
 
 == Change log ==
+
+= Version 0.4.5 =
+
+* Bugfix: Correctly output the table's `id` attribute for "new" Google Spreadsheets.
+* Security: Added additional output escaping.
 
 = Version 0.4.4 =
 

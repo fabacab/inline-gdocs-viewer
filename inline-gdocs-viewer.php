@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table.
- * Version: 0.4.4
+ * Version: 0.4.5
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://meitarmoscovitz.com/
  */
@@ -33,6 +33,17 @@ class InlineGoogleSpreadsheetViewerPlugin {
         return $url;
     }
 
+    private function getDocKey ($key) {
+        // Assume a full link.
+        if ('http' === substr($key, 0, 4)) {
+            $m = array();
+            preg_match('/docs\.google\.com\/spreadsheets\/d\/([^\/]*)/i', $key, $m);
+            return $m[1];
+        } else {
+            return $key;
+        }
+    }
+
     private function fetchData ($url) {
         $resp = wp_remote_get($url);
         if (is_wp_error($resp)) { return false; } // bail on error
@@ -43,6 +54,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         return $this->str_getcsv($csv_str); // Yo, why is PHP's built-in str_getcsv() frakking things up?
     }
 
+    // TODO: Do we need this code anymore? Everything comes in via CSV format.
     private function parseHtml ($html_str, $gid = 0) {
         $ret = array();
 
@@ -89,10 +101,15 @@ class InlineGoogleSpreadsheetViewerPlugin {
 
         // Prepend a space character onto the 'class' value, if one exists.
         if (!empty($options['class'])) { $options['class'] = " {$options['class']}"; }
+        // Extract the document ID from the key, if a full URL was given.
+        $key = $this->getDocKey($options['key']);
 
-        $html = "<table id=\"igsv-{$options['key']}\" class=\"igsv-table{$options['class']}\" summary=\"{$options['summary']}\">";
+        $id = esc_attr($key);
+        $class = esc_attr($options['class']);
+        $summary = esc_attr($options['summary']);
+        $html = "<table id=\"igsv-$id\" class=\"igsv-table$class\" summary=\"$summary\">";
         if (!empty($caption)) {
-            $html .= "<caption>$caption</caption>";
+            $html .= '<caption>' . esc_html($caption) . '</caption>';
         }
 
         $html .= "<thead>\n";
@@ -101,6 +118,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
             $ir++;
             $ic = 1; // reset column counting
             foreach ($v as $th) {
+                $th = esc_html($th);
                 $html .= "<th class=\"col-$ic " . $this->evenOrOdd($ic) . "\"><div>$th</div></td>";
                 $ic++;
             }
@@ -113,6 +131,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
             $ir++;
             $ic = 1; // reset column counting
             foreach ($v as $td) {
+                $td = esc_html($td);
                 $html .= "<td class=\"col-$ic " . $this->evenOrOdd($ic) . "\">$td</td>";
                 $ic++;
             }
