@@ -3,8 +3,8 @@ Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: Google Docs, Google, Spreadsheet, shortcode
 Requires at least: 3.3
-Tested up to: 3.9
-Stable tag: 0.4.5
+Tested up to: 3.9.1
+Stable tag: 0.4.6
 
 Embeds a public Google Spreadsheet in a WordPress post or page as an HTML table.
 
@@ -78,6 +78,10 @@ You should triple-check that you've published your spreadsheet. Google provides 
 While you can't strip out columns like you can do with rows, you can [hide columns using CSS](http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/comment-page-2/#comment-294582) with code such as, `.col-4 { display: none; }`, for example.
 
 == Change log ==
+
+= Version 0.4.6 =
+
+* Update to support Google's new `gid` attribute requirements. (Dear Google, please stop changing things, sincerely, [a homeless hacker who survives thanks to donations for free software](http://maymay.net/).)
 
 = Version 0.4.5 =
 
