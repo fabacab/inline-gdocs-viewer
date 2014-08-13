@@ -202,6 +202,15 @@ class InlineGoogleSpreadsheetViewerPlugin {
             '//cdn.datatables.net/tabletools/2.2.1/js/dataTables.tableTools.min.js',
             'jquery-datatables'
         );
+        wp_enqueue_style(
+            'datatables-fixedcolumns',
+            '//datatables.net/release-datatables/extensions/FixedColumns/css/dataTables.fixedColumns.css'
+        );
+        wp_enqueue_script(
+            'datatables-fixedcolumns',
+            '//datatables.net/release-datatables/extensions/FixedColumns/js/dataTables.fixedColumns.js',
+            'jquery-datatables'
+        );
 
         // Plugin initialization.
         wp_enqueue_script(
