@@ -3,8 +3,8 @@ Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: Google Docs, Google, Spreadsheet, shortcode
 Requires at least: 3.3
-Tested up to: 3.9.1
-Stable tag: 0.4.6
+Tested up to: 3.9.2
+Stable tag: 0.4.7
 
 Embeds a public Google Spreadsheet in a WordPress post or page as an HTML table.
 
@@ -45,6 +45,10 @@ All tables are progressively enhanced with jQuery [DataTables](https://datatable
 
     [gdoc key="ABCDEFG" class="no-datatables"]
 
+For DataTables-enhanced tables, you can also specify columns that you'd like to "freeze" when the user scrolls large tables horizontally. To do so, use the `FixedColumns-left-N` and `FixedColumns-right-N` classes, where `N` is the number of columns you'd like to freeze. For instance, to display the three left-most columns and the right-most column in a fixed (frozen) position, use the following in your shortcode:
+
+    [gdoc key="ABCDEFG" class="FixedColumns-left-3 FixedColumns-right-1"]
+
 Web addresses and email addresses in your data are turned into links. If this causes problems, you can disable this behavior by specifying `no` to the `linkify` attribute in your shortcode. For instance:
 
     [godc key="ABCDEFG" linkify="no"]
@@ -78,6 +82,11 @@ You should triple-check that you've published your spreadsheet. Google provides 
 While you can't strip out columns like you can do with rows, you can [hide columns using CSS](http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/comment-page-2/#comment-294582) with code such as, `.col-4 { display: none; }`, for example.
 
 == Change log ==
+
+= Version 0.4.7 =
+
+* Feature: Support for the [FixedColumns extension](https://datatables.net/extensions/fixedcolumns/) for DataTables-enhanced tables.
+* Large DataTables-enhanced tables now scroll horinzontally by default to avoid common layout issues.
 
 = Version 0.4.6 =
 
