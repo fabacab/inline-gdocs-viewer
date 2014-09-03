@@ -81,6 +81,27 @@ You should triple-check that you've published your spreadsheet. Google provides 
 = Can I remove certain columns from appearing on my webpage? =
 While you can't strip out columns like you can do with rows, you can [hide columns using CSS](http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/comment-page-2/#comment-294582) with code such as, `.col-4 { display: none; }`, for example.
 
+== How do I change the default settings, like can I turn paging off? Can I change the page length? Can I change the sort order? ==
+
+If you're able to add JavaScript to your theme, you can do all of these things, and more. Any and all DataTables-enhanced tables can be modified by using the DataTables API.
+
+For instance, to disable paging, add a JavaScript to your theme that looks like this:
+
+    jQuery(window).load(function () {
+        jQuery('#igsv-MY_TABLE_KEY').dataTable().api().page.len(-1).draw();
+    });
+
+
+Or, to have your DataTables-enhanced table automatically sort itself by the second column:
+
+    jQuery(window).load(function () {
+        jQuery(‘#igsv-MY_TABLE_KEY’).dataTable().api().order([1, 'desc']).draw();
+    });
+
+(Replace `MY_TABLE_KEY` with the Google Spreadsheet document ID of your spreadsheet, of course.)
+
+Please refer to the [DataTables API reference manual](https://datatables.net/reference/api) for more information about customizing DataTables-enhanced tables.
+
 == Change log ==
 
 = Version 0.4.7 =
