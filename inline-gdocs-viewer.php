@@ -57,13 +57,17 @@ class InlineGoogleSpreadsheetViewerPlugin {
         return $this->str_getcsv($csv_str); // Yo, why is PHP's built-in str_getcsv() frakking things up?
     }
 
-    // TODO: Do we need this code anymore? Everything comes in via CSV format.
     private function parseHtml ($html_str, $gid = 0) {
         $ret = array();
 
         $dom = new DOMDocument();
-        $dom->loadHTML($html_str);
+        @$dom->loadHTML($html_str);
         $tables = $dom->getElementsByTagName('table');
+
+        // Error early, if no tables were found.
+        if (0 === $tables->length) {
+            throw new Exception(__('[Error loading Google Spreadsheet data. Make sure your Google Spreadsheet is shared <a href="https://support.google.com/drive/answer/2494886?p=visibility_options">using either the "Public on the web" or "Anyone with the link" options</a>.]', 'inline-gdocs-viewer'));
+        }
 
         for ($i = 0; $i < $tables->length; $i++) {
             $rows = $tables->item($i)->getElementsByTagName('tr');
@@ -235,17 +239,21 @@ class InlineGoogleSpreadsheetViewerPlugin {
     private function displayData($resp, $atts, $content) {
         $html = '';
         $type = explode(';', $resp['headers']['content-type']);
-        switch ($type[0]) {
-            case 'text/html':
-                $gid = ($atts['gid']) ? $atts['gid'] : 0;
-                $r = $this->parseHtml($resp['body'], $gid);
+        try {
+            switch ($type[0]) {
+                case 'text/html':
+                    $gid = ($atts['gid']) ? $atts['gid'] : 0;
+                    $r = $this->parseHtml($resp['body'], $gid);
+                    break;
+                case 'text/csv':
+                default:
+                    $r = $this->parseCsv($resp['body']);
                 break;
-            case 'text/csv':
-            default:
-                $r = $this->parseCsv($resp['body']);
-            break;
+            }
+            $html .= $this->dataToHtml($r, $atts, $content);
+        } catch (Exception $e) {
+            $html = $e->getMessage();
         }
-        $html .= $this->dataToHtml($r, $atts, $content);
         return $html;
     }
 }
