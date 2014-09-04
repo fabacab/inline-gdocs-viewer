@@ -3,8 +3,8 @@ Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: Google Docs, Google, Spreadsheet, shortcode
 Requires at least: 3.3
-Tested up to: 3.9.2
-Stable tag: 0.4.7
+Tested up to: 4.0
+Stable tag: 0.4.7.1
 
 Embeds a public Google Spreadsheet in a WordPress post or page as an HTML table.
 
@@ -76,7 +76,7 @@ Finally, both rows and cells (based on columns) are assigned an additional class
     .igsv-table td.even { /* styles for even-numbered cells (column 2, 4, 6...) */ }
 
 = A table appears, but it's not my spreadsheet's data! And it looks weird! =
-You should triple-check that you've published your spreadsheet. Google provides instructions for doing this. Be sure to follow steps 1 and 2 in [Google Spreadsheets Help: Publishing to the Web](http://docs.google.com/support/bin/answer.py?hl=en&answer=47134).
+If you're still using the "old" Google Spreadsheets, you should triple-check that you've published your spreadsheet. Google provides instructions for doing this. Be sure to follow steps 1 and 2 in [Google Spreadsheets Help: Publishing to the Web](http://docs.google.com/support/bin/answer.py?hl=en&answer=47134). If you're using the "new" Google Spreadsheets, be sure you've selected either the ["Public on the web" or "Anyone with the link" Sharing options](https://support.google.com/drive/answer/2494886?p=visibility_options) for your Google Spreadsheet.
 
 = Can I remove certain columns from appearing on my webpage? =
 While you can't strip out columns like you can do with rows, you can [hide columns using CSS](http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/comment-page-2/#comment-294582) with code such as, `.col-4 { display: none; }`, for example.
@@ -103,6 +103,10 @@ Or, to have your DataTables-enhanced table automatically sort itself by the seco
 Please refer to the [DataTables API reference manual](https://datatables.net/reference/api) for more information about customizing DataTables-enhanced tables.
 
 == Change log ==
+
+= Version 0.4.7.1 =
+
+* Usability: Show a user-friendly error with suggestions to fix the detected problem.
 
 = Version 0.4.7 =
 
