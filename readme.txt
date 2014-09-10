@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, shortcode
 Requires at least: 3.3
 Tested up to: 4.0
-Stable tag: 0.4.7.1
+Stable tag: 0.5
 
 Embeds a public Google Spreadsheet in a WordPress post or page as an HTML table.
 
@@ -51,7 +51,11 @@ For DataTables-enhanced tables, you can also specify columns that you'd like to 
 
 Web addresses and email addresses in your data are turned into links. If this causes problems, you can disable this behavior by specifying `no` to the `linkify` attribute in your shortcode. For instance:
 
-    [godc key="ABCDEFG" linkify="no"]
+    [gdoc key="ABCDEFG" linkify="no"]
+
+You can pre-process your Google Spreadsheet before retrieving data from it by passing a [Google Charts API Query Language](https://developers.google.com/chart/interactive/docs/querylanguage#Language_Syntax) query to the shortcode's `query` attribute. This lets you interact with the data in your Google Spreadsheet as though the spreadsheet were a relational database table. For instance, if you maintain a spreadsheet of game results for a sports league and wish to display the team that scored the most goals in a single game, then assuming columns named "team" and "goals" existed in your spreadsheet, you might use a shortcode like this:
+
+    [gdoc key="ABCDEFG" query="SELECT team WHERE max(goals)"]
 
 == Installation ==
 
@@ -79,7 +83,11 @@ Finally, both rows and cells (based on columns) are assigned an additional class
 If you're still using the "old" Google Spreadsheets, you should triple-check that you've published your spreadsheet. Google provides instructions for doing this. Be sure to follow steps 1 and 2 in [Google Spreadsheets Help: Publishing to the Web](http://docs.google.com/support/bin/answer.py?hl=en&answer=47134). If you're using the "new" Google Spreadsheets, be sure you've selected either the ["Public on the web" or "Anyone with the link" Sharing options](https://support.google.com/drive/answer/2494886?p=visibility_options) for your Google Spreadsheet.
 
 = Can I remove certain columns from appearing on my webpage? =
-While you can't strip out columns like you can do with rows, you can [hide columns using CSS](http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/comment-page-2/#comment-294582) with code such as, `.col-4 { display: none; }`, for example.
+If you're using the "new" Google Spreadsheets, you can strip out columns by `select`ing only those columns you wish to retrieve by passing a [Google Charts API Query Language](https://developers.google.com/chart/interactive/docs/querylanguage#Language_Syntax) query to the shortcode's `query` attribute. For example, to retrieve and display only the first, second, and third columns in a spreadsheet, use a shortcode like this:
+
+    [gdoc key="ABCDEFG" query="select A, B, C"]
+
+Alternatively, you can [hide columns using CSS](http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/comment-page-2/#comment-294582) with code such as, `.col-4 { display: none; }`, for example.
 
 == How do I change the default settings, like can I turn paging off? Can I change the page length? Can I change the sort order? ==
 
@@ -91,7 +99,6 @@ For instance, to disable paging, add a JavaScript to your theme that looks like 
         jQuery('#igsv-MY_TABLE_KEY').dataTable().api().page.len(-1).draw();
     });
 
-
 Or, to have your DataTables-enhanced table automatically sort itself by the second column:
 
     jQuery(window).load(function () {
@@ -102,7 +109,13 @@ Or, to have your DataTables-enhanced table automatically sort itself by the seco
 
 Please refer to the [DataTables API reference manual](https://datatables.net/reference/api) for more information about customizing DataTables-enhanced tables.
 
+Another option for sorting your table, for example, is to use the `query` attribute and pass along an appropriate [Google Charts API Query Language query that includes an `order by` clause](https://developers.google.com/chart/interactive/docs/querylanguage#Order_By).
+
 == Change log ==
+
+= Version 0.5 =
+
+* [Feature](https://wordpress.org/support/topic/work-great-12): Query your spreadsheet like a database using the new `query` shortcode attribute. The value of the `query` attribute is any [Google Charts API Query Language query](https://developers.google.com/chart/interactive/docs/querylanguage). For example, to retrieve only the first two columns in rows whose first column begins with "Mario Bros." in a Google Spreadsheet, use a shortcode like `[gdoc key="ABCDEFG" query="select A, B where A starts with 'Mario Bros.'"]`.
 
 = Version 0.4.7.1 =
 

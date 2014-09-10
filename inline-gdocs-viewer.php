@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table.
- * Version: 0.4.7.1
+ * Version: 0.5
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://meitarmoscovitz.com/
  */
@@ -16,14 +16,15 @@ class InlineGoogleSpreadsheetViewerPlugin {
         add_shortcode($this->shortcode, array($this, 'displayShortcode'));
     }
 
-    private function getDocUrl ($key, $gid) {
+    private function getDocUrl ($key, $gid, $query) {
         $url = '';
         // Assume a full link.
         $m = array();
         if (preg_match('/\/(edit|pubhtml).*$/', $key, $m) && 'http' === substr($key, 0, 4)) {
             $parts = parse_url($key);
             $key = $parts['scheme'] . '://' . $parts['host'] . $parts['path'];
-            $url = str_replace($m[1], 'export?format=csv', $key);
+            $action = ($query) ? 'gviz/tq?tqx=out:csv&tq=' . urlencode($query) : 'export?format=csv';
+            $url = str_replace($m[1], $action, $key);
             if ($gid) {
                 $url .= '&gid=' . $gid;
             }
@@ -229,10 +230,11 @@ class InlineGoogleSpreadsheetViewerPlugin {
             'summary'  => 'Google Spreadsheet', // If spreadsheet, value for summary attribute
             'strip'    => 0,                    // If spreadsheet, how many rows to omit from top
             'header_rows' => 1,                 // Number of rows in <thead>
-            'linkify'  => true                  // Whether to run make_clickable() on parsed data
+            'linkify'  => true,                 // Whether to run make_clickable() on parsed data
+            'query'    => false                 // Google Visualization Query Language querystring
         ), $atts, $this->shortcode);
 
-        $resp = $this->fetchData($this->getDocUrl($x['key'], $x['gid']));
+        $resp = $this->fetchData($this->getDocUrl($x['key'], $x['gid'], $x['query']));
         return $this->displayData($resp, $x, $content);
     }
 
