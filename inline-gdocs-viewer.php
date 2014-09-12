@@ -70,7 +70,9 @@ class InlineGoogleSpreadsheetViewerPlugin {
 
     private function fetchData ($url) {
         $resp = wp_remote_get($url);
-        if (is_wp_error($resp)) { return false; } // bail on error
+        if (is_wp_error($resp)) { // bail on error
+            throw new Exception('[' . __('Error requesting Google Spreadsheet data:', 'inline-gdocs-viewer') . $resp->get_error_message() . ']');
+        }
         return $resp;
     }
 
