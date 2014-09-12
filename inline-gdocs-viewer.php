@@ -5,7 +5,9 @@
  * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table.
  * Version: 0.5
  * Author: Meitar Moscovitz <meitar@maymay.net>
- * Author URI: http://meitarmoscovitz.com/
+ * Author URI: http://maymay.net/
+ * Text Domain: inline-gdocs-viewer
+ * Domain Path: /languages
  */
 
 class InlineGoogleSpreadsheetViewerPlugin {
@@ -13,7 +15,13 @@ class InlineGoogleSpreadsheetViewerPlugin {
     private $shortcode = 'gdoc';
 
     public function __construct () {
+        add_action('plugins_loaded', array($this, 'registerL10n'));
+
         add_shortcode($this->shortcode, array($this, 'displayShortcode'));
+    }
+
+    public function registerL10n () {
+        load_plugin_textdomain('inline-gdocs-viewer', false, dirname(plugin_basename(__FILE__)) . '/languages/');
     }
 
     private function getDocUrl ($key, $gid, $query) {
@@ -67,7 +75,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
 
         // Error early, if no tables were found.
         if (0 === $tables->length) {
-            throw new Exception(__('[Error loading Google Spreadsheet data. Make sure your Google Spreadsheet is shared <a href="https://support.google.com/drive/answer/2494886?p=visibility_options">using either the "Public on the web" or "Anyone with the link" options</a>.]', 'inline-gdocs-viewer'));
+            throw new Exception('[' . __('Error loading Google Spreadsheet data. Make sure your Google Spreadsheet is shared <a href="https://support.google.com/drive/answer/2494886?p=visibility_options">using either the "Public on the web" or "Anyone with the link" options</a>.', 'inline-gdocs-viewer') . ']');
         }
 
         for ($i = 0; $i < $tables->length; $i++) {
