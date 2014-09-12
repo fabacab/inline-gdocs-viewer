@@ -1,0 +1,109 @@
+# Copyright (C) 2014 Inline Google Spreadsheet Viewer
+# This file is distributed under the same license as the Inline Google Spreadsheet Viewer package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Inline Google Spreadsheet Viewer 0.5.1\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/inline-gdocs-viewer\n"
+"POT-Creation-Date: 2014-09-12 22:24:33+00:00\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"PO-Revision-Date: 2014-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+
+#: inline-gdocs-viewer.php:74
+msgid "Error requesting Google Spreadsheet data:"
+msgstr ""
+
+#: inline-gdocs-viewer.php:92
+msgid ""
+"Error loading Google Spreadsheet data. Make sure your Google Spreadsheet is "
+"shared <a href=\"https://support.google.com/drive/answer/2494886?"
+"p=visibility_options\">using either the \"Public on the web\" or \"Anyone "
+"with the link\" options</a>."
+msgstr ""
+
+#: inline-gdocs-viewer.php:297
+msgid "Add Spreadsheet"
+msgstr ""
+
+#: inline-gdocs-viewer.php:324
+msgid "Inline Google Spreadsheet shortcode"
+msgstr ""
+
+#: inline-gdocs-viewer.php:329
+msgid "Insert inline Google Spreadsheet"
+msgstr ""
+
+#: inline-gdocs-viewer.php:330
+msgid "Enter the key (web address) of your Google Spreadsheet"
+msgstr ""
+
+#: inline-gdocs-viewer.php:333
+msgid "Key"
+msgstr ""
+
+#: inline-gdocs-viewer.php:334
+msgid "paste your Spreadsheet URL here"
+msgstr ""
+
+#: inline-gdocs-viewer.php:349
+msgid ""
+"You can insert a Google Spreadsheet in this post. To do so, type %s[gdoc key="
+"\"YOUR_SPREADSHEET_URL\"]%s wherever you would like the spreadsheet to "
+"appear. Remember to replace YOUR_SPREADSHEET_URL with the web address of "
+"your Google Spreadsheet."
+msgstr ""
+
+#: inline-gdocs-viewer.php:355
+msgid ""
+"Note that at this time, only Google Spreadsheets that have been shared using "
+"either the \"Public on the web\" or \"anyone with the link\" options will be "
+"visible on this page. If you are having trouble getting your Spreadsheet to "
+"show up on your website, you can get help from %sthe Inline Google "
+"Spreadsheet Viewer plugin support forum%s. Consider searching the support "
+"forum to see if your question has already been answered before posting a new "
+"thread."
+msgstr ""
+
+#: inline-gdocs-viewer.php:366
+msgid "Inserting a Google Spreadsheet"
+msgstr ""
+
+#: inline-gdocs-viewer.php:375
+msgid ""
+"Inline Google Spreadsheet Viewer is provided as free software, but sadly "
+"grocery stores do not offer free food. If you like this plugin, please "
+"consider %1$s to its %2$s. &hearts; Thank you!"
+msgstr ""
+
+#: inline-gdocs-viewer.php:376
+msgid "making a donation"
+msgstr ""
+
+#: inline-gdocs-viewer.php:377
+msgid "houseless, jobless, nomadic developer"
+msgstr ""
+
+#. Plugin Name of the plugin/theme
+msgid "Inline Google Spreadsheet Viewer"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"Retrieves a published, public Google Spreadsheet and displays it as an HTML "
+"table."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Meitar Moscovitz <meitar@maymay.net>"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://maymay.net/"
+msgstr ""

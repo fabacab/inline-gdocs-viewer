@@ -4,7 +4,9 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, shortcode
 Requires at least: 3.3
 Tested up to: 4.0
-Stable tag: 0.5
+Stable tag: 0.5.1
+License: GPLv3
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 Embeds a public Google Spreadsheet in a WordPress post or page as an HTML table.
 
@@ -112,6 +114,13 @@ Please refer to the [DataTables API reference manual](https://datatables.net/ref
 Another option for sorting your table, for example, is to use the `query` attribute and pass along an appropriate [Google Charts API Query Language query that includes an `order by` clause](https://developers.google.com/chart/interactive/docs/querylanguage#Order_By).
 
 == Change log ==
+
+= Version 0.5.1 =
+
+* Feature: New `gdoc` quicktag allows point-and-click insertion of `[gdoc key="ABCDEFG"]` shortcode when using the HTML editor.
+* Feature: On-line help using WordPress's built-in help viewer.
+* Usability: More error detection and suggestions for possible fixes.
+* Localization: Translation infrastructure added. [Help translate Inline Google Spreadsheet Viewer into your langauge](https://www.transifex.com/projects/p/inline-gdocs-viewer/)!
 
 = Version 0.5 =
 
