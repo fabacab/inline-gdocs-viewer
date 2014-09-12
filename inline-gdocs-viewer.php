@@ -16,12 +16,24 @@ class InlineGoogleSpreadsheetViewerPlugin {
 
     public function __construct () {
         add_action('plugins_loaded', array($this, 'registerL10n'));
+        add_action('admin_head', array($this, 'doAdminHeadActions'));
+        add_action('admin_enqueue_scripts', array($this, 'addAdminScripts'));
+        add_action('admin_print_footer_scripts', array($this, 'addQuickTagButton'));
 
         add_shortcode($this->shortcode, array($this, 'displayShortcode'));
     }
 
     public function registerL10n () {
         load_plugin_textdomain('inline-gdocs-viewer', false, dirname(plugin_basename(__FILE__)) . '/languages/');
+    }
+
+    public function doAdminHeadActions () {
+        $this->registerContextualHelp();
+    }
+
+    public function addAdminScripts () {
+        wp_enqueue_style('wp-jquery-ui-dialog');
+        wp_enqueue_script('jquery-ui-dialog');
     }
 
     private function getDocUrl ($key, $gid, $query) {
@@ -242,29 +254,128 @@ class InlineGoogleSpreadsheetViewerPlugin {
             'query'    => false                 // Google Visualization Query Language querystring
         ), $atts, $this->shortcode);
 
-        $resp = $this->fetchData($this->getDocUrl($x['key'], $x['gid'], $x['query']));
-        return $this->displayData($resp, $x, $content);
+        try {
+            $resp = $this->fetchData($this->getDocUrl($x['key'], $x['gid'], $x['query']));
+            $output = $this->displayData($resp, $x, $content);
+        } catch (Exception $e) {
+            $output = $e->getMessage();
+        }
+        return $output;
     }
 
     private function displayData($resp, $atts, $content) {
-        $html = '';
         $type = explode(';', $resp['headers']['content-type']);
-        try {
-            switch ($type[0]) {
-                case 'text/html':
-                    $gid = ($atts['gid']) ? $atts['gid'] : 0;
-                    $r = $this->parseHtml($resp['body'], $gid);
-                    break;
-                case 'text/csv':
-                default:
-                    $r = $this->parseCsv($resp['body']);
+        switch ($type[0]) {
+            case 'text/html':
+                $gid = ($atts['gid']) ? $atts['gid'] : 0;
+                $r = $this->parseHtml($resp['body'], $gid);
                 break;
-            }
-            $html .= $this->dataToHtml($r, $atts, $content);
-        } catch (Exception $e) {
-            $html = $e->getMessage();
+            case 'text/csv':
+            default:
+                $r = $this->parseCsv($resp['body']);
+            break;
         }
-        return $html;
+        return $this->dataToHtml($r, $atts, $content);
+    }
+
+    public function addQuickTagButton () {
+        if (wp_script_is('quicktags')) {
+?>
+<script type="text/javascript">
+jQuery(function () {
+    var d = jQuery('#qt_content_igsv_sheet_dialog');
+    d.dialog({
+        'dialogClass'  : 'wp-dialog',
+        'modal'        : true,
+        'autoOpen'     : false,
+        'closeOnEscape': true,
+        'minWidth'     : 500,
+        'buttons'      : {
+            'add' : {
+                'text'  : '<?php print esc_js(__('Add Spreadsheet', 'inline-gdocs-viewer'));?>',
+                'class' : 'button-primary',
+                'click' : function () {
+                    var x = jQuery('#content').prop('selectionStart');
+                    var cur_txt = jQuery('#content').val();
+                    var new_txt = '[gdoc key="' + jQuery('#js-qt-igsv-sheet-key').val() + '"]';
+
+                    jQuery('#content').val([cur_txt.slice(0, x), new_txt, cur_txt.slice(x)].join(''));
+
+                    jQuery('#js-qt-igsv-sheet-key').val('');
+                    jQuery(this).dialog('close');
+                }
+            }
+        }
+    });
+    QTags.addButton(
+        'igsv_sheet',
+        'gdoc',
+        function () {
+            jQuery('#qt_content_igsv_sheet').on('click', function (e) {
+                e.preventDefault();
+                d.dialog('open');
+            });
+            jQuery('#qt_content_igsv_sheet').click();
+        },
+        '[/gdoc]',
+        '',
+        '<?php print esc_js(__('Inline Google Spreadsheet shortcode', 'inline-gdocs-viewer'));?>',
+        130
+    );
+});
+</script>
+<div id="qt_content_igsv_sheet_dialog" title="<?php esc_attr_e('Insert inline Google Spreadsheet', 'inline-gdocs-viewer');?>">
+    <p class="howto"><?php esc_html_e('Enter the key (web address) of your Google Spreadsheet', 'inline-gdocs-viewer');?></p>
+    <div>
+        <label>
+            <span><?php esc_html_e('Key', 'inline-gdocs-viewer');?></span>
+            <input style="width: 75%;" id="js-qt-igsv-sheet-key" placeholder="<?php esc_attr_e('paste your Spreadsheet URL here', 'inline-gdocs-viewer');?>" />
+        </label>
+    </div>
+    <?php print $this->showDonationAppeal();?>
+</div><!-- #qt_content_igsv_sheet_dialog -->
+<?php
+        }
+    }
+
+    private function registerContextualHelp () {
+        $screen = get_current_screen();
+        if ($screen->id !== 'post' ) { return; }
+
+        $html = '<p>';
+        $html .= sprintf(
+            esc_html__('You can insert a Google Spreadsheet in this post. To do so, type %s[gdoc key="YOUR_SPREADSHEET_URL"]%s wherever you would like the spreadsheet to appear. Remember to replace YOUR_SPREADSHEET_URL with the web address of your Google Spreadsheet.', 'inline-gdocs-viewer'),
+            '<kbd>', '</kbd>'
+        );
+        $html .= '</p>';
+        $html .= '<p>';
+        $html .= sprintf(
+            esc_html__('Note that at this time, only Google Spreadsheets that have been shared using either the "Public on the web" or "anyone with the link" options will be visible on this page. If you are having trouble getting your Spreadsheet to show up on your website, you can get help from %sthe Inline Google Spreadsheet Viewer plugin support forum%s. Consider searching the support forum to see if your question has already been answered before posting a new thread.', 'inline-gdocs-viewer'),
+            '<a href="https://wordpress.org/support/plugin/inline-google-spreadsheet-viewer/">', '</a>'
+        );
+        $html .= '</p>';
+        ob_start();
+        $this->showDonationAppeal();
+        $x = ob_get_contents();
+        ob_end_clean();
+        $html .= $x;
+        $screen->add_help_tab(array(
+            'id' => $this->shortcode . '-' . $screen->base . '-help',
+            'title' => __('Inserting a Google Spreadsheet', 'inline-gdocs-viewer'),
+            'content' => $html
+        ));
+    }
+
+    private function showDonationAppeal () {
+?>
+<div class="donation-appeal">
+    <p style="text-align: center; font-size: smaller; margin: 1em auto;"><?php print sprintf(
+esc_html__('Inline Google Spreadsheet Viewer is provided as free software, but sadly grocery stores do not offer free food. If you like this plugin, please consider %1$s to its %2$s. &hearts; Thank you!', 'inline-gdocs-viewer'),
+'<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=meitarm%40gmail%2ecom&lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer%20WordPress%20Plugin&amp;item_number=inline%2dgdocs%2dviewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted">' . esc_html__('making a donation', 'inline-gdocs-viewer') . '</a>',
+'<a href="http://Cyberbusking.org/">' . esc_html__('houseless, jobless, nomadic developer', 'inline-gdocs-viewer') . '</a>'
+);?></p>
+</div>
+<?php
     }
 }
 
