@@ -13,6 +13,7 @@
 class InlineGoogleSpreadsheetViewerPlugin {
 
     private $shortcode = 'gdoc';
+    private $invocations = 0;
 
     public function __construct () {
         add_action('plugins_loaded', array($this, 'registerL10n'));
@@ -253,15 +254,28 @@ class InlineGoogleSpreadsheetViewerPlugin {
             'strip'    => 0,                    // If spreadsheet, how many rows to omit from top
             'header_rows' => 1,                 // Number of rows in <thead>
             'linkify'  => true,                 // Whether to run make_clickable() on parsed data
-            'query'    => false                 // Google Visualization Query Language querystring
+            'query'    => false,                // Google Visualization Query Language querystring
+            'chart'    => false                 // Type of Chart (for an interactive chart)
         ), $atts, $this->shortcode);
 
-        try {
-            $resp = $this->fetchData($this->getDocUrl($x['key'], $x['gid'], $x['query']));
-            $output = $this->displayData($resp, $x, $content);
-        } catch (Exception $e) {
-            $output = $e->getMessage();
+        $url = $this->getDocUrl($x['key'], $x['gid'], $x['query']);
+        if (false === $x['chart']) {
+            try {
+                $output = $this->displayData($this->fetchData($url), $x, $content);
+            } catch (Exception $e) {
+                $output = $e->getMessage();
+            }
+        } else {
+            wp_enqueue_script('google-ajax-api', '//www.google.com/jsapi');
+            wp_enqueue_script(
+                'igsv-charts',
+                plugins_url('igsv-charts.js', __FILE__),
+                'google-ajax-api'
+            );
+            $chart_id = 'igsv-' . $this->invocations . '-' . $x['chart'] . 'chart-'  . $this->getDocKey($x['key']);
+            $output = '<div id="' . $chart_id . '" class="igsv-chart" data-chart-type="' . esc_attr(ucfirst($x['chart'])) . '" data-datasource-href="' . esc_attr($url) . '"></div>';
         }
+        $this->invocations++;
         return $output;
     }
 
