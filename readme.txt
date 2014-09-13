@@ -91,7 +91,7 @@ If you're using the "new" Google Spreadsheets, you can strip out columns by `sel
 
 Alternatively, you can [hide columns using CSS](http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/comment-page-2/#comment-294582) with code such as, `.col-4 { display: none; }`, for example.
 
-== How do I change the default settings, like can I turn paging off? Can I change the page length? Can I change the sort order? ==
+= How do I change the default settings, like can I turn paging off? Can I change the page length? Can I change the sort order? =
 
 If you're able to add JavaScript to your theme, you can do all of these things, and more. Any and all DataTables-enhanced tables can be modified by using the DataTables API.
 
@@ -104,7 +104,7 @@ For instance, to disable paging, add a JavaScript to your theme that looks like 
 Or, to have your DataTables-enhanced table automatically sort itself by the second column:
 
     jQuery(window).load(function () {
-        jQuery(‘#igsv-MY_TABLE_KEY’).dataTable().api().order([1, 'desc']).draw();
+        jQuery('#igsv-MY_TABLE_KEY').dataTable().api().order([1, 'desc']).draw();
     });
 
 (Replace `MY_TABLE_KEY` with the Google Spreadsheet document ID of your spreadsheet, of course.)
