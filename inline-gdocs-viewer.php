@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
- * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table.
- * Version: 0.5.1
+ * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table or interactive chart.
+ * Version: 0.6
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: inline-gdocs-viewer

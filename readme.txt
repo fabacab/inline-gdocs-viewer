@@ -1,18 +1,20 @@
 === Plugin Name ===
 Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
-Tags: Google Docs, Google, Spreadsheet, shortcode
+Tags: Google Docs, Google, Spreadsheet, shortcode, Chart, data, visualization, infographics
 Requires at least: 3.3
 Tested up to: 4.0
-Stable tag: 0.5.1
+Stable tag: 0.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Embeds a public Google Spreadsheet in a WordPress post or page as an HTML table.
+Embeds a public Google Spreadsheet in a WordPress post or page as an HTML table or interactive chart.
 
 == Description ==
 
-Fetches a publicly shared Google Spreadsheet using a `[gdoc key=""]` WordPress shortcode, then renders it as an HTML table, embedded in your blog post or page. The only required parameter is `key`, which specifies the document you'd like to retrieve. Optionally, you can also strip a certain number of rows (e.g., `strip="3"` omits the top 3 rows of the spreadsheet) and you can supply a table `summary`, `<caption>` and customized `class` value.
+Easily turn data stored in a Google Spreadsheet into a beautiful interactive chart or graph, a sortable and searchable table, or both!
+
+The Inline Google Spreadsheet Viewer fetches a publicly shared Google Spreadsheet using a `[gdoc key=""]` WordPress shortcode, then renders it as an HTML table or interactive chart, embedded in your blog post or page. The only required parameter is `key`, which specifies the document you'd like to retrieve and will render a feature-rich table. Additional parameters let you customize how you display your data in the table, or transforms the table into an interactive bar chart, pie chart, or other information visualization.
 
 Your spreadsheet must be shared [using either the "Public on the web" or "Anyone with the link" options](https://support.google.com/drive/?p=visibility_options&hl=en_US). Currently, private Google Spreadsheets or Spreadsheets shared with "Specific people" are not supported.
 
@@ -24,18 +26,38 @@ If your spreadsheet uses the "old" Google Spreadsheets, you need to [ensure that
 
     [gdoc key="ABCDEFG"]
 
-To render the HTML table with additional metadata, you can also do the following:
+To create an interactive chart from your Spreadsheet's data, use the `chart` attribute to a supported chart type. These include:
 
-    [gdoc key="ABCDEFG" class="my-sheet" summary="An example spreadsheet, with a summary."]This is the table's caption.[/gdoc]
+* `Area` charts
+* `Bar` charts
+* `Bubble` charts
+* `Candlestick` charts
+* `Column` charts
+* `Combo` charts
+* `Histogram` charts
+* `Line` charts
+* `Pie` charts
+* `Scatter` charts
+* `Stepped` area charts
+
+For example, if you have a Google Spreadsheet for a sports league that records the goals each team has scored (where the first column is the team name and the second column is their total goals), you can create a bar chart, with an optional title, from that data using a shortcode like this:
+
+    [gdoc key="ABCDEFG" chart="Bar" title="Total goals per team"]
+
+To render an HTML table with additional metadata, such as supplying the table's `title`, `summary`, `<caption>`, and a customized `class` value, you can do the following:
+
+    [gdoc key="ABCDEFG" class="my-sheet" title="Tooltip text displayed on hover" summary="An example spreadsheet, with a summary."]This is the table's caption.[/gdoc]
 
 The above shortcode will produce HTML that looks something like the following:
 
-    <table id="igsv-ABCDEFG" class="igsv-table my-sheet" summary="An example spreadsheet, with a summary.">
+    <table id="igsv-ABCDEFG" class="igsv-table my-sheet" title="Tooltip text displayed on hover" summary="An example spreadsheet, with a summary.">
         <caption>This is the table's caption.</caption>
         <!-- ...rest of table code using spreadsheet data here... -->
     </table>
 
-You can use the `gid` attribute to embed a worksheet other than the first one (the one on the far left). For example, to display a worksheet published at `https://spreadsheets.google.com/pub?key=ABCDEFG&gid=4`, use the following shortcode in your WordPress post or page:
+You can also `strip` a certain number of rows (e.g., `strip="3"` omits the top 3 rows of the spreadsheet).
+
+You can use the `gid` attribute to fetch data from a worksheet other than the first one (the one on the far left). For example, to display a worksheet published at `https://spreadsheets.google.com/pub?key=ABCDEFG&gid=4`, use the following shortcode in your WordPress post or page:
 
     [gdoc key="ABCDEFG" gid="4"]
 
@@ -43,7 +65,7 @@ The `header_rows` attribute lets you specify how many rows should be rendered as
 
     [gdoc key="ABCDEFG" header_rows="3"]
 
-All tables are progressively enhanced with jQuery [DataTables](https://datatables.net/) to provide sorting, searching, and pagination functions on the table display itself. If you'd like a specific table not to include this functionality, use the `no-datatables` `class` in your shortcode. For instance:
+Be default, all tables are progressively enhanced with jQuery [DataTables](https://datatables.net/) to provide sorting, searching, and pagination functions on the table display itself. If you'd like a specific table not to include this functionality, use the `no-datatables` `class` in your shortcode. For instance:
 
     [gdoc key="ABCDEFG" class="no-datatables"]
 
@@ -55,9 +77,11 @@ Web addresses and email addresses in your data are turned into links. If this ca
 
     [gdoc key="ABCDEFG" linkify="no"]
 
-You can pre-process your Google Spreadsheet before retrieving data from it by passing a [Google Charts API Query Language](https://developers.google.com/chart/interactive/docs/querylanguage#Language_Syntax) query to the shortcode's `query` attribute. This lets you interact with the data in your Google Spreadsheet as though the spreadsheet were a relational database table. For instance, if you maintain a spreadsheet of game results for a sports league and wish to display the team that scored the most goals in a single game, then assuming columns named "team" and "goals" existed in your spreadsheet, you might use a shortcode like this:
+You can pre-process your Google Spreadsheet before retrieving data from it by passing a [Google Charts API Query Language](https://developers.google.com/chart/interactive/docs/querylanguage#Language_Syntax) query to the shortcode's `query` attribute. This lets you interact with the data in your Google Spreadsheet as though the spreadsheet were a relational database table. For instance, if you wish to display the team that scored the most goals on your website, you might use a shortcode like this to query your Google Spreadsheet and display the highest-scoring team:
 
     [gdoc key="ABCDEFG" query="SELECT team WHERE max(goals)"]
+
+Queries are also useful if your spreadsheet contains complex data from which many different charts can be created, allowing you to select only the parts of your spreadsheet that you'd like to use to compose the interactive chart.
 
 == Installation ==
 
@@ -83,6 +107,16 @@ Finally, both rows and cells (based on columns) are assigned an additional class
 
 = A table appears, but it's not my spreadsheet's data! And it looks weird! =
 If you're still using the "old" Google Spreadsheets, you should triple-check that you've published your spreadsheet. Google provides instructions for doing this. Be sure to follow steps 1 and 2 in [Google Spreadsheets Help: Publishing to the Web](http://docs.google.com/support/bin/answer.py?hl=en&answer=47134). If you're using the "new" Google Spreadsheets, be sure you've selected either the ["Public on the web" or "Anyone with the link" Sharing options](https://support.google.com/drive/answer/2494886?p=visibility_options) for your Google Spreadsheet.
+
+= Nothing appears where my chart should be. =
+
+The best way to determine what's wrong with a chart that isn't displaying properly is to try displaying the chart's data as a simple HTML table (by removing the `chart` attribute from your shortcode), and seeing what the tabular data source looks like.
+
+Charts most likely fail to display because of a mismatch between the chart you are using and the format of your spreadsheet.
+
+Each type of chart expects to retrieve data with a certain number of rows and/or columns. If your Google Spreadsheet is not already designed to create data for a chart, you might be able to use the `query` attribute to select only the rows and/or columns that the `chart` you're using expects. Otherwise, consider creating a new sheet with the proper formatting and using the `gid` attribute in your shortcode.
+
+To learn more about the correct spreadsheet formats for each chart type, please refer to [Google's Chart Gallery documentation](https://google-developers.appspot.com/chart/interactive/docs/gallery) for the type of chart you are using.
 
 = Can I remove certain columns from appearing on my webpage? =
 If you're using the "new" Google Spreadsheets, you can strip out columns by `select`ing only those columns you wish to retrieve by passing a [Google Charts API Query Language](https://developers.google.com/chart/interactive/docs/querylanguage#Language_Syntax) query to the shortcode's `query` attribute. For example, to retrieve and display only the first, second, and third columns in a spreadsheet, use a shortcode like this:
@@ -114,6 +148,23 @@ Please refer to the [DataTables API reference manual](https://datatables.net/ref
 Another option for sorting your table, for example, is to use the `query` attribute and pass along an appropriate [Google Charts API Query Language query that includes an `order by` clause](https://developers.google.com/chart/interactive/docs/querylanguage#Order_By).
 
 == Change log ==
+
+= Version 0.6 =
+
+* Feature: Use the `chart` attribute to display your Google Spreadsheet's data as an interactive chart or graph. Supported chart types include:
+    * Area charts
+    * Bar charts
+    * Bubble charts
+    * Candlestick charts
+    * Column charts
+    * Combo charts
+    * Histograms
+    * Line charts
+    * Pie charts
+    * Scatter charts
+    * Stepped area charts
+* Feature: Customize the tooltip by supplying a `title` attribute in the shortcode for your table or chart.
+* Performance: Load large JavaScript libraries only when needed for the kind of chart or table that's being displayed.
 
 = Version 0.5.1 =
 
@@ -193,3 +244,7 @@ Another option for sorting your table, for example, is to use the `query` attrib
 = Version 0.1 =
 
 * Initial release.
+
+== Other notes ==
+
+Maintaining this plugin is a labor of love. However, if you like it, please consider [making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=meitarm%40gmail%2ecom&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer%20WordPress%20Plugin&item_number=inline%2dgdocs%2dviewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted) for your use of the plugin, [purchasing one of Meitar's web development books](http://www.amazon.com/gp/redirect.html?ie=UTF8&location=http%3A%2F%2Fwww.amazon.com%2Fs%3Fie%3DUTF8%26redirect%3Dtrue%26sort%3Drelevancerank%26search-type%3Dss%26index%3Dbooks%26ref%3Dntt%255Fathr%255Fdp%255Fsr%255F2%26field-author%3DMeitar%2520Moscovitz&tag=maymaydotnet-20&linkCode=ur2&camp=1789&creative=390957) or, better yet, contributing directly to [Meitar's Cyberbusking fund](http://Cyberbusking.org/). (Publishing royalties ain't exactly the lucrative income it used to be, y'know?) Your support is appreciated!
