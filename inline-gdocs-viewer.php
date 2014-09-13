@@ -138,7 +138,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
         $id = esc_attr($key);
         $class = esc_attr($options['class']);
         $summary = esc_attr($options['summary']);
-        $html = "<table id=\"igsv-$id\" class=\"igsv-table$class\" summary=\"$summary\">";
+        $title = esc_attr($options['title']);
+        $html = "<table id=\"igsv-$id\" class=\"igsv-table$class\" summary=\"$summary\" title=\"$title\">";
         if (!empty($caption)) {
             $html .= '<caption>' . esc_html($caption) . '</caption>';
         }
@@ -201,53 +202,10 @@ class InlineGoogleSpreadsheetViewerPlugin {
      * WordPress Shortcode handler.
      */
     public function displayShortcode ($atts, $content = null) {
-        // Core DataTables.
-        wp_enqueue_style(
-            'jquery-datatables',
-            '//cdn.datatables.net/1.10.0/css/jquery.dataTables.css'
-        );
-        wp_enqueue_script(
-            'jquery-datatables',
-            '//cdn.datatables.net/1.10.0/js/jquery.dataTables.js',
-            'jquery'
-        );
-        // DataTables extensions.
-        wp_enqueue_style(
-            'datatables-colvis',
-            '//cdn.datatables.net/colvis/1.1.0/css/dataTables.colVis.css'
-        );
-        wp_enqueue_script(
-            'datatables-colvis',
-            '//cdn.datatables.net/colvis/1.1.0/js/dataTables.colVis.min.js',
-            'jquery-datatables'
-        );
-        wp_enqueue_style(
-            'datatables-tabletools',
-            '//cdn.datatables.net/tabletools/2.2.1/css/dataTables.tableTools.css'
-        );
-        wp_enqueue_script(
-            'datatables-tabletools',
-            '//cdn.datatables.net/tabletools/2.2.1/js/dataTables.tableTools.min.js',
-            'jquery-datatables'
-        );
-        wp_enqueue_style(
-            'datatables-fixedcolumns',
-            '//datatables.net/release-datatables/extensions/FixedColumns/css/dataTables.fixedColumns.css'
-        );
-        wp_enqueue_script(
-            'datatables-fixedcolumns',
-            '//datatables.net/release-datatables/extensions/FixedColumns/js/dataTables.fixedColumns.js',
-            'jquery-datatables'
-        );
-
-        // Plugin initialization.
-        wp_enqueue_script(
-            'igsv-datatables',
-            plugins_url('inline-gdocs-viewer.js', __FILE__),
-            'jquery-datatables'
-        );
+        $script_dependencies = array();
         $x = shortcode_atts(array(
             'key'      => false,                // Google Doc URL or ID
+            'title'    => '',                   // Title (attribute) text or visible chart title
             'class'    => '',                   // Container element's custom class value
             'gid'      => false,                // Sheet ID for a Google Spreadsheet, if only one
             'summary'  => 'Google Spreadsheet', // If spreadsheet, value for summary attribute
@@ -257,24 +215,72 @@ class InlineGoogleSpreadsheetViewerPlugin {
             'query'    => false,                // Google Visualization Query Language querystring
             'chart'    => false                 // Type of Chart (for an interactive chart)
         ), $atts, $this->shortcode);
-
         $url = $this->getDocUrl($x['key'], $x['gid'], $x['query']);
+
         if (false === $x['chart']) {
+            if (false === strpos($x['class'], 'no-datatables')) {
+                // Core DataTables.
+                wp_enqueue_style(
+                    'jquery-datatables',
+                    '//cdn.datatables.net/1.10.0/css/jquery.dataTables.css'
+                );
+                wp_enqueue_script(
+                    'jquery-datatables',
+                    '//cdn.datatables.net/1.10.0/js/jquery.dataTables.js',
+                    'jquery'
+                );
+                // DataTables extensions.
+                wp_enqueue_style(
+                    'datatables-colvis',
+                    '//cdn.datatables.net/colvis/1.1.0/css/dataTables.colVis.css'
+                );
+                wp_enqueue_script(
+                    'datatables-colvis',
+                    '//cdn.datatables.net/colvis/1.1.0/js/dataTables.colVis.min.js',
+                    'jquery-datatables'
+                );
+                wp_enqueue_style(
+                    'datatables-tabletools',
+                    '//cdn.datatables.net/tabletools/2.2.1/css/dataTables.tableTools.css'
+                );
+                wp_enqueue_script(
+                    'datatables-tabletools',
+                    '//cdn.datatables.net/tabletools/2.2.1/js/dataTables.tableTools.min.js',
+                    'jquery-datatables'
+                );
+                wp_enqueue_style(
+                    'datatables-fixedcolumns',
+                    '//datatables.net/release-datatables/extensions/FixedColumns/css/dataTables.fixedColumns.css'
+                );
+                wp_enqueue_script(
+                    'datatables-fixedcolumns',
+                    '//datatables.net/release-datatables/extensions/FixedColumns/js/dataTables.fixedColumns.js',
+                    'jquery-datatables'
+                );
+                $script_dependencies[] = 'jquery-datatables';
+            }
             try {
                 $output = $this->displayData($this->fetchData($url), $x, $content);
             } catch (Exception $e) {
                 $output = $e->getMessage();
             }
         } else {
+            // If a chart but no query, just query for entire spreadsheet
+            if (false === $x['query']) {
+                $url = preg_replace('/export\?format=csv/', 'gviz/tq', $url);
+            }
             wp_enqueue_script('google-ajax-api', '//www.google.com/jsapi');
-            wp_enqueue_script(
-                'igsv-charts',
-                plugins_url('igsv-charts.js', __FILE__),
-                'google-ajax-api'
-            );
+            $script_dependencies[] = 'google-ajax-api';
             $chart_id = 'igsv-' . $this->invocations . '-' . $x['chart'] . 'chart-'  . $this->getDocKey($x['key']);
-            $output = '<div id="' . $chart_id . '" class="igsv-chart" data-chart-type="' . esc_attr(ucfirst($x['chart'])) . '" data-datasource-href="' . esc_attr($url) . '"></div>';
+            $output = '<div id="' . $chart_id . '" class="igsv-chart" title="' . esc_attr($x['title']) . '" data-chart-type="' . esc_attr(ucfirst($x['chart'])) . '" data-datasource-href="' . esc_attr($url) . '"></div>';
         }
+
+        wp_enqueue_script(
+            'inline-gdocs-viewer',
+            plugins_url('inline-gdocs-viewer.js', __FILE__),
+            $script_dependencies
+        );
+
         $this->invocations++;
         return $output;
     }
