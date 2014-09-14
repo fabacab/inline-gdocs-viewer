@@ -258,7 +258,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
                 );
                 wp_enqueue_script(
                     'igsv-datatables',
-                    plugins_url('inline-gdocs-viewer.js', __FILE__),
+                    plugins_url('igsv-datatables.js', __FILE__),
                     'jquery-datatables'
                 );
             }
