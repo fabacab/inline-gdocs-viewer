@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table or interactive chart.
- * Version: 0.6
+ * Version: 0.6.1
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: inline-gdocs-viewer
@@ -202,7 +202,6 @@ class InlineGoogleSpreadsheetViewerPlugin {
      * WordPress Shortcode handler.
      */
     public function displayShortcode ($atts, $content = null) {
-        $script_dependencies = array();
         $x = shortcode_atts(array(
             'key'      => false,                // Google Doc URL or ID
             'title'    => '',                   // Title (attribute) text or visible chart title
@@ -257,7 +256,11 @@ class InlineGoogleSpreadsheetViewerPlugin {
                     '//datatables.net/release-datatables/extensions/FixedColumns/js/dataTables.fixedColumns.js',
                     'jquery-datatables'
                 );
-                $script_dependencies[] = 'jquery-datatables';
+                wp_enqueue_script(
+                    'igsv-datatables',
+                    plugins_url('inline-gdocs-viewer.js', __FILE__),
+                    'jquery-datatables'
+                );
             }
             try {
                 $output = $this->displayData($this->fetchData($url), $x, $content);
@@ -270,16 +273,14 @@ class InlineGoogleSpreadsheetViewerPlugin {
                 $url = preg_replace('/export\?format=csv/', 'gviz/tq', $url);
             }
             wp_enqueue_script('google-ajax-api', '//www.google.com/jsapi');
-            $script_dependencies[] = 'google-ajax-api';
+            wp_enqueue_script(
+                'igsv-gvizcharts',
+                plugins_url('igsv-gvizcharts.js', __FILE__),
+                'google-ajax-api'
+            );
             $chart_id = 'igsv-' . $this->invocations . '-' . $x['chart'] . 'chart-'  . $this->getDocKey($x['key']);
             $output = '<div id="' . $chart_id . '" class="igsv-chart" title="' . esc_attr($x['title']) . '" data-chart-type="' . esc_attr(ucfirst($x['chart'])) . '" data-datasource-href="' . esc_attr($url) . '"></div>';
         }
-
-        wp_enqueue_script(
-            'inline-gdocs-viewer',
-            plugins_url('inline-gdocs-viewer.js', __FILE__),
-            $script_dependencies
-        );
 
         $this->invocations++;
         return $output;

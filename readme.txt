@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, shortcode, Chart, data, visualization, infographics
 Requires at least: 3.3
 Tested up to: 4.0
-Stable tag: 0.6
+Stable tag: 0.6.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -148,6 +148,10 @@ Please refer to the [DataTables API reference manual](https://datatables.net/ref
 Another option for sorting your table, for example, is to use the `query` attribute and pass along an appropriate [Google Charts API Query Language query that includes an `order by` clause](https://developers.google.com/chart/interactive/docs/querylanguage#Order_By).
 
 == Change log ==
+
+= Version 0.6.1 =
+
+* [Bugfix](https://wordpress.org/support/topic/with-06-ver-i-have-an-error-uncaught-referenceerror-google-is-not-defined): Fix bug that caused JavaScript loading to fail when certain `gdoc` shortcodes were used.
 
 = Version 0.6 =
 
