@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table or interactive chart.
- * Version: 0.6.2
+ * Version: 0.6.2.1
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: inline-gdocs-viewer
@@ -302,7 +302,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
     }
 
     public function addQuickTagButton () {
-        if (wp_script_is('quicktags')) {
+        $screen = get_current_screen();
+        if (wp_script_is('quicktags') && 'post' === $screen->base) {
 ?>
 <script type="text/javascript">
 jQuery(function () {
