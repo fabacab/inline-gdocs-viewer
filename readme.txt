@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, shortcode, Chart, data, visualization, infographics
 Requires at least: 3.3
 Tested up to: 4.0
-Stable tag: 0.6.2.1
+Stable tag: 0.6.2.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -147,7 +147,15 @@ Please refer to the [DataTables API reference manual](https://datatables.net/ref
 
 Another option for sorting your table, for example, is to use the `query` attribute and pass along an appropriate [Google Charts API Query Language query that includes an `order by` clause](https://developers.google.com/chart/interactive/docs/querylanguage#Order_By).
 
+= Why am I getting errors when I try to use the `query` attribute? =
+
+If your `query` includes an angle bracket, such as a less than (`<`) or a greater than (`>`) sign, [WordPress will assume you are trying to write HTML](https://core.trac.wordpress.org/ticket/28564) and strip everything except the first word of your query, resulting in syntax error. Instead, use the URL-encoded equivalents of these characters (`%3C` and `%3E`, for `<` and `>`, respectively), which WordPress will pass to the plugin unmolested and which the plugin is specifically aware of how to handle correctly.
+
 == Change log ==
+
+= Version 0.6.2.2 =
+
+* [Bugfix](https://wordpress.org/support/topic/using-greaterless-than-signs-in-where-clause): Workaround WordPress parser garbling `<` and `>` comparison operators in `query` shortcode attribute. Instead, use the URL-encoded equivalents, `%3C` and `%3E`, respectively.
 
 = Version 0.6.2.1 =
 

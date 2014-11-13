@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table or interactive chart.
- * Version: 0.6.2.1
+ * Version: 0.6.2.2
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: inline-gdocs-viewer
@@ -44,7 +44,15 @@ class InlineGoogleSpreadsheetViewerPlugin {
         if (preg_match('/\/(edit|pubhtml).*$/', $key, $m) && 'http' === substr($key, 0, 4)) {
             $parts = parse_url($key);
             $key = $parts['scheme'] . '://' . $parts['host'] . $parts['path'];
-            $action = ($query) ? 'gviz/tq?tqx=out:csv&tq=' . urlencode($query) : 'export?format=csv';
+            $action = ($query)
+                // Due to shortcode parsing limitations of angle brackets (< and > characters),
+                // manually decode only the URL encoded values for those values, which are
+                // themselves expected to be entered manually by the user. That is, to supply
+                // the shortcode with a less than sign, the user ought enter %3C, but after
+                // the initial urlencode($query), this will encode the percent sign, returning
+                // instead the value %253C, so we manually replace this in the query ourselves.
+                ? 'gviz/tq?tqx=out:csv&tq=' . str_replace('%253E', '%3E', str_replace('%253C', '%3C', urlencode($query)))
+                : 'export?format=csv';
             $url = str_replace($m[1], $action, $key);
             if ($gid) {
                 $url .= '&gid=' . $gid;
