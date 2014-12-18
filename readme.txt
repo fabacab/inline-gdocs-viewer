@@ -245,7 +245,7 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 
 == Change log ==
 
-= Version 0.7
+= Version 0.7 =
 
 * Feature: Previews for direct links to PDF, XSLT, DOC, and other file formats supported by the [Google Docs Viewer](https://docs.google.com/viewer) now work, too. Simply use the direct URL to one such file hosted on the public Internet as your `key` to embed an HTML preview of that file.
 * Feature: New shortcode attributes `style`, `width`, and `height` enable you to supply inline display dimensions. Note that when used on HTML tables, you must use the CSS equivalents for `width` and `height` by using the `style` attribute rather than the other two directly. For instance: `[gdoc key="ABDCEFG" class="no-datatables" style="width:50%;height:480px;"]
