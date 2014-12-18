@@ -173,57 +173,57 @@ Note that when a JSON object is used as a value, the shortcode attribute's value
 
 The list of attributes for configurable options is:
 
-    * `chart_annotations`
-    * `chart_aggregation_target`
-    * `chart_area_opacity`
-    * `chart_axis_titles_position`
-    * `chart_background_color`
-    * `chart_bars`
-    * `chart_bubble`
-    * `chart_candlestick`
-    * `chart_chart_area`
-    * `chart_color_axis`
-    * `chart_colors`
-    * `chart_crosshair`
-    * `chart_curve_type`
-    * `chart_data_opacity`
-    * `chart_dimensions`
-    * `chart_enable_interactivity`
-    * `chart_explorer`
-    * `chart_focus_target`
-    * `chart_font_name`
-    * `chart_font_size`
-    * `chart_force_i_frame`
-    * `chart_h_axes`
-    * `chart_h_axis`
-    * `chart_height`
-    * `chart_interpolate_nulls`
-    * `chart_is_stacked`
-    * `chart_legend`
-    * `chart_line_width`
-    * `chart_orientation`
-    * `chart_pie_hole`
-    * `chart_pie_residue_slice_color`
-    * `chart_pie_residue_slice_label`
-    * `chart_pie_slice_border_color`
-    * `chart_pie_slice_text`
-    * `chart_pie_slice_text_stlye`
-    * `chart_pie_start_angle`
-    * `chart_point_shape`
-    * `chart_point_size`
-    * `chart_reverse_categories`
-    * `chart_selection_mode`
-    * `chart_series`
-    * `chart_size_axis`
-    * `chart_slice_visibility_threshold`
-    * `chart_slices`
-    * `chart_theme`
-    * `chart_title_position`
-    * `chart_title_text_style`
-    * `chart_tooltip`
-    * `chart_trendlines`
-    * `chart_v_axis`
-    * `chart_width`
+* `chart_annotations`
+* `chart_aggregation_target`
+* `chart_area_opacity`
+* `chart_axis_titles_position`
+* `chart_background_color`
+* `chart_bars`
+* `chart_bubble`
+* `chart_candlestick`
+* `chart_chart_area`
+* `chart_color_axis`
+* `chart_colors`
+* `chart_crosshair`
+* `chart_curve_type`
+* `chart_data_opacity`
+* `chart_dimensions`
+* `chart_enable_interactivity`
+* `chart_explorer`
+* `chart_focus_target`
+* `chart_font_name`
+* `chart_font_size`
+* `chart_force_i_frame`
+* `chart_h_axes`
+* `chart_h_axis`
+* `chart_height`
+* `chart_interpolate_nulls`
+* `chart_is_stacked`
+* `chart_legend`
+* `chart_line_width`
+* `chart_orientation`
+* `chart_pie_hole`
+* `chart_pie_residue_slice_color`
+* `chart_pie_residue_slice_label`
+* `chart_pie_slice_border_color`
+* `chart_pie_slice_text`
+* `chart_pie_slice_text_stlye`
+* `chart_pie_start_angle`
+* `chart_point_shape`
+* `chart_point_size`
+* `chart_reverse_categories`
+* `chart_selection_mode`
+* `chart_series`
+* `chart_size_axis`
+* `chart_slice_visibility_threshold`
+* `chart_slices`
+* `chart_theme`
+* `chart_title_position`
+* `chart_title_text_style`
+* `chart_tooltip`
+* `chart_trendlines`
+* `chart_v_axis`
+* `chart_width`
 
 = Why am I getting errors when I try to use the `query` attribute? =
 
