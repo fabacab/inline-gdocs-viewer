@@ -2,8 +2,8 @@
 /**
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
- * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table or interactive chart.
- * Version: 0.6.3
+ * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
+ * Version: 0.7
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: inline-gdocs-viewer
@@ -504,6 +504,11 @@ jQuery(function () {
             '<a href="https://wordpress.org/support/plugin/inline-google-spreadsheet-viewer/">', '</a>'
         );
         $html .= '</p>';
+        $html .= '<p>' . sprintf(
+            esc_html__('If your Spreadsheet is properly formatted, you can also transform your data into an interactive chart by using the %1$schart%2$s attribute. Supported chart types are Area, Bar, Bubble, Candlestick, Column, Combo, Histogram, Line, Pie, Scatter, and Stepped. For instance, to make a Pie chart, type %1$s[gdoc key="YOUR_SPREADSHEET_URL" chart="Pie"]%2$s. Customize your chart with your own choice of colors by supplying a space-separated list of colors with the %1$scolors%2$s attribute, like %1$scolors="red green"%2$s. Additional configuration options depend on the chart you use. Refer to the %3$sGoogle Chart API documentation%4$s for more information.' ,'inline-gdocs-viewer'),
+            '<kbd>', '</kbd>',
+            '<a href="https://developers.google.com/chart/interactive/docs/gallery">', '</a>'
+        ) . '</p>';
         ob_start();
         $this->showDonationAppeal();
         $x = ob_get_contents();
@@ -519,7 +524,7 @@ jQuery(function () {
     private function showDonationAppeal () {
 ?>
 <div class="donation-appeal">
-    <p style="text-align: center; font-size: smaller; margin: 1em auto;"><?php print sprintf(
+    <p style="text-align: center; font-style: italic; margin: 1em 3em;"><?php print sprintf(
 esc_html__('Inline Google Spreadsheet Viewer is provided as free software, but sadly grocery stores do not offer free food. If you like this plugin, please consider %1$s to its %2$s. &hearts; Thank you!', 'inline-gdocs-viewer'),
 '<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=meitarm%40gmail%2ecom&lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer%20WordPress%20Plugin&amp;item_number=inline%2dgdocs%2dviewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted">' . esc_html__('making a donation', 'inline-gdocs-viewer') . '</a>',
 '<a href="http://Cyberbusking.org/">' . esc_html__('houseless, jobless, nomadic developer', 'inline-gdocs-viewer') . '</a>'

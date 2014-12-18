@@ -1,10 +1,10 @@
 === Plugin Name ===
 Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
-Tags: Google Docs, Google, Spreadsheet, shortcode, Chart, data, visualization, infographics
+Tags: Google Docs, Google, Spreadsheet, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz
 Requires at least: 3.3
 Tested up to: 4.1
-Stable tag: 0.6.3
+Stable tag: 0.7
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -12,9 +12,13 @@ Embeds a public Google Spreadsheet in a WordPress post or page as an HTML table 
 
 == Description ==
 
-Easily turn data stored in a Google Spreadsheet into a beautiful interactive chart or graph, a sortable and searchable table, or both!
+Easily turn data stored in a Google Spreadsheet into a beautiful interactive chart or graph, a sortable and searchable table, or both! Also supports live previews of PDF, XSLT, DOC, and other file formats supported by the [Google Docs Viewer](https://docs.google.com/viewer).
 
-The Inline Google Spreadsheet Viewer fetches a publicly shared Google Spreadsheet using a `[gdoc key=""]` WordPress shortcode, then renders it as an HTML table or interactive chart, embedded in your blog post or page. The only required parameter is `key`, which specifies the document you'd like to retrieve and will render a feature-rich table. Additional parameters let you customize how you display your data in the table, or transforms the table into an interactive bar chart, pie chart, or other information visualization.
+The Inline Google Spreadsheet Viewer fetches a publicly shared Google Spreadsheet using a `[gdoc key=""]` WordPress shortcode, then renders it as an HTML table, interactive chart, or document preview embedded in your blog post or page. The only required parameter is `key`, which specifies the document you'd like to retrieve. Additional parameters let you customize how you display your spreadsheet data in the table, or transforms the table into an interactive bar chart, pie chart, or other information visualization.
+
+**Donations for this plugin make up a chunk of my income. If you continue to enjoy this plugin, please consider [making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted). :) Thank you for your support!**
+
+= Update your blog post or page whenever your Google Spreadsheet changes =
 
 Your spreadsheet must be shared [using either the "Public on the web" or "Anyone with the link" options](https://support.google.com/drive/?p=visibility_options&hl=en_US). Currently, private Google Spreadsheets or Spreadsheets shared with "Specific people" are not supported.
 
@@ -86,6 +90,16 @@ You can pre-process your Google Spreadsheet before retrieving data from it by pa
     [gdoc key="ABCDEFG" query="SELECT team WHERE max(goals)"]
 
 Queries are also useful if your spreadsheet contains complex data from which many different charts can be created, allowing you to select only the parts of your spreadsheet that you'd like to use to compose the interactive chart.
+
+= Embed and view documents online without leaving your blog =
+
+You can supply the URL of any file online to load a preview of that document on your blog. To do so, supply the file's URL as your `key`:
+
+    [gdoc key="http://example.com/my_final_paper.pdf"]
+
+To tweak the way your preview looks, you can use the `width`, `height`, or `style` attributes:
+
+    [gdoc key="http://example.com/my_final_paper.pdf" style="min-height:780px;border:none;"]
 
 == Installation ==
 
@@ -230,6 +244,12 @@ The list of attributes for configurable options is:
 If your `query` includes an angle bracket, such as a less than (`<`) or a greater than (`>`) sign, [WordPress will assume you are trying to write HTML](https://core.trac.wordpress.org/ticket/28564) and strip everything except the first word of your query, resulting in syntax error. Instead, use the URL-encoded equivalents of these characters (`%3C` and `%3E`, for `<` and `>`, respectively), which WordPress will pass to the plugin unmolested and which the plugin is specifically aware of how to handle correctly.
 
 == Change log ==
+
+= Version 0.7
+
+* Feature: Previews for direct links to PDF, XSLT, DOC, and other file formats supported by the [Google Docs Viewer](https://docs.google.com/viewer) now work, too. Simply use the direct URL to one such file hosted on the public Internet as your `key` to embed an HTML preview of that file.
+* Feature: New shortcode attributes `style`, `width`, and `height` enable you to supply inline display dimensions. Note that when used on HTML tables, you must use the CSS equivalents for `width` and `height` by using the `style` attribute rather than the other two directly. For instance: `[gdoc key="ABDCEFG" class="no-datatables" style="width:50%;height:480px;"]
+* Bugfix: Correct `chart_pie_slice_text_style` attribute handling.
 
 = Version 0.6.3 =
 
