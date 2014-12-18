@@ -257,7 +257,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
             'chart_pie_residue_slice_label'    => false,
             'chart_pie_slice_border_color'     => false,
             'chart_pie_slice_text'             => false,
-            'chart_pie_slice_text_stlye'       => false,
+            'chart_pie_slice_text_style'       => false,
             'chart_pie_start_angle'            => false,
             'chart_point_shape'                => false,
             'chart_point_size'                 => false,

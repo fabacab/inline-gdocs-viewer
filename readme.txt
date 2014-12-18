@@ -207,7 +207,7 @@ The list of attributes for configurable options is:
 * `chart_pie_residue_slice_label`
 * `chart_pie_slice_border_color`
 * `chart_pie_slice_text`
-* `chart_pie_slice_text_stlye`
+* `chart_pie_slice_text_style`
 * `chart_pie_start_angle`
 * `chart_point_shape`
 * `chart_point_size`
