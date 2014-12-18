@@ -37,6 +37,25 @@ class InlineGoogleSpreadsheetViewerPlugin {
         wp_enqueue_script('jquery-ui-dialog');
     }
 
+    /**
+     * Lazily tests whether the provided key is likely a
+     * Google Spreadsheet or if it's a URL for a file.
+     *
+     * This is later used to determine whether we load the
+     * sheet shortcode or the Google Docs Viewer's <iframe>.
+     */
+    private function isGoogleSpreadsheetKey ($key) {
+        $is_sheet = true;
+        $key_parts = parse_url($key);
+        if (isset($key_parts['path'])) {
+            $path_info = pathinfo($key_parts['path']);
+            if (!empty($path_info['extension'])) {
+                $is_sheet = false;
+            }
+        }
+        return $is_sheet;
+    }
+
     private function getDocUrl ($key, $gid, $query) {
         $url = '';
         // Assume a full link.
@@ -71,10 +90,9 @@ class InlineGoogleSpreadsheetViewerPlugin {
         if ('http' === substr($key, 0, 4)) {
             $m = array();
             preg_match('/docs\.google\.com\/spreadsheets\/d\/([^\/]*)/i', $key, $m);
-            return $m[1];
-        } else {
-            return $key;
+            $key = $m[1];
         }
+        return esc_attr($key);
     }
 
     private function fetchData ($url) {
@@ -147,7 +165,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
         $class = esc_attr($options['class']);
         $summary = esc_attr($options['summary']);
         $title = esc_attr($options['title']);
-        $html = "<table id=\"igsv-$id\" class=\"igsv-table$class\" summary=\"$summary\" title=\"$title\">";
+        $style = esc_attr($options['style']);
+        $html = "<table id=\"igsv-$id\" class=\"igsv-table$class\" summary=\"$summary\" title=\"$title\" style=\"$style\">";
         if (!empty($caption)) {
             $html .= '<caption>' . esc_html($caption) . '</caption>';
         }
@@ -216,11 +235,15 @@ class InlineGoogleSpreadsheetViewerPlugin {
             'class'    => '',                   // Container element's custom class value
             'gid'      => false,                // Sheet ID for a Google Spreadsheet, if only one
             'summary'  => 'Google Spreadsheet', // If spreadsheet, value for summary attribute
+            'width'    => '100%',
+            'height'   => false,
+            'style'    => false,
             'strip'    => 0,                    // If spreadsheet, how many rows to omit from top
             'header_rows' => 1,                 // Number of rows in <thead>
             'linkify'  => true,                 // Whether to run make_clickable() on parsed data
             'query'    => false,                // Google Visualization Query Language querystring
             'chart'    => false,                // Type of Chart (for an interactive chart)
+
 
             // Depending on the type of chart, the following options may be available.
             'chart_aggregation_target'         => false,
@@ -278,8 +301,27 @@ class InlineGoogleSpreadsheetViewerPlugin {
             // For some reason this isn't parsing?
             //'chart_is3D'                       => false,
         ), $atts, $this->shortcode);
-        $url = $this->getDocUrl($x['key'], $x['gid'], $x['query']);
+        if ($this->isGoogleSpreadsheetKey($x['key'])) {
+            $output = $this->getSpreadsheetOutput($x);
+        } else {
+            $output = $this->getGDocsViewerOutput($x);
+        }
+        $this->invocations++;
+        return $output;
+    }
 
+    private function getGDocsViewerOutput ($x) {
+        $output  = '<iframe src="';
+        $output .= esc_attr('https://docs.google.com/viewer?url=' . esc_url($x['key']) . '&embedded=true');
+        $output .= '" width="' . esc_attr($x['width']) . '" height="' . esc_attr($x['height']) . '" style="' . esc_attr($x['style']) . '">';
+        $output .= esc_html__('Your Web browser must support inline frames to display this content:', 'inline-gdocs-viewer');
+        $output .= ' <a href="' . esc_attr($x['key']) . '">' . esc_html($x['title']) . '</a>';
+        $output .= '</iframe>';
+        return $output;
+    }
+
+    private function getSpreadsheetOutput ($x) {
+        $url = $this->getDocUrl($x['key'], $x['gid'], $x['query']);
         if (false === $x['chart']) {
             if (false === strpos($x['class'], 'no-datatables')) {
                 // Core DataTables.
@@ -357,7 +399,6 @@ class InlineGoogleSpreadsheetViewerPlugin {
             $output .= '></div>'; // .igsv-chart
         }
 
-        $this->invocations++;
         return $output;
     }
 
