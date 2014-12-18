@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table or interactive chart.
- * Version: 0.6.2.2
+ * Version: 0.6.3
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: inline-gdocs-viewer
@@ -220,7 +220,63 @@ class InlineGoogleSpreadsheetViewerPlugin {
             'header_rows' => 1,                 // Number of rows in <thead>
             'linkify'  => true,                 // Whether to run make_clickable() on parsed data
             'query'    => false,                // Google Visualization Query Language querystring
-            'chart'    => false                 // Type of Chart (for an interactive chart)
+            'chart'    => false,                // Type of Chart (for an interactive chart)
+
+            // Depending on the type of chart, the following options may be available.
+            'chart_aggregation_target'         => false,
+            'chart_annotations'                => false,
+            'chart_area_opacity'               => false,
+            'chart_axis_titles_position'       => false,
+            'chart_background_color'           => false,
+            'chart_bars'                       => false,
+            'chart_bubble'                     => false,
+            'chart_candlestick'                => false,
+            'chart_chart_area'                 => false,
+            'chart_color_axis'                 => false,
+            'chart_colors'                     => false,
+            'chart_crosshair'                  => false,
+            'chart_curve_type'                 => false,
+            'chart_data_opacity'               => false,
+            'chart_dimensions'                 => false,
+            'chart_enable_interactivity'       => false,
+            'chart_explorer'                   => false,
+            'chart_focus_target'               => false,
+            'chart_font_name'                  => false,
+            'chart_font_size'                  => false,
+            'chart_force_i_frame'              => false,
+            'chart_h_axes'                     => false,
+            'chart_h_axis'                     => false,
+            'chart_height'                     => false,
+            'chart_interpolate_nulls'          => false,
+            'chart_is_stacked'                 => false,
+            'chart_legend'                     => false,
+            'chart_line_width'                 => false,
+            'chart_orientation'                => false,
+            'chart_pie_hole'                   => false,
+            'chart_pie_residue_slice_color'    => false,
+            'chart_pie_residue_slice_label'    => false,
+            'chart_pie_slice_border_color'     => false,
+            'chart_pie_slice_text'             => false,
+            'chart_pie_slice_text_stlye'       => false,
+            'chart_pie_start_angle'            => false,
+            'chart_point_shape'                => false,
+            'chart_point_size'                 => false,
+            'chart_reverse_categories'         => false,
+            'chart_selection_mode'             => false,
+            'chart_series'                     => false,
+            'chart_size_axis'                  => false,
+            'chart_slice_visibility_threshold' => false,
+            'chart_slices'                     => false,
+            'chart_theme'                      => false,
+            'chart_title_position'             => false,
+            'chart_title_text_style'           => false,
+            'chart_tooltip'                    => false,
+            'chart_trendlines'                 => false,
+            'chart_v_axis'                     => false,
+            'chart_width'                      => false,
+
+            // For some reason this isn't parsing?
+            //'chart_is3D'                       => false,
         ), $atts, $this->shortcode);
         $url = $this->getDocUrl($x['key'], $x['gid'], $x['query']);
 
@@ -287,11 +343,32 @@ class InlineGoogleSpreadsheetViewerPlugin {
                 'google-ajax-api'
             );
             $chart_id = 'igsv-' . $this->invocations . '-' . $x['chart'] . 'chart-'  . $this->getDocKey($x['key']);
-            $output = '<div id="' . $chart_id . '" class="igsv-chart" title="' . esc_attr($x['title']) . '" data-chart-type="' . esc_attr(ucfirst($x['chart'])) . '" data-datasource-href="' . esc_attr($url) . '"></div>';
+            $output  = '<div id="' . $chart_id . '" class="igsv-chart" title="' . esc_attr($x['title']) . '"';
+            $output .= ' data-chart-type="' . esc_attr(ucfirst($x['chart'])) . '"';
+            $output .= ' data-datasource-href="' . esc_attr($url) . '"';
+            if ($chart_opts = $this->getChartOptions($x)) {
+                foreach ($chart_opts as $k => $v) {
+                    if (!empty($v)) {
+                        // use single-quoted attribute-value syntax for later JSON parsing in JavaScript
+                        $output .= ' data-' . str_replace('_', '-', $k) . "='" . $v . "'";
+                    }
+                }
+            }
+            $output .= '></div>'; // .igsv-chart
         }
 
         $this->invocations++;
         return $output;
+    }
+
+    private function getChartOptions($atts) {
+        $opts = array();
+        foreach ($atts as $k => $v) {
+            if (0 === strpos($k, 'chart_')) {
+                $opts[$k] = $v;
+            }
+        }
+        return $opts;
     }
 
     private function displayData($resp, $atts, $content) {

@@ -3,8 +3,8 @@ Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: Google Docs, Google, Spreadsheet, shortcode, Chart, data, visualization, infographics
 Requires at least: 3.3
-Tested up to: 4.0
-Stable tag: 0.6.2.2
+Tested up to: 4.1
+Stable tag: 0.6.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -43,6 +43,10 @@ To create an interactive chart from your Spreadsheet's data, use the `chart` att
 For example, if you have a Google Spreadsheet for a sports league that records the goals each team has scored (where the first column is the team name and the second column is their total goals), you can create a bar chart, with an optional title, from that data using a shortcode like this:
 
     [gdoc key="ABCDEFG" chart="Bar" title="Total goals per team"]
+
+Depending on the type of chart you chose, you can customize your chart with a number of options, such as colors. For example, to create a 3D red and green pie chart whose slices are labelled with your data's values:
+
+    [gdoc key="ABCDEFG" chart="Pie" chart_colors="red green" chart_dimensions="3" chart_pie_slice_text="value"]
 
 To render an HTML table with additional metadata, such as supplying the table's `title`, `summary`, `<caption>`, and a customized `class` value, you can do the following:
 
@@ -147,11 +151,92 @@ Please refer to the [DataTables API reference manual](https://datatables.net/ref
 
 Another option for sorting your table, for example, is to use the `query` attribute and pass along an appropriate [Google Charts API Query Language query that includes an `order by` clause](https://developers.google.com/chart/interactive/docs/querylanguage#Order_By).
 
+= How do I customize my chart? =
+
+Using specific shortcode attributes, you can choose from a huge number of configurable options to customize the look and feel of your chart. The specific shortcode attributes available to you depend on the type of chart you chose. Refer to the [Google Chart API documentation](https://developers.google.com/chart/interactive/docs/gallery) to learn which configuration options are available for which type of charts.
+
+Each configuration option is accessible through a shortcode of a similar name. For instance, the `colors` configuration option is accessible to you through the `chart_colors` attribute. It accepts a list of colors, which you supply to the shortcode in a similar way as you might provide a `class` value:
+
+    [godc key="ABCDEFG" chart="Pie" chart_colors="red green"]
+
+To create a 3D chart, specify `chart_dimensions="3"`.
+
+With a few exceptions, the name of a shortcode attribute is always an underscore-separated translation of the camelCase name of the option in the Google Chart API. For instance, to disable chart interactivity by setting the chart's `enableInteractivity` option to `false`, use a shortcode like:
+
+    [gdoc key="ABCDEFG" chart="Pie" chart_enable_interactivity="false"]
+
+Some configuration options call for an `Object` value. For these, the shortcode attribute value should be a [JSON](http://JSON.org/) object. For instance, to use the different properties of the `backgroundColor` option:
+
+    [gdoc key="ABCDEFG" chart="Pie" chart_background_color='{"fill":"yellow","stroke":"red","strokeWidth":5}']
+
+Note that when a JSON object is used as a value, the shortcode attribute's value must be single-quoted.
+
+The list of attributes for configurable options is:
+
+    * `chart_annotations`
+    * `chart_aggregation_target`
+    * `chart_area_opacity`
+    * `chart_axis_titles_position`
+    * `chart_background_color`
+    * `chart_bars`
+    * `chart_bubble`
+    * `chart_candlestick`
+    * `chart_chart_area`
+    * `chart_color_axis`
+    * `chart_colors`
+    * `chart_crosshair`
+    * `chart_curve_type`
+    * `chart_data_opacity`
+    * `chart_dimensions`
+    * `chart_enable_interactivity`
+    * `chart_explorer`
+    * `chart_focus_target`
+    * `chart_font_name`
+    * `chart_font_size`
+    * `chart_force_i_frame`
+    * `chart_h_axes`
+    * `chart_h_axis`
+    * `chart_height`
+    * `chart_interpolate_nulls`
+    * `chart_is_stacked`
+    * `chart_legend`
+    * `chart_line_width`
+    * `chart_orientation`
+    * `chart_pie_hole`
+    * `chart_pie_residue_slice_color`
+    * `chart_pie_residue_slice_label`
+    * `chart_pie_slice_border_color`
+    * `chart_pie_slice_text`
+    * `chart_pie_slice_text_stlye`
+    * `chart_pie_start_angle`
+    * `chart_point_shape`
+    * `chart_point_size`
+    * `chart_reverse_categories`
+    * `chart_selection_mode`
+    * `chart_series`
+    * `chart_size_axis`
+    * `chart_slice_visibility_threshold`
+    * `chart_slices`
+    * `chart_theme`
+    * `chart_title_position`
+    * `chart_title_text_style`
+    * `chart_tooltip`
+    * `chart_trendlines`
+    * `chart_v_axis`
+    * `chart_width`
+
 = Why am I getting errors when I try to use the `query` attribute? =
 
 If your `query` includes an angle bracket, such as a less than (`<`) or a greater than (`>`) sign, [WordPress will assume you are trying to write HTML](https://core.trac.wordpress.org/ticket/28564) and strip everything except the first word of your query, resulting in syntax error. Instead, use the URL-encoded equivalents of these characters (`%3C` and `%3E`, for `<` and `>`, respectively), which WordPress will pass to the plugin unmolested and which the plugin is specifically aware of how to handle correctly.
 
 == Change log ==
+
+= Version 0.6.3 =
+
+* Feature: Massively customizeable charts.
+    * You can now use a huge number of shortcode options to customize the look and feel of your charts. Most configurable options defined in the [Google Chart API](https://developers.google.com/chart/interactive/docs/gallery) are supported through shortcode attributes. For instance,
+        * to choose **custom chart colors**, use the `chart_colors` attribute with a space-separated list of color strings (like `chart_colors="red #CCC"`).
+        * Use [JSON](http://json.org/) syntax in an attribute whose value calls for an `Object`. For instance, `chart_background_color='{"fill":"yellow","stroke":"red","strokeWidth":5}'`, and notice the single quotes around the attribute value and double quotes for correct JSON parsing.
 
 = Version 0.6.2.2 =
 

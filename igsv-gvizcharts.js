@@ -11,6 +11,36 @@ jQuery(document).ready(function () {
         var options = {
             'title': jQuery('#' + chart_id).attr('title')
         };
+        jQuery.each(this.attributes, function(index, attr) {
+            if (0 === attr.name.indexOf('data-chart-')) {
+                var name_parts = attr.name.split('-').slice(2);
+                if ('type' !== name_parts[0]) { // handled elsewhere
+                    // change to camelCase names
+                    var opt_name = name_parts[0];
+                    for (var i = 1; i < name_parts.length; i++) {
+                        opt_name += name_parts[i].charAt(0).toUpperCase() + name_parts[i].slice(1);
+                    }
+                    options[opt_name] = attr.value;
+                }
+            }
+        });
+        // Parse options.
+        for (x in options) {
+            try {
+                options[x] = JSON.parse(options[x]);
+            } catch (e) {
+                // ignore
+            }
+            switch (x) {
+                case 'colors':
+                    options.colors = jQuery(this).data('chart-colors').split(' ');
+                break;
+                case 'dimensions':
+                    options.is3D = (3) ? true : false;
+                    delete options.dimensions;
+                break;
+            }
+        }
         query.send(function (response) {
             if (response.isError()) {
                 return; // bail, let Google handle displaying errors
