@@ -6,31 +6,14 @@ google.load('visualization', '1.0', {
 });
 jQuery(document).ready(function () {
     jQuery('.igsv-chart').each(function () {
-        var chart_id = jQuery(this).attr('id');
-        var query = new google.visualization.Query(jQuery('#' + chart_id).data('datasource-href'));
-        var options = {
-            'title': jQuery('#' + chart_id).attr('title')
-        };
-        jQuery.each(this.attributes, function(index, attr) {
-            if (0 === attr.name.indexOf('data-chart-')) {
-                var name_parts = attr.name.split('-').slice(2);
-                if ('type' !== name_parts[0]) { // handled elsewhere
-                    // change to camelCase names
-                    var opt_name = name_parts[0];
-                    for (var i = 1; i < name_parts.length; i++) {
-                        opt_name += name_parts[i].charAt(0).toUpperCase() + name_parts[i].slice(1);
-                    }
-                    options[opt_name] = attr.value;
-                }
-            }
-        });
-        // Parse options.
+        var chart_id = jQuery(this).attr('id'),
+            query = new google.visualization.Query(jQuery(this).data('datasource-href')),
+            options = lowerFirstCharInKeys(stripPrefixInKeys('chart', jQuery(this).data()));
+
+        // Special-case chart options.
+        options.title = jQuery(this).attr('title');
+        delete options.type; // handled elsewhere
         for (x in options) {
-            try {
-                options[x] = JSON.parse(options[x]);
-            } catch (e) {
-                // ignore
-            }
             switch (x) {
                 case 'colors':
                     options.colors = jQuery(this).data('chart-colors').split(' ');
@@ -41,12 +24,13 @@ jQuery(document).ready(function () {
                 break;
             }
         }
+
         query.send(function (response) {
             if (response.isError()) {
                 return; // bail, let Google handle displaying errors
             }
-            var data = response.getDataTable();
-            var chart;
+            var data = response.getDataTable(),
+                chart;
             switch (jQuery('#' + chart_id).data('chart-type')) {
                 case 'Area':
                     chart = new google.visualization.AreaChart(document.getElementById(chart_id));
@@ -87,5 +71,25 @@ jQuery(document).ready(function () {
             }
             chart.draw(data, options);
         });
+
+        // Chart helpers.
+        function stripPrefixInKeys (prefix, obj) {
+            var new_obj = {};
+            for (x in obj) {
+                if (0 === x.indexOf(prefix)) {
+                    new_obj[x.slice(prefix.length)] = obj[x];
+                } else {
+                    new_obj[x] = obj[x];
+                }
+            }
+            return new_obj;
+        }
+        function lowerFirstCharInKeys (obj) {
+            var new_obj = {};
+            for (x in obj) {
+                new_obj[x.charAt(0).toLowerCase() + x.slice(1)] = obj[x];
+            }
+            return new_obj;
+        }
     });
 });
