@@ -302,7 +302,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
             //'chart_is3D'                       => false,
         ), $atts, $this->shortcode);
         if ($this->isGoogleSpreadsheetKey($x['key'])) {
-            $output = $this->getSpreadsheetOutput($x);
+            $output = $this->getSpreadsheetOutput($x, $content);
         } else {
             $output = $this->getGDocsViewerOutput($x);
         }
@@ -320,7 +320,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         return $output;
     }
 
-    private function getSpreadsheetOutput ($x) {
+    private function getSpreadsheetOutput ($x, $content) {
         $url = $this->getDocUrl($x['key'], $x['gid'], $x['query']);
         if (false === $x['chart']) {
             if (false === strpos($x['class'], 'no-datatables')) {
