@@ -12,11 +12,11 @@ Embeds a public Google Spreadsheet in a WordPress post or page as an HTML table 
 
 == Description ==
 
-Easily turn data stored in a Google Spreadsheet into a beautiful interactive chart or graph, a sortable and searchable table, or both! Also supports live previews of PDF, XSLT, DOC, and other file formats supported by the [Google Docs Viewer](https://docs.google.com/viewer).
+Easily turn data stored in a Google Spreadsheet into a beautiful interactive chart or graph, a sortable and searchable table, or both! Also supports live previews of PDF, XLS, DOC, and other file formats supported by the [Google Docs Viewer](https://docs.google.com/viewer).
 
 The Inline Google Spreadsheet Viewer fetches a publicly shared Google Spreadsheet using a `[gdoc key=""]` WordPress shortcode, then renders it as an HTML table, interactive chart, or document preview embedded in your blog post or page. The only required parameter is `key`, which specifies the document you'd like to retrieve. Additional parameters let you customize how you display your spreadsheet data in the table, or transforms the table into an interactive bar chart, pie chart, or other information visualization.
 
-**Donations for this plugin make up a chunk of my income. If you continue to enjoy this plugin, please consider [making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted). :) Thank you for your support!**
+*Donations for this plugin make up a chunk of my income. If you continue to enjoy this plugin, please consider [making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted). :) Thank you for your support!*
 
 = Update your blog post or page whenever your Google Spreadsheet changes =
 
@@ -185,59 +185,7 @@ Some configuration options call for an `Object` value. For these, the shortcode 
 
 Note that when a JSON object is used as a value, the shortcode attribute's value must be single-quoted.
 
-The list of attributes for configurable options is:
-
-* `chart_annotations`
-* `chart_aggregation_target`
-* `chart_area_opacity`
-* `chart_axis_titles_position`
-* `chart_background_color`
-* `chart_bars`
-* `chart_bubble`
-* `chart_candlestick`
-* `chart_chart_area`
-* `chart_color_axis`
-* `chart_colors`
-* `chart_crosshair`
-* `chart_curve_type`
-* `chart_data_opacity`
-* `chart_dimensions`
-* `chart_enable_interactivity`
-* `chart_explorer`
-* `chart_focus_target`
-* `chart_font_name`
-* `chart_font_size`
-* `chart_force_i_frame`
-* `chart_h_axes`
-* `chart_h_axis`
-* `chart_height`
-* `chart_interpolate_nulls`
-* `chart_is_stacked`
-* `chart_legend`
-* `chart_line_width`
-* `chart_orientation`
-* `chart_pie_hole`
-* `chart_pie_residue_slice_color`
-* `chart_pie_residue_slice_label`
-* `chart_pie_slice_border_color`
-* `chart_pie_slice_text`
-* `chart_pie_slice_text_style`
-* `chart_pie_start_angle`
-* `chart_point_shape`
-* `chart_point_size`
-* `chart_reverse_categories`
-* `chart_selection_mode`
-* `chart_series`
-* `chart_size_axis`
-* `chart_slice_visibility_threshold`
-* `chart_slices`
-* `chart_theme`
-* `chart_title_position`
-* `chart_title_text_style`
-* `chart_tooltip`
-* `chart_trendlines`
-* `chart_v_axis`
-* `chart_width`
+See [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-viewer/other_notes/) for a complete list of attribute for configurable chart options.
 
 = Why am I getting errors when I try to use the `query` attribute? =
 
@@ -388,4 +336,98 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 
 == Other notes ==
 
-Maintaining this plugin is a labor of love. However, if you like it, please consider [making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=meitarm%40gmail%2ecom&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer%20WordPress%20Plugin&item_number=inline%2dgdocs%2dviewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted) for your use of the plugin, [purchasing one of Meitar's web development books](http://www.amazon.com/gp/redirect.html?ie=UTF8&location=http%3A%2F%2Fwww.amazon.com%2Fs%3Fie%3DUTF8%26redirect%3Dtrue%26sort%3Drelevancerank%26search-type%3Dss%26index%3Dbooks%26ref%3Dntt%255Fathr%255Fdp%255Fsr%255F2%26field-author%3DMeitar%2520Moscovitz&tag=maymaydotnet-20&linkCode=ur2&camp=1789&creative=390957) or, better yet, contributing directly to [Meitar's Cyberbusking fund](http://Cyberbusking.org/). (Publishing royalties ain't exactly the lucrative income it used to be, y'know?) Your support is appreciated!
+If you like this plugin, **please consider [making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=meitarm%40gmail%2ecom&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer%20WordPress%20Plugin&item_number=inline%2dgdocs%2dviewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted) for your use of the plugin**, [purchasing one of Meitar's web development books](http://www.amazon.com/gp/redirect.html?ie=UTF8&location=http%3A%2F%2Fwww.amazon.com%2Fs%3Fie%3DUTF8%26redirect%3Dtrue%26sort%3Drelevancerank%26search-type%3Dss%26index%3Dbooks%26ref%3Dntt%255Fathr%255Fdp%255Fsr%255F2%26field-author%3DMeitar%2520Moscovitz&tag=maymaydotnet-20&linkCode=ur2&camp=1789&creative=390957) or, better yet, contributing directly to [Meitar's Cyberbusking fund](http://Cyberbusking.org/). (Publishing royalties ain't exactly the lucrative income it used to be, y'know?) Your support is appreciated!
+
+= Shortcode attribute documentation =
+
+This plugin provides one shortcode (`gdoc`) that can do many things through a combination of shortcode attributes. Every attribute must have a value. These attributes and their recognized values are documented here.
+
+* `key` - Specifies the document to retrieve.
+    * **required** Every `gdoc` shortcode must have one and only one `key` attribute. (All other attributes are optional.)
+    * `key` can be one of three types:
+        * The fully-qualified URL of a Google Spreadsheet that has been publicly shared, like `[gdoc key="https://docs.google.com/spreadsheets/d/ABCDEFG/edit"]`
+        * The document ID of an old-style Google Spreadsheet that has been "Published to the web," like `[gdoc key="ABCDEFG"]`
+        * The fully-qualified URL of a document on the Web. PDF, DOC, XLS, and other file formats supported by the [Google Docs Viewer](https://docs.google.com/viewer) will be rendered using the Viewer, like `[gdoc key="http://example.com/my_final_paper.pdf"]`
+* `chart` - Displays Google Sheet data as a chart instead of a table. Valid values are:
+    * `Area`
+    * `Bar`
+    * `Bubble`
+    * `Candlestick`
+    * `Column`
+    * `Combo`
+    * `Histogram`
+    * `Line`
+    * `Pie`
+    * `Scatter`
+    * `Stepped`
+* `class` - An optional custom HTML `class` value or space-separated list of values. The following class names are treated specially:
+    * `no-datatables` deactivates DataTables features.
+    * `FixedColumns-left-N` or `FixedColumns-right-N` freezes the left- or right-most `N` columns in the table, respectively.
+* `gid` - The ID of a worksheet in a Google Spreadsheet to load, other than the first one, like `[gdoc key="ABCDEFG" gid="123"]`
+* `header_rows` - A number specifying how many rows to place in the output's `<thead>` element. (Default: `1`.)
+* `height` - Height of the containing HTML element. Use `style` for tables. (Default: automatically calculated.)
+* `linkify` - Whether or not to automatically turn URLs, email addresses, and so on, into clickable links. Set to `false` to disable this behavior. (Default: `true`.)
+* `strip` - The number of leading rows to omit from the resulting HTML table. (Default: `0`.)
+* `style` - An inline CSS rule applied to the containing HTML element. (Default: none.)
+* `summary` - A brief description of the information displayed for the `summary` attribute of the resulting HTML `<table>`. (Default: `Google Spreadsheet`.)
+* `title` - An optional title for your data visualization or table. This is usually displayed in Web browsers as a tooltip when a user hovers over the table or is shown as the headline of a charts. (Default: none.)
+* `query` - A [Google Charts API Query Language](https://developers.google.com/chart/interactive/docs/querylanguage#Language_Syntax) query string, like `[gdoc key="ABCDEFG" query="SELECT team WHERE max(goals)"]`.
+* `width` - Width of the containing HTML element. Use `style` for tables. (Default: `100%`.)
+
+= Chart customization options =
+
+To use chart customization options, you must also choose a chart type by including the `chart` attribute.
+
+The **complete list of attributes for configurable chart options** is below. Refer to [Google's Chart Gallery documentation](https://google-developers.appspot.com/chart/interactive/docs/gallery) for the type of chart you are using to learn more about which chart types support which chart options.
+
+* `chart_annotations`
+* `chart_aggregation_target`
+* `chart_area_opacity`
+* `chart_axis_titles_position`
+* `chart_background_color`
+* `chart_bars`
+* `chart_bubble`
+* `chart_candlestick`
+* `chart_chart_area`
+* `chart_color_axis`
+* `chart_colors`
+* `chart_crosshair`
+* `chart_curve_type`
+* `chart_data_opacity`
+* `chart_dimensions`
+* `chart_enable_interactivity`
+* `chart_explorer`
+* `chart_focus_target`
+* `chart_font_name`
+* `chart_font_size`
+* `chart_force_i_frame`
+* `chart_h_axes`
+* `chart_h_axis`
+* `chart_height`
+* `chart_interpolate_nulls`
+* `chart_is_stacked`
+* `chart_legend`
+* `chart_line_width`
+* `chart_orientation`
+* `chart_pie_hole`
+* `chart_pie_residue_slice_color`
+* `chart_pie_residue_slice_label`
+* `chart_pie_slice_border_color`
+* `chart_pie_slice_text`
+* `chart_pie_slice_text_style`
+* `chart_pie_start_angle`
+* `chart_point_shape`
+* `chart_point_size`
+* `chart_reverse_categories`
+* `chart_selection_mode`
+* `chart_series`
+* `chart_size_axis`
+* `chart_slice_visibility_threshold`
+* `chart_slices`
+* `chart_theme`
+* `chart_title_position`
+* `chart_title_text_style`
+* `chart_tooltip`
+* `chart_trendlines`
+* `chart_v_axis`
+* `chart_width`

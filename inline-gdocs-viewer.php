@@ -499,16 +499,23 @@ jQuery(function () {
         );
         $html .= '</p>';
         $html .= '<p>';
+        $html .= esc_html__('Only Google Spreadsheets that have been shared using either the "Public on the web" or "anyone with the link" options will be visible on this page.', 'inline-gdocs-viewer');
+        $html .= '</p>';
+        $html .= '<p>' . sprintf(
+            esc_html__('You can also transform your data into an interactive chart by using the %1$schart%2$s attribute. Supported chart types are Area, Bar, Bubble, Candlestick, Column, Combo, Histogram, Line, Pie, Scatter, and Stepped. For instance, to make a Pie chart, type %1$s[gdoc key="YOUR_SPREADSHEET_URL" chart="Pie"]%2$s. Customize your chart with your own choice of colors by supplying a space-separated list of color values with the %1$schart_colors%2$s attribute, like %1$schart_colors="red green"%2$s. Additional options depend on the chart you use.' ,'inline-gdocs-viewer'),
+            '<kbd>', '</kbd>'
+        ) . '</p>';
+        $html .= '<p>' . sprintf(
+            esc_html__('Refer to the %1$sshortcode attribute documentation%3$s for a complete list of shortcode attributes, and the %2$sGoogle Chart API documentation%3$s for more information about each option.' ,'inline-gdocs-viewer'),
+            '<a href="https://wordpress.org/plugins/inline-google-spreadsheet-viewer/other_notes/" target="_blank">',
+            '<a href="https://developers.google.com/chart/interactive/docs/gallery" target="_blank">', '</a>'
+        ) . '</p>';
+        $html .= '<p>';
         $html .= sprintf(
-            esc_html__('Note that at this time, only Google Spreadsheets that have been shared using either the "Public on the web" or "anyone with the link" options will be visible on this page. If you are having trouble getting your Spreadsheet to show up on your website, you can get help from %sthe Inline Google Spreadsheet Viewer plugin support forum%s. Consider searching the support forum to see if your question has already been answered before posting a new thread.', 'inline-gdocs-viewer'),
+            esc_html__('If you are having trouble getting your Spreadsheet to show up on your website, you can %sget help from the plugin support forum%s. Consider searching the support forum to see if your question has already been answered before posting a new thread.', 'inline-gdocs-viewer'),
             '<a href="https://wordpress.org/support/plugin/inline-google-spreadsheet-viewer/">', '</a>'
         );
         $html .= '</p>';
-        $html .= '<p>' . sprintf(
-            esc_html__('If your Spreadsheet is properly formatted, you can also transform your data into an interactive chart by using the %1$schart%2$s attribute. Supported chart types are Area, Bar, Bubble, Candlestick, Column, Combo, Histogram, Line, Pie, Scatter, and Stepped. For instance, to make a Pie chart, type %1$s[gdoc key="YOUR_SPREADSHEET_URL" chart="Pie"]%2$s. Customize your chart with your own choice of colors by supplying a space-separated list of colors with the %1$scolors%2$s attribute, like %1$scolors="red green"%2$s. Additional configuration options depend on the chart you use. Refer to the %3$sGoogle Chart API documentation%4$s for more information.' ,'inline-gdocs-viewer'),
-            '<kbd>', '</kbd>',
-            '<a href="https://developers.google.com/chart/interactive/docs/gallery">', '</a>'
-        ) . '</p>';
         ob_start();
         $this->showDonationAppeal();
         $x = ob_get_contents();
