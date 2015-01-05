@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz
 Requires at least: 3.3
 Tested up to: 4.1
-Stable tag: 0.7.1
+Stable tag: 0.8
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -12,7 +12,7 @@ Embeds a public Google Spreadsheet in a WordPress post or page as an HTML table 
 
 == Description ==
 
-Easily turn data stored in a Google Spreadsheet into a beautiful interactive chart or graph, a sortable and searchable table, or both! Also supports live previews of PDF, XLS, DOC, and other file formats supported by the [Google Docs Viewer](https://docs.google.com/viewer).
+Easily turn data stored in a Google Spreadsheet into a beautiful interactive chart or graph, a sortable and searchable table, or both! Also supports live previews of PDF, XLS, DOC, and other file formats supported by the [Google Docs Viewer](https://docs.google.com/viewer), and includes a built-in cache for extra speed.
 
 The Inline Google Spreadsheet Viewer fetches a publicly shared Google Spreadsheet using a `[gdoc key=""]` WordPress shortcode, then renders it as an HTML table, interactive chart, or document preview embedded in your blog post or page. The only required parameter is `key`, which specifies the document you'd like to retrieve. Additional parameters let you customize how you display your spreadsheet data in the table, or transforms the table into an interactive bar chart, pie chart, or other information visualization.
 
@@ -109,6 +109,15 @@ To tweak the way your preview looks, you can use the `width`, `height`, or `styl
 
 == Frequently Asked Questions ==
 
+= Will my website be updated when my Google Spreadsheets change? =
+Yes. Changes you make to your Google Spreadsheets will be shown on your website within a few minutes.
+
+To improve your website's performance, Inline Google Spreadsheet Viewer automatically caches spreadsheets for 10 minutes. If you are making many changes quickly and/or you don't want to wait for the cache to expire on its own, you can add the `use_cache="no"` attribute to your shortcode to disable the caching mechanism:
+
+    [gdoc key="ABCDEFG" use_cache="no"]
+
+After you save and reload the page, you should see near-instant updates. Note that disabling the plugin's cache can result in decreased performance. Disabling the cache is recommended only for relatively small spreadsheets (less than 100 rows or so) or for debugging purposes.
+
 = The default style is ugly. Can I change it? =
 Yes, if you're able to change your theme's style sheet. The plugin renders HTML with plenty of [CSS](http://en.wikipedia.org/wiki/Cascading_Style_Sheets) hooks. Use the `igsv-table` class from your style sheets to target the plugin's `<table>` element.
 
@@ -204,6 +213,13 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 5. Transform your spreadsheet's data into an interactive graph or chart by adding a single shortcode attribute. 11 chart types are supported, including `Area`, `Bar`, `Column`, `Pie`, `Line`, `Scatter` and more. Every chart can be customized with user-defined colors, opacity, and even 3D effects. There are over 50 configuration options to choose from. See [the FAQ](https://wordpress.org/plugins/inline-google-spreadsheet-viewer/faq/) for a detailed list.
 
 == Change log ==
+
+= Version 0.8 =
+
+* Feature: Built-in caching. To improve page load speeds, shortcodes whose `key`s output spreadsheet table data will be cached for ten minutes by default.
+    * You can use the new `expire_in` attribute to set a custom cache lifetime (in seconds). For instance, to cache for 1 minute instead of 10, use `[gdoc key="ABCDEFG" expire_in="60"]`
+    * To turn off caching for a specific spreadsheet, set the `use_cache` attribute to `no`, like `[gdoc key="ABCDEFG" use_cache="no"]`. Disabling the cache for a spreadsheet is only recommended for relatively small datasets (under 100 rows or so) that change often, or for debugging purposes.
+    * Changing the `query` in a shortcode will also create a new cache, since a different query may return different data.
 
 = Version 0.7.1 =
 
@@ -363,16 +379,18 @@ This plugin provides one shortcode (`gdoc`) that can do many things through a co
 * `class` - An optional custom HTML `class` value or space-separated list of values. The following class names are treated specially:
     * `no-datatables` deactivates DataTables features.
     * `FixedColumns-left-N` or `FixedColumns-right-N` freezes the left- or right-most `N` columns in the table, respectively.
+* `expire_in` - How long to cache responses from Google for, in seconds. Set to `0` to cache forever. (Default: `600`, which is ten minutes.)
 * `gid` - The ID of a worksheet in a Google Spreadsheet to load, other than the first one, like `[gdoc key="ABCDEFG" gid="123"]`
 * `header_rows` - A number specifying how many rows to place in the output's `<thead>` element. (Default: `1`.)
-* `height` - Height of the containing HTML element. Use `style` for tables. (Default: automatically calculated.)
+* `height` - Height of the containing HTML element. Tables ignore this, use `style` instead. (Default: automatically calculated.)
 * `linkify` - Whether or not to automatically turn URLs, email addresses, and so on, into clickable links. Set to `false` to disable this behavior. (Default: `true`.)
+* `query` - A [Google Charts API Query Language](https://developers.google.com/chart/interactive/docs/querylanguage#Language_Syntax) query string, like `[gdoc key="ABCDEFG" query="SELECT team WHERE max(goals)"]`. (Default: none.)
 * `strip` - The number of leading rows to omit from the resulting HTML table. (Default: `0`.)
-* `style` - An inline CSS rule applied to the containing HTML element. (Default: none.)
+* `style` - An inline CSS rule applied to the containing HTML element. For example, to set a fixed height on a table, use `[gdoc key="ABCDEFG" style="height: 480px;"]`. (Default: none.)
 * `summary` - A brief description of the information displayed for the `summary` attribute of the resulting HTML `<table>`. (Default: `Google Spreadsheet`.)
 * `title` - An optional title for your data visualization or table. This is usually displayed in Web browsers as a tooltip when a user hovers over the table or is shown as the headline of a charts. (Default: none.)
-* `query` - A [Google Charts API Query Language](https://developers.google.com/chart/interactive/docs/querylanguage#Language_Syntax) query string, like `[gdoc key="ABCDEFG" query="SELECT team WHERE max(goals)"]`.
-* `width` - Width of the containing HTML element. Use `style` for tables. (Default: `100%`.)
+* `use_cache` - Whether or not to cache spreadsheet data. Set this to `no` to disable caching for that shortcode invocation. (Default: `true`.)
+* `width` - Width of the containing HTML element. Tables ignore this, use `style` instead. (Default: `100%`.)
 
 = Chart customization options =
 

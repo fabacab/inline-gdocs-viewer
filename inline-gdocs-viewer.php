@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * Version: 0.7.1
+ * Version: 0.8
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: inline-gdocs-viewer
@@ -35,6 +35,18 @@ class InlineGoogleSpreadsheetViewerPlugin {
     public function addAdminScripts () {
         wp_enqueue_style('wp-jquery-ui-dialog');
         wp_enqueue_script('jquery-ui-dialog');
+    }
+
+    /**
+     * Deterministically makes a unique transient name.
+     *
+     * @param string $key The ID of the document, extracted from the key attribute of the shortcode.
+     * @param string $q The query, if one exists, from the query attribute of the shortcode.
+     * @return string A 40 character unique string representing the name of the transient for this key and query.
+     * @see https://codex.wordpress.org/Transients_API
+     */
+    private function getTransientName ($key, $q) {
+        return substr($this->shortcode . hash('sha1', $this->shortcode . $key . $q), 0, 40);
     }
 
     /**
@@ -240,10 +252,12 @@ class InlineGoogleSpreadsheetViewerPlugin {
             'style'    => false,
             'strip'    => 0,                    // If spreadsheet, how many rows to omit from top
             'header_rows' => 1,                 // Number of rows in <thead>
-            'linkify'  => true,                 // Whether to run make_clickable() on parsed data
+            'use_cache' => true,                // Whether to use Transients API for fetched data.
+            // TODO: Make a plugin option setting for default transient expiry time.
+            'expire_in' => 10*MINUTE_IN_SECONDS,// Custom time-to-live of cached transient data.
+            'linkify'  => true,                 // Whether to run make_clickable() on parsed data.
             'query'    => false,                // Google Visualization Query Language querystring
             'chart'    => false,                // Type of Chart (for an interactive chart)
-
 
             // Depending on the type of chart, the following options may be available.
             'chart_aggregation_target'         => false,
@@ -369,7 +383,18 @@ class InlineGoogleSpreadsheetViewerPlugin {
                 );
             }
             try {
-                $output = $this->displayData($this->fetchData($url), $x, $content);
+                $data = NULL;
+                $transient = $this->getTransientName($x['key'], $x['query']);
+                if (false === $x['use_cache'] || 'no' === strtolower($x['use_cache'])) {
+                    delete_transient($transient);
+                    $data = $this->fetchData($url);
+                } else {
+                    if (false === ($data = get_transient($transient))) {
+                        $data = $this->fetchData($url);
+                        set_transient($transient, $data, (int) $x['expire_in']);
+                    }
+                }
+                $output = $this->displayData($data, $x, $content);
             } catch (Exception $e) {
                 $output = $e->getMessage();
             }
