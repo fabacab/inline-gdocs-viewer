@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz
 Requires at least: 3.3
 Tested up to: 4.1
-Stable tag: 0.8
+Stable tag: 0.8.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -213,6 +213,12 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 5. Transform your spreadsheet's data into an interactive graph or chart by adding a single shortcode attribute. 11 chart types are supported, including `Area`, `Bar`, `Column`, `Pie`, `Line`, `Scatter` and more. Every chart can be customized with user-defined colors, opacity, and even 3D effects. There are over 50 configuration options to choose from. See [the FAQ](https://wordpress.org/plugins/inline-google-spreadsheet-viewer/faq/) for a detailed list.
 
 == Change log ==
+
+= Version 0.8.1 =
+
+* [Bugfix](https://wordpress.org/support/topic/fatal-error-on-loading-table?replies=3): Properly serialize and store responses from Google with mismatched encoding.
+* Bugfix: Properly save and load caches with shortcodes that use the `gid` attribute.
+* Bugfix: Uninstaller correctly clears plugin cache.
 
 = Version 0.8 =
 

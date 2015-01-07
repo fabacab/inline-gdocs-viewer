@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * Version: 0.8
+ * Version: 0.8.1
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: inline-gdocs-viewer
@@ -45,8 +45,20 @@ class InlineGoogleSpreadsheetViewerPlugin {
      * @return string A 40 character unique string representing the name of the transient for this key and query.
      * @see https://codex.wordpress.org/Transients_API
      */
-    private function getTransientName ($key, $q) {
-        return substr($this->shortcode . hash('sha1', $this->shortcode . $key . $q), 0, 40);
+    private function getTransientName ($key, $q, $gid) {
+        return substr($this->shortcode . hash('sha1', $this->shortcode . $key . $q . $gid), 0, 40);
+    }
+
+    /**
+     * This simple getter/setter pair works around a bug in WP's own
+     * serialization, apparently, by serializing the data ourselves
+     * and then base64 encoding it.
+     */
+    private function getTransient ($transient) {
+        return unserialize(base64_decode(get_transient($transient)));
+    }
+    private function setTransient ($transient, $data, $expiry) {
+        return set_transient($transient, base64_encode(serialize($data)), $expiry);
     }
 
     /**
@@ -384,14 +396,14 @@ class InlineGoogleSpreadsheetViewerPlugin {
             }
             try {
                 $data = NULL;
-                $transient = $this->getTransientName($x['key'], $x['query']);
+                $transient = $this->getTransientName($x['key'], $x['query'], $x['gid']);
                 if (false === $x['use_cache'] || 'no' === strtolower($x['use_cache'])) {
                     delete_transient($transient);
                     $data = $this->fetchData($url);
                 } else {
-                    if (false === ($data = get_transient($transient))) {
+                    if (false === ($data = $this->getTransient($transient))) {
                         $data = $this->fetchData($url);
-                        set_transient($transient, $data, (int) $x['expire_in']);
+                        $this->setTransient($transient, $data, (int) $x['expire_in']);
                     }
                 }
                 $output = $this->displayData($data, $x, $content);
