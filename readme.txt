@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz
 Requires at least: 3.5
 Tested up to: 4.1
-Stable tag: 0.8.1
+Stable tag: 0.8.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -12,15 +12,24 @@ Embeds a public Google Spreadsheet in a WordPress post or page as an HTML table 
 
 == Description ==
 
-Easily turn data stored in a Google Spreadsheet into a beautiful interactive chart or graph, a sortable and searchable table, or both! Also supports live previews of PDF, XLS, DOC, and other file formats supported by the [Google Docs Viewer](https://docs.google.com/viewer), and includes a built-in cache for extra speed.
+Easily turn data stored in a Google Spreadsheet into a beautiful interactive chart or graph, a sortable and searchable table, or both! Embed live previews of PDF, XLS, DOC, and other file formats supported by the [Google Docs Viewer](https://docs.google.com/viewer). A built-in cache provides extra speed.
 
-The Inline Google Spreadsheet Viewer fetches a publicly shared Google Spreadsheet using a `[gdoc key=""]` WordPress shortcode, then renders it as an HTML table, interactive chart, or document preview embedded in your blog post or page. The only required parameter is `key`, which specifies the document you'd like to retrieve. Additional parameters let you customize how you display your spreadsheet data in the table, or transforms the table into an interactive bar chart, pie chart, or other information visualization.
+* Update your blog post or page whenever your Google Spreadsheet changes.
+* Create beautiful interactive graphs and charts from your spreadsheet with ease.
+* Embed almost any online document to view without leaving your blog.
+* Use a powerful and flexible query language and a plethora of configuration options.
+
+= Quick start =
+
+Paste the URL of your public Google Spreadsheet on its own line in your WordPress post or page, then save your post. That's it. :) Your spreadsheet will appear in a sorted, searchable HTML table. See the [screenshots](https://wordpress.org/plugins/inline-google-spreadsheet-viewer/screenshots/) for an example.
+
+Your spreadsheet must be shared using either the "Public on the web" or "Anyone with the link" options [(learn how to share your spreadsheet)](https://support.google.com/drive/?p=visibility_options&hl=en_US). Currently, private Google Spreadsheets or Spreadsheets shared with "Specific people" are not supported.
 
 *Donations for this plugin make up a chunk of my income. If you continue to enjoy this plugin, please consider [making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted). :) Thank you for your support!*
 
-= Update your blog post or page whenever your Google Spreadsheet changes =
+= User guide =
 
-Your spreadsheet must be shared [using either the "Public on the web" or "Anyone with the link" options](https://support.google.com/drive/?p=visibility_options&hl=en_US). Currently, private Google Spreadsheets or Spreadsheets shared with "Specific people" are not supported.
+You can transform your spreadsheet into an interactive chart or graph, embed documents other than spreadsheets, and customize the HTML of your table using a `[gdoc key=""]` [WordPress shortcode](https://codex.wordpress.org/Shortcode). The only required parameter is `key`, which specifies the document you'd like to retrieve. All additional attributes are optional.
 
 After setting the appropriate Sharing setting, copy the URL you use to view the Spreadsheet from your browser's address bar into the shortcode. For example, to display the spreadsheet at `https://docs.google.com/spreadsheets/d/ABCDEFG/edit`, use the following shortcode in your WordPress post or page:
 
@@ -30,7 +39,11 @@ If your spreadsheet uses the "old" Google Spreadsheets, you need to [ensure that
 
     [gdoc key="ABCDEFG"]
 
-To create an interactive chart from your Spreadsheet's data, use the `chart` attribute to a supported chart type. These include:
+Use the `gid` attribute to fetch data from a worksheet other than the first one (the one on the far left). For example, to display a worksheet published at `https://spreadsheets.google.com/pub?key=ABCDEFG&gid=4`, use the following shortcode in your WordPress post or page:
+
+    [gdoc key="ABCDEFG" gid="4"]
+
+To create an interactive chart from your Spreadsheet's data, use the `chart` attribute with a supported chart type. These include:
 
 * `Area` charts
 * `Bar` charts
@@ -65,10 +78,6 @@ The above shortcode will produce HTML that looks something like the following:
 
 You can also `strip` a certain number of rows (e.g., `strip="3"` omits the top 3 rows of the spreadsheet).
 
-You can use the `gid` attribute to fetch data from a worksheet other than the first one (the one on the far left). For example, to display a worksheet published at `https://spreadsheets.google.com/pub?key=ABCDEFG&gid=4`, use the following shortcode in your WordPress post or page:
-
-    [gdoc key="ABCDEFG" gid="4"]
-
 The `header_rows` attribute lets you specify how many rows should be rendered as the [table header](http://reference.sitepoint.com/html/thead). For example, to render a worksheet's top 3 rows inside the `<thead>` element, use:
 
     [gdoc key="ABCDEFG" header_rows="3"]
@@ -85,15 +94,13 @@ Web addresses and email addresses in your data are turned into links. If this ca
 
     [gdoc key="ABCDEFG" linkify="no"]
 
-You can pre-process your Google Spreadsheet before retrieving data from it by passing a [Google Charts API Query Language](https://developers.google.com/chart/interactive/docs/querylanguage#Language_Syntax) query to the shortcode's `query` attribute. This lets you interact with the data in your Google Spreadsheet as though the spreadsheet were a relational database table. For instance, if you wish to display the team that scored the most goals on your website, you might use a shortcode like this to query your Google Spreadsheet and display the highest-scoring team:
+You can pre-process your Google Spreadsheet before retrieving data from it by passing a [Google Charts API Query Language](https://developers.google.com/chart/interactive/docs/querylanguage#Language_Syntax) query to the shortcode's `query` attribute. This lets you interact with the data in your Google Spreadsheet as though the spreadsheet were a relational database table. For instance, if you wish to display the team that scored the most goals on your website, you might use a shortcode like this to query your Google Spreadsheet and display the highest-scoring team, where the team name is the first column (column `A`) and that team's score is the second column (column `B`):
 
-    [gdoc key="ABCDEFG" query="SELECT team WHERE max(goals)"]
+    [gdoc key="ABCDEFG" query="select A where max(B)"]
 
 Queries are also useful if your spreadsheet contains complex data from which many different charts can be created, allowing you to select only the parts of your spreadsheet that you'd like to use to compose the interactive chart.
 
-= Embed and view documents online without leaving your blog =
-
-You can supply the URL of any file online to load a preview of that document on your blog. To do so, supply the file's URL as your `key`:
+You can also supply the URL of any file online to load a preview of that document on your blog. To do so, supply the file's URL as your `key`:
 
     [gdoc key="http://example.com/my_final_paper.pdf"]
 
@@ -103,7 +110,7 @@ To tweak the way your preview looks, you can use the `width`, `height`, or `styl
 
 == Installation ==
 
-1. Upload `inline-gdocs-viewer.php` to the `/wp-content/plugins/` directory.
+1. Upload the unzipped `inline-google-spreadsheet-viewer` folder to the `/wp-content/plugins/` directory.
 1. Activate the plugin through the 'Plugins' menu in WordPress.
 1. Use the `[gdoc key="ABCDEFG"]` shortcode wherever you'd like to insert the Google Spreadsheet.
 
@@ -136,7 +143,6 @@ Finally, both rows and cells (based on columns) are assigned an additional class
 If you're still using the "old" Google Spreadsheets, you should triple-check that you've published your spreadsheet. Google provides instructions for doing this. Be sure to follow steps 1 and 2 in [Google Spreadsheets Help: Publishing to the Web](http://docs.google.com/support/bin/answer.py?hl=en&answer=47134). If you're using the "new" Google Spreadsheets, be sure you've selected either the ["Public on the web" or "Anyone with the link" Sharing options](https://support.google.com/drive/answer/2494886?p=visibility_options) for your Google Spreadsheet.
 
 = Nothing appears where my chart should be. =
-
 The best way to determine what's wrong with a chart that isn't displaying properly is to try displaying the chart's data as a simple HTML table (by removing the `chart` attribute from your shortcode), and seeing what the tabular data source looks like.
 
 Charts most likely fail to display because of a mismatch between the chart you are using and the format of your spreadsheet.
@@ -175,7 +181,6 @@ Please refer to the [DataTables API reference manual](https://datatables.net/ref
 Another option for sorting your table, for example, is to use the `query` attribute and pass along an appropriate [Google Charts API Query Language query that includes an `order by` clause](https://developers.google.com/chart/interactive/docs/querylanguage#Order_By).
 
 = How do I customize my chart? =
-
 Using specific shortcode attributes, you can choose from a huge number of configurable options to customize the look and feel of your chart. The specific shortcode attributes available to you depend on the type of chart you chose. Refer to the [Google Chart API documentation](https://developers.google.com/chart/interactive/docs/gallery) to learn which configuration options are available for which type of charts.
 
 Each configuration option is accessible through a shortcode of a similar name. For instance, the `colors` configuration option is accessible to you through the `chart_colors` attribute. It accepts a list of colors, which you supply to the shortcode in a similar way as you might provide a `class` value:
@@ -212,7 +217,16 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 
 5. Transform your spreadsheet's data into an interactive graph or chart by adding a single shortcode attribute. 11 chart types are supported, including `Area`, `Bar`, `Column`, `Pie`, `Line`, `Scatter` and more. Every chart can be customized with user-defined colors, opacity, and even 3D effects. There are over 50 configuration options to choose from. See [the FAQ](https://wordpress.org/plugins/inline-google-spreadsheet-viewer/faq/) for a detailed list.
 
+6. Use all the features of the [Google Query Language](https://developers.google.com/chart/interactive/docs/querylanguage) to pinpoint the exact data you want. Over 50 additional configuration options let you customize the exact way your graphs, charts, and tables look.
+
+7. This screenshot shows an example of what the previous screenshot might output with a given spreadsheet that contains data for the Aliens, Ninjas, Pirates, and Robots teams, and their player's respective points.
+
 == Change log ==
+
+= Version 0.8.2 =
+
+* Feature: [WordPress Embeds](https://codex.wordpress.org/Embeds) support provides [OEmbed](http://oembed.com/) emulation, so now you don't even need to use a shortcode. In other words, pasting your Spreadsheet's `key` onto its own line is now the equivalent of invoking a shortcode like this: `[gdoc key="https://docs.google.com/spreadsheets/d/ABCDEFG/edit"]` 
+    * This feature is only available for "new" Google Spreadsheets.
 
 = Version 0.8.1 =
 
@@ -233,7 +247,7 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 
 = Version 0.7 =
 
-* Feature: Previews for direct links to PDF, XSLT, DOC, and other file formats supported by the [Google Docs Viewer](https://docs.google.com/viewer) now work, too. Simply use the direct URL to one such file hosted on the public Internet as your `key` to embed an HTML preview of that file.
+* Feature: Previews for direct links to PDF, XLS, DOC, and other file formats supported by the [Google Docs Viewer](https://docs.google.com/viewer) now work, too. Simply use the direct URL to one such file hosted on the public Internet as your `key` to embed an HTML preview of that file.
 * Feature: New shortcode attributes `style`, `width`, and `height` enable you to supply inline display dimensions. Note that when used on HTML tables, you must use the CSS equivalents for `width` and `height` by using the `style` attribute rather than the other two directly. For instance: `[gdoc key="ABDCEFG" class="no-datatables" style="width:50%;height:480px;"]`
 * Bugfix: Correct `chart_pie_slice_text_style` attribute handling.
 
@@ -389,12 +403,12 @@ This plugin provides one shortcode (`gdoc`) that can do many things through a co
 * `gid` - The ID of a worksheet in a Google Spreadsheet to load, other than the first one, like `[gdoc key="ABCDEFG" gid="123"]`
 * `header_rows` - A number specifying how many rows to place in the output's `<thead>` element. (Default: `1`.)
 * `height` - Height of the containing HTML element. Tables ignore this, use `style` instead. (Default: automatically calculated.)
-* `linkify` - Whether or not to automatically turn URLs, email addresses, and so on, into clickable links. Set to `false` to disable this behavior. (Default: `true`.)
-* `query` - A [Google Charts API Query Language](https://developers.google.com/chart/interactive/docs/querylanguage#Language_Syntax) query string, like `[gdoc key="ABCDEFG" query="SELECT team WHERE max(goals)"]`. (Default: none.)
+* `linkify` - Whether or not to automatically turn URLs, email addresses, and so on, into clickable links. Set to `no` to disable this behavior. (Default: `true`.)
+* `query` - A [Google Charts API Query Language](https://developers.google.com/chart/interactive/docs/querylanguage#Language_Syntax) query string, like `[gdoc key="ABCDEFG" query="select A where max(B)"]`. *Note:* Arrow bracktets (`<` and `>`) in queries must be URL-encoded (`%3C` and `%3E`, respectively) to avoid confusing the WordPress HTML parser. (Default: none.)
 * `strip` - The number of leading rows to omit from the resulting HTML table. (Default: `0`.)
 * `style` - An inline CSS rule applied to the containing HTML element. For example, to set a fixed height on a table, use `[gdoc key="ABCDEFG" style="height: 480px;"]`. (Default: none.)
 * `summary` - A brief description of the information displayed for the `summary` attribute of the resulting HTML `<table>`. (Default: `Google Spreadsheet`.)
-* `title` - An optional title for your data visualization or table. This is usually displayed in Web browsers as a tooltip when a user hovers over the table or is shown as the headline of a charts. (Default: none.)
+* `title` - An optional title for your data visualization or table. This is usually displayed in Web browsers as a tooltip when a user hovers over the table or is shown as the headline of a chart. (Default: none.)
 * `use_cache` - Whether or not to cache spreadsheet data. Set this to `no` to disable caching for that shortcode invocation. (Default: `true`.)
 * `width` - Width of the containing HTML element. Tables ignore this, use `style` instead. (Default: `100%`.)
 

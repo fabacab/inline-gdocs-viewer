@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * Version: 0.8.1
+ * Version: 0.8.2
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: inline-gdocs-viewer
@@ -22,6 +22,11 @@ class InlineGoogleSpreadsheetViewerPlugin {
         add_action('admin_print_footer_scripts', array($this, 'addQuickTagButton'));
 
         add_shortcode($this->shortcode, array($this, 'displayShortcode'));
+        wp_embed_register_handler(
+            $this->shortcode . 'spreadsheet',
+            '!https://docs.google.com/spreadsheets/d/([^/]+)!',
+            array($this, 'oEmbedHandler')
+        );
     }
 
     public function registerL10n () {
@@ -247,6 +252,10 @@ class InlineGoogleSpreadsheetViewerPlugin {
         }
         fclose($temp);
         return $r;
+    }
+
+    public function oEmbedHandler ($matches, $attr, $url, $rawattr) {
+        return $this->displayShortcode(array('key' => $url));
     }
 
     /**
