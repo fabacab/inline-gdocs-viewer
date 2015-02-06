@@ -82,7 +82,7 @@ The `header_rows` attribute lets you specify how many rows should be rendered as
 
     [gdoc key="ABCDEFG" header_rows="3"]
 
-Be default, all tables are progressively enhanced with jQuery [DataTables](https://datatables.net/) to provide sorting, searching, and pagination functions on the table display itself. If you'd like a specific table not to include this functionality, use the `no-datatables` `class` in your shortcode. For instance:
+By default, all tables are progressively enhanced with jQuery [DataTables](https://datatables.net/) to provide sorting, searching, and pagination functions on the table display itself. If you'd like a specific table not to include this functionality, use the `no-datatables` `class` in your shortcode. For instance:
 
     [gdoc key="ABCDEFG" class="no-datatables"]
 
