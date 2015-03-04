@@ -3,8 +3,8 @@ Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: Google Docs, Google, Spreadsheet, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz
 Requires at least: 3.5
-Tested up to: 4.1
-Stable tag: 0.8.3
+Tested up to: 4.1.1
+Stable tag: 0.8.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -222,6 +222,11 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 7. This screenshot shows an example of what the previous screenshot might output with a given spreadsheet that contains data for the Aliens, Ninjas, Pirates, and Robots teams, and their player's respective points.
 
 == Change log ==
+
+= Version 0.8.4 =
+
+* Developer: Two new plugin [filters](https://codex.wordpress.org/Plugin_API#Filters), `gdoc_table_html` and `gdoc_viewer_html`, allow other plugin or theme authors to customize the output produced by the `gdoc` shortcode. See the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-viewer/other_notes/) page for documentation and implementation notes.
+* [Bugfix](https://wordpress.org/support/topic/bug-and-fix-script-dependencies): Correctly declare JavaScript dependencies.
 
 = Version 0.8.3 =
 
@@ -473,3 +478,15 @@ The **complete list of attributes for configurable chart options** is below. Ref
 * `chart_trendlines`
 * `chart_v_axis`
 * `chart_width`
+
+= Plugin hooks =
+
+This section documents hooks that the plugin implements. Developers of other plugins or themes can use these in their code to customize the way this plugin works.
+
+== Filters ==
+
+* `gdoc_table_html` - Filters the Google Spreadsheet data after it has been converted to an HTML `<table>` element. Some notes about this filter:
+    * The most common use for this filter is to use [`html_entity_decode()`](https://php.net/html-entity-decode) to allow the data source to include raw HTML that will be displayed. This is considered a potential security risk and so is not recommended unless you are absolutely sure you need this functionality. In the majority of cases where users assume they need this functionality, it turns out there are other, more preferable alternatives, despite its convenience.
+    * Another related use case for this filter is to allow [WordPress shortcodes](https://codex.wordpress.org/Shortcode) that are present in the data source to be evaluated at runtime. See [this thread](https://wordpress.org/support/topic/using-filter-hooks-1) for a brief discussion of that use case. However, this can also be problematic and is not recommended unless you are certain the shortcodes being used will not cause issues like invalid and broken markup, since most shortcode functions do not expect to be inside of an HTML `<table>`.
+    * This filter runs immediately after HTML conversion is complete, but *before* that HTML is processed through the [`make_clickable()`](https://codex.wordpress.org/Function_Reference/make_clickable) function. This means that the value of the `linkify` shortcode attribute will affect the ultimate output of the shortcode invocation regardless of your filter function, and also means you should not call `make_clickable()` yourself.
+* `gdoc_viewer_html` - Same as above, but applied to the `<iframe>` that loads the [Google Docs Viewer](https://docs.google.com/viewer). Use this filter to, for intance, customize the fallback content in the case that the user's browser does not support `<iframe>` elements.

@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * Version: 0.8.3
+ * Version: 0.8.4
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: inline-gdocs-viewer
@@ -227,6 +227,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
         }
         $html .= '</tbody></table>';
 
+        $html = apply_filters($this->shortcode . '_table_html', $html);
+
         if (false === $options['linkify'] || 'no' === strtolower($options['linkify'])) {
             return $html;
         } else {
@@ -352,7 +354,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         $output .= esc_html__('Your Web browser must support inline frames to display this content:', 'inline-gdocs-viewer');
         $output .= ' <a href="' . esc_attr($x['key']) . '">' . esc_html($x['title']) . '</a>';
         $output .= '</iframe>';
-        return $output;
+        return apply_filters($this->shortcode . '_viewer_html', $output);
     }
 
     private function getSpreadsheetOutput ($x, $content) {
