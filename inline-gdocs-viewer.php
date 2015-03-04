@@ -367,7 +367,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
                 wp_enqueue_script(
                     'jquery-datatables',
                     '//cdn.datatables.net/1.10.0/js/jquery.dataTables.js',
-                    'jquery'
+                    array('jquery')
                 );
                 // DataTables extensions.
                 wp_enqueue_style(
@@ -377,7 +377,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
                 wp_enqueue_script(
                     'datatables-colvis',
                     '//cdn.datatables.net/colvis/1.1.0/js/dataTables.colVis.min.js',
-                    'jquery-datatables'
+                    array('jquery-datatables')
                 );
                 wp_enqueue_style(
                     'datatables-tabletools',
@@ -386,7 +386,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
                 wp_enqueue_script(
                     'datatables-tabletools',
                     '//cdn.datatables.net/tabletools/2.2.1/js/dataTables.tableTools.min.js',
-                    'jquery-datatables'
+                    array('jquery-datatables')
                 );
                 wp_enqueue_style(
                     'datatables-fixedcolumns',
@@ -395,12 +395,12 @@ class InlineGoogleSpreadsheetViewerPlugin {
                 wp_enqueue_script(
                     'datatables-fixedcolumns',
                     '//datatables.net/release-datatables/extensions/FixedColumns/js/dataTables.fixedColumns.js',
-                    'jquery-datatables'
+                    array('jquery-datatables')
                 );
                 wp_enqueue_script(
                     'igsv-datatables',
                     plugins_url('igsv-datatables.js', __FILE__),
-                    'jquery-datatables'
+                    array('jquery-datatables')
                 );
             }
             try {
@@ -428,7 +428,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
             wp_enqueue_script(
                 'igsv-gvizcharts',
                 plugins_url('igsv-gvizcharts.js', __FILE__),
-                'google-ajax-api'
+                array('google-ajax-api')
             );
             $chart_id = 'igsv-' . $this->invocations . '-' . $x['chart'] . 'chart-'  . $this->getDocKey($x['key']);
             $output  = '<div id="' . $chart_id . '" class="igsv-chart" title="' . esc_attr($x['title']) . '"';
