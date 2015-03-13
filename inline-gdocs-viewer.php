@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * Version: 0.8.4
+ * Version: 0.8.5
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: inline-gdocs-viewer
@@ -364,11 +364,11 @@ class InlineGoogleSpreadsheetViewerPlugin {
                 // Core DataTables.
                 wp_enqueue_style(
                     'jquery-datatables',
-                    '//cdn.datatables.net/1.10.0/css/jquery.dataTables.css'
+                    '//cdn.datatables.net/1.10.5/css/jquery.dataTables.min.css'
                 );
                 wp_enqueue_script(
                     'jquery-datatables',
-                    '//cdn.datatables.net/1.10.0/js/jquery.dataTables.js',
+                    '//cdn.datatables.net/1.10.5/js/jquery.dataTables.min.js',
                     array('jquery')
                 );
                 // DataTables extensions.
@@ -397,6 +397,15 @@ class InlineGoogleSpreadsheetViewerPlugin {
                 wp_enqueue_script(
                     'datatables-fixedcolumns',
                     '//datatables.net/release-datatables/extensions/FixedColumns/js/dataTables.fixedColumns.js',
+                    array('jquery-datatables')
+                );
+                wp_enqueue_style(
+                    'datatables-responsive',
+                    '//cdn.datatables.net/responsive/1.0.4/css/dataTables.responsive.css'
+                );
+                wp_enqueue_script(
+                    'datatables-responsive',
+                    '//cdn.datatables.net/responsive/1.0.4/js/dataTables.responsive.js',
                     array('jquery-datatables')
                 );
                 wp_enqueue_script(

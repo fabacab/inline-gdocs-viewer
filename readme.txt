@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz
 Requires at least: 3.5
 Tested up to: 4.1.1
-Stable tag: 0.8.4
+Stable tag: 0.8.5
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -222,6 +222,11 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 7. This screenshot shows an example of what the previous screenshot might output with a given spreadsheet that contains data for the Aliens, Ninjas, Pirates, and Robots teams, and their player's respective points.
 
 == Change log ==
+
+= Version 0.8.5 =
+
+* Feature: DataTables-enhanced tables now include the [Responsive](https://datatables.net/extensions/responsive/) plugin enabled by default. This plugin further improves narrow and liquid layouts by displaying columns that won't fit without scrolling horizontally in a child row instead. If you want to keep the old behavior (horizontal scrolling), add the `no-responsive` `class` to your shortcode, like this: `[gdoc key="ABCDEFG" class="no-responsive"]`
+* Developer: Update [DataTables](https://datatables.net/) libraries to version 1.10.5.
 
 = Version 0.8.4 =
 
