@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz
 Requires at least: 3.5
 Tested up to: 4.1.1
-Stable tag: 0.8.5
+Stable tag: 0.8.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -223,6 +223,12 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 
 == Change log ==
 
+= Version 0.8.6 =
+
+* Feature: Automatically detect default site language and display some DataTables labels and buttons in that language.
+    * Use the new `lang` attribute to declare that a particular spreadsheet's contents is in a language other than the default. For instance, use `lang="nl-NL"` to declare that a given spreadsheet is in Dutch.
+    * Translations are available for all [DataTables internationalization plugins](https://www.datatables.net/plug-ins/i18n/).
+
 = Version 0.8.5 =
 
 * Feature: DataTables-enhanced tables now include the [Responsive](https://datatables.net/extensions/responsive/) plugin enabled by default. This plugin further improves narrow and liquid layouts by displaying columns that won't fit without scrolling horizontally in a child row instead. If you want to keep the old behavior (horizontal scrolling), add the `no-responsive` `class` to your shortcode, like this: `[gdoc key="ABCDEFG" class="no-responsive"]`
@@ -411,12 +417,14 @@ This plugin provides one shortcode (`gdoc`) that can do many things through a co
     * `Scatter`
     * `Stepped`
 * `class` - An optional custom HTML `class` value or space-separated list of values. The following class names are treated specially:
-    * `no-datatables` deactivates DataTables features.
+    * `no-datatables` deactivates all DataTables features.
+    * `no-responsive` deactivates only DataTables' Responsive features.
     * `FixedColumns-left-N` or `FixedColumns-right-N` freezes the left- or right-most `N` columns in the table, respectively.
 * `expire_in` - How long to cache responses from Google for, in seconds. Set to `0` to cache forever. (Default: `600`, which is ten minutes.)
 * `gid` - The ID of a worksheet in a Google Spreadsheet to load, other than the first one, like `[gdoc key="ABCDEFG" gid="123"]`
 * `header_rows` - A number specifying how many rows to place in the output's `<thead>` element. (Default: `1`.)
 * `height` - Height of the containing HTML element. Tables ignore this, use `style` instead. (Default: automatically calculated.)
+* `lang` - The [ISO 639](http://www.iso.org/iso/home/standards/language_codes.htm) language code declaring the human language of the spreadsheet's contents. For instance, use `nl-NL` to declare that content is in Dutch. (Default: your site's [global language setting](https://codex.wordpress.org/WordPress_in_Your_Language).)
 * `linkify` - Whether or not to automatically turn URLs, email addresses, and so on, into clickable links. Set to `no` to disable this behavior. (Default: `true`.)
 * `query` - A [Google Charts API Query Language](https://developers.google.com/chart/interactive/docs/querylanguage#Language_Syntax) query string, like `[gdoc key="ABCDEFG" query="select A where max(B)"]`. *Note:* Arrow bracktets (`<` and `>`) in queries must be URL-encoded (`%3C` and `%3E`, respectively) to avoid confusing the WordPress HTML parser. (Default: none.)
 * `strip` - The number of leading rows to omit from the resulting HTML table. (Default: `0`.)

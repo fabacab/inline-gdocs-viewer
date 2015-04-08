@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * Version: 0.8.5
+ * Version: 0.8.6
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: inline-gdocs-viewer
@@ -195,7 +195,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
         $summary = esc_attr($options['summary']);
         $title = esc_attr($options['title']);
         $style = esc_attr($options['style']);
-        $html = "<table id=\"igsv-$id\" class=\"igsv-table$class\" summary=\"$summary\" title=\"$title\" style=\"$style\">";
+        $lang = esc_attr($options['lang']);
+        $html = "<table id=\"igsv-$id\" class=\"igsv-table$class\" lang=\"$lang\" summary=\"$summary\" title=\"$title\" style=\"$style\">";
         if (!empty($caption)) {
             $html .= '<caption>' . esc_html($caption) . '</caption>';
         }
@@ -278,6 +279,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
             'use_cache' => true,                // Whether to use Transients API for fetched data.
             // TODO: Make a plugin option setting for default transient expiry time.
             'expire_in' => 10*MINUTE_IN_SECONDS,// Custom time-to-live of cached transient data.
+            'lang'     => get_bloginfo('language'),
             'linkify'  => true,                 // Whether to run make_clickable() on parsed data.
             'query'    => false,                // Google Visualization Query Language querystring
             'chart'    => false,                // Type of Chart (for an interactive chart)
@@ -413,6 +415,11 @@ class InlineGoogleSpreadsheetViewerPlugin {
                     plugins_url('igsv-datatables.js', __FILE__),
                     array('jquery-datatables')
                 );
+
+                $plugin_vars = array(
+                    'lang_dir' => plugins_url('languages', __FILE__)
+                );
+                wp_localize_script('igsv-datatables', 'igsv_plugin_vars', $plugin_vars);
             }
             try {
                 $data = NULL;

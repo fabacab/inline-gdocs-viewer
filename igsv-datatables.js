@@ -1,15 +1,18 @@
 // DataTables
 jQuery(document).ready(function () {
     jQuery('.igsv-table:not(.no-datatables)').each(function () {
+        var table = jQuery(this);
         var dt_opts = {
             'dom': 'TC<"clear">lfrtip',
             'scrollX': true,
             'responsive': true,
             'tableTools': {
                 'sSwfPath': '//datatables.net/release-datatables/extensions/TableTools/swf/copy_csv_xls_pdf.swf'
+            },
+            'language': {
+                'url': igsv_plugin_vars.lang_dir + '/datatables-' + table.attr('lang') + '.json'
             }
         };
-        var table = jQuery(this);
         if (table.hasClass('no-responsive')) {
             delete dt_opts.responsive;
         }
