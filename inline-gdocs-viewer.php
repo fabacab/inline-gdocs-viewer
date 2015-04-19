@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * Version: 0.8.7
+ * Version: 0.9
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: inline-gdocs-viewer
@@ -169,9 +169,30 @@ class InlineGoogleSpreadsheetViewerPlugin {
     }
 
     /**
-     * @param $r array Multidimensional array representing table data.
-     * @param $options array Values passed from the shortcode.
-     * @param $caption string Passed via shortcode, should be the table caption.
+     * Prints an appropriate HTML attribute string for any HTML5 Data
+     * attributes that DataTables can use.
+     *
+     * @param array $atts Values passed from the shortcode.
+     * @return A string representing attribute-value pairs in HTML.
+     */
+    function dataTablesAttributes ($atts) {
+        $str = '';
+        foreach ($atts as $k => $v) {
+            if (0 === strpos($k, 'datatables_') && false !== $v) {
+                $k = str_replace('datatables', 'data', str_replace('_', '-', $k));
+                // We urldecode() the value here because WordPress shortcodes
+                // use square brackets, but so do JavaScript arrays so users
+                // are advised to sometimes enter URL-encoded equivalents.
+                $str .= esc_attr($k) . '=\'' . esc_attr(urldecode($v)) . '\' ';
+            }
+        }
+        return $str;
+    }
+
+    /**
+     * @param array $r Multidimensional array representing table data.
+     * @param array $options Values passed from the shortcode.
+     * @param string $caption Passed via shortcode, should be the table caption.
      * @return An HTML string of the complete <table> element.
      * @see displayShortcode
      */
@@ -185,18 +206,21 @@ class InlineGoogleSpreadsheetViewerPlugin {
         $ir = 1; // row number counter
         $ic = 1; // column number counter
 
-        // Prepend a space character onto the 'class' value, if one exists.
-        if (!empty($options['class'])) { $options['class'] = " {$options['class']}"; }
         // Extract the document ID from the key, if a full URL was given.
         $key = $this->getDocKey($options['key']);
+        $html  = '<table id="igsv-' . esc_attr($key) . '"';
+        // Prepend a space character onto the 'class' value, if one exists.
+        if (!empty($options['class'])) { $options['class'] = " {$options['class']}"; }
+        $html .= ' class="igsv-table' . esc_attr($options['class']) . '"';
+        $html .= ' lang="' . esc_attr($options['lang']) . '"';
+        $html .= ' summary="' . esc_attr($options['summary']) . '"';
+        $html .= ' title="' . esc_attr($options['title']) . '"';
+        $html .= ' style="' . esc_attr($options['style']) . '"';
+        $html .= (array_search('no-datatables', explode(' ', $options['class'])))
+            ? ''
+            : ' ' . $this->dataTablesAttributes($options);
+        $html .= '>';
 
-        $id = esc_attr($key);
-        $class = esc_attr($options['class']);
-        $summary = esc_attr($options['summary']);
-        $title = esc_attr($options['title']);
-        $style = esc_attr($options['style']);
-        $lang = esc_attr($options['lang']);
-        $html = "<table id=\"igsv-$id\" class=\"igsv-table$class\" lang=\"$lang\" summary=\"$summary\" title=\"$title\" style=\"$style\">";
         if (!empty($caption)) {
             $html .= '<caption>' . esc_html($caption) . '</caption>';
         }
@@ -336,9 +360,59 @@ class InlineGoogleSpreadsheetViewerPlugin {
             'chart_trendlines'                 => false,
             'chart_v_axis'                     => false,
             'chart_width'                      => false,
-
             // For some reason this isn't parsing?
             //'chart_is3D'                       => false,
+
+            // DataTables's HTML5 data- attributes.
+            // DataTables Features
+            // @see https://www.datatables.net/reference/option/#Features
+            'datatables_auto_width'    => false,
+            'datatables_defer_render'  => false,
+            'datatables_info'          => false,
+            'datatables_j_query_UI'    => false,
+            'datatables_length_change' => false,
+            'datatables_ordering'      => false,
+            'datatables_paging'        => false,
+            'datatables_processing'    => false,
+            'datatables_scroll_x'      => false,
+            'datatables_scroll_y'      => false,
+            'datatables_searching'     => false,
+            'datatables_server_side'   => false,
+            'datatables_state_save'    => false,
+
+            // DataTables Data
+            // @see https://www.datatables.net/reference/option/#Data
+            'datatables_ajax' => false,
+            'datatables_data' => false,
+
+            // DataTables Options
+            // @see https://www.datatables.net/reference/option/#Options
+            'datatables_defer_loading'   => false,
+            'datatables_destroy'         => false,
+            'datatables_display_start'   => false,
+            'datatables_dom'             => 'TC<"clear">lfrtip',
+            'datatables_length_menu'     => false,
+            'datatables_order_cells_top' => false,
+            'datatables_order_classes'   => false,
+            'datatables_order'           => false,
+            'datatables_order_fixed'     => false,
+            'datatables_order_multi'     => false,
+            'datatables_page_length'     => false,
+            'datatables_paging_type'     => false,
+            'datatables_renderer'        => false,
+            'datatables_retrieve'        => false,
+            'datatables_scroll_collapse' => false,
+            'datatables_search_cols'     => false,
+            'datatables_search_delay'    => false,
+            'datatables_search'          => false,
+            'datatables_state_duration'  => false,
+            'datatables_stripe_classes'  => false,
+            'datatables_tab_index'       => false,
+
+            // DataTables Columns
+            // @see https://www.datatables.net/reference/option/#Columnes
+            'datatables_column_defs' => false,
+            'datatables_columns'     => false
         ), $atts, $this->shortcode);
         if ($this->isGoogleSpreadsheetKey($x['key'])) {
             $x['query'] = apply_filters($this->shortcode . '_query', $x['query'], $x);
@@ -367,11 +441,11 @@ class InlineGoogleSpreadsheetViewerPlugin {
                 // Core DataTables.
                 wp_enqueue_style(
                     'jquery-datatables',
-                    '//cdn.datatables.net/1.10.5/css/jquery.dataTables.min.css'
+                    '//cdn.datatables.net/1.10.6/css/jquery.dataTables.min.css'
                 );
                 wp_enqueue_script(
                     'jquery-datatables',
-                    '//cdn.datatables.net/1.10.5/js/jquery.dataTables.min.js',
+                    '//cdn.datatables.net/1.10.6/js/jquery.dataTables.min.js',
                     array('jquery')
                 );
                 // DataTables extensions.

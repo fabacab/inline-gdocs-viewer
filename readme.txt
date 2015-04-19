@@ -1,10 +1,10 @@
 === Plugin Name ===
 Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
-Tags: Google Docs, Google, Spreadsheet, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz
+Tags: Google Docs, Google, Spreadsheet, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables
 Requires at least: 3.5
 Tested up to: 4.1.1
-Stable tag: 0.8.7
+Stable tag: 0.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -160,7 +160,21 @@ Alternatively, you can [hide columns using CSS](http://maymay.net/blog/projects/
 
 = How do I change the default settings, like can I turn paging off? Can I change the page length? Can I change the sort order? =
 
-If you're able to add JavaScript to your theme, you can do all of these things, and more. Any and all DataTables-enhanced tables can be modified by using the DataTables API.
+All of [these DataTables options](https://datatables.net/reference/option/) are accessible through shortcode attributes. The shortcode attribute is an underscore-separated version of the DataTables's CamelCase'ed option name, prefixed with `datatables_`. For instance, to turn off paging, you need to set [the DataTables `paging` option](https://datatables.net/reference/option/paging) to `false`, so you would use a shortcode like this:
+
+    [gdoc key="ABCDEFG" datatables_paging="false"]
+
+Similarly, to change how many rows appear per page, you need to use [the DataTables `pageLength` option](https://datatables.net/reference/option/pageLength), setting it to a number. Its default is `10`, so if you wanted to show 15 rows per page, you would use a shortcode like this:
+
+    [gdoc key="ABCDEFG" datatables_page_length="15"]
+
+Some DataTables options need to be given JavaScript array literals, such as in the case of [the DataTables `order` option](https://datatables.net/reference/option/order), which controls the initial sort order for a table. However, using square brackets (`[` and `]`) inside a shortcode confuses the WordPress parser, so these characters must be URL-escaped (into `%5B` and `%5D`, respectively). Suppose you want your table to be sorted by the second column in descending order (instead of the first column in ascending order, which is the default). You need to supply a 2-dimensional array such as `[[ 1, "desc" ]]` to DataTable's `order` option (column counting begins at 0). In a shortcode, with the square brackets URL-escaped, this becomes:
+
+    [gdoc key="ABCDEFG" datatables_order='%5B%5B 2, "desc" %5D%5D']
+
+Note that when a JSON string literal is supplied in a shortcode attribute (`"desc"`), it must be double-quoted, so the shortcode attribute value itself must be single-quoted.
+
+Alternatively, if you're able to add JavaScript to your theme, you can do all of these things, and more because any and all DataTables-enhanced tables can be modified by using the DataTables API.
 
 For instance, to disable paging, add a JavaScript to your theme that looks like this:
 
@@ -168,7 +182,7 @@ For instance, to disable paging, add a JavaScript to your theme that looks like 
         jQuery('#igsv-MY_TABLE_KEY').dataTable().api().page.len(-1).draw();
     });
 
-Or, to have your DataTables-enhanced table automatically sort itself by the second column:
+Or, to have your DataTables-enhanced table automatically sort itself by the second column in descending order:
 
     jQuery(window).load(function () {
         jQuery('#igsv-MY_TABLE_KEY').dataTable().api().order([1, 'desc']).draw();
@@ -178,7 +192,7 @@ Or, to have your DataTables-enhanced table automatically sort itself by the seco
 
 Please refer to the [DataTables API reference manual](https://datatables.net/reference/api) for more information about customizing DataTables-enhanced tables.
 
-Another option for sorting your table, for example, is to use the `query` attribute and pass along an appropriate [Google Charts API Query Language query that includes an `order by` clause](https://developers.google.com/chart/interactive/docs/querylanguage#Order_By).
+Another option for sorting your table, for example, is to use the `query` attribute and pass along an appropriate [Google Charts API Query Language query that includes an `order by` clause](https://developers.google.com/chart/interactive/docs/querylanguage#Order_By). In this case, however, you may want to disable DataTables's client-side sorting, as the data will be sorted in the HTML source.
 
 = How do I customize my chart? =
 Using specific shortcode attributes, you can choose from a huge number of configurable options to customize the look and feel of your chart. The specific shortcode attributes available to you depend on the type of chart you chose. Refer to the [Google Chart API documentation](https://developers.google.com/chart/interactive/docs/gallery) to learn which configuration options are available for which type of charts.
@@ -222,6 +236,12 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 7. This screenshot shows an example of what the previous screenshot might output with a given spreadsheet that contains data for the Aliens, Ninjas, Pirates, and Robots teams, and their player's respective points.
 
 == Change log ==
+
+= Version 0.9 =
+
+* Feature: Fully customizable DataTables.
+    * You can now use a huge number of shortcode attributes to customize the features of your DataTables-enhanced tables. All [DataTables Feature, Data, Options, and Columns options groups](https://datatables.net/reference/option/) are supported through an underscore-separated shortcode attribute of a similar name. See [this plugin's FAQ](https://wordpress.org/plugins/inline-google-spreadsheet-viewer/faq/) for details. See this plugin's [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-viewer/other_notes/) page for a complete list of shortcode attributes.
+* Developer: Update DataTables library to version 1.10.6.
 
 = Version 0.8.7 =
 
@@ -495,6 +515,51 @@ The **complete list of attributes for configurable chart options** is below. Ref
 * `chart_trendlines`
 * `chart_v_axis`
 * `chart_width`
+
+= DataTables customization options =
+
+To use DataTables customization options, you must not supply the `no-datatables` class.
+
+The **complete list of DataTables customization attributes** is below. Please refer to the [DataTables Options reference](https://datatables.net/reference/option/) for more information about each particular option.
+
+* `datatables_auto_width`
+* `datatables_defer_render`
+* `datatables_info`
+* `datatables_j_query_UI`
+* `datatables_length_change`
+* `datatables_ordering`
+* `datatables_paging`
+* `datatables_processing`
+* `datatables_scroll_x`
+* `datatables_scroll_y`
+* `datatables_searching`
+* `datatables_server_side`
+* `datatables_state_save`
+* `datatables_ajax`
+* `datatables_data`
+* `datatables_defer_loading`
+* `datatables_destroy`
+* `datatables_display_start`
+* `datatables_dom`
+* `datatables_length_menu`
+* `datatables_order_cells_top`
+* `datatables_order_classes`
+* `datatables_order`
+* `datatables_order_fixed`
+* `datatables_order_multi`
+* `datatables_page_length`
+* `datatables_paging_type`
+* `datatables_renderer`
+* `datatables_retrieve`
+* `datatables_scroll_collapse`
+* `datatables_search_cols`
+* `datatables_search_delay`
+* `datatables_search`
+* `datatables_state_duration`
+* `datatables_stripe_classes`
+* `datatables_tab_index`
+* `datatables_column_defs`
+* `datatables_columns`
 
 = Plugin hooks =
 

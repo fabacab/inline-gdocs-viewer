@@ -3,8 +3,6 @@ jQuery(document).ready(function () {
     jQuery('.igsv-table:not(.no-datatables)').each(function () {
         var table = jQuery(this);
         var dt_opts = {
-            'dom': 'TC<"clear">lfrtip',
-            'scrollX': true,
             'responsive': true,
             'tableTools': {
                 'sSwfPath': '//datatables.net/release-datatables/extensions/TableTools/swf/copy_csv_xls_pdf.swf'
@@ -19,7 +17,7 @@ jQuery(document).ready(function () {
         table.DataTable(dt_opts);
 
         var x;
-        if (jQuery(this).is('.FixedColumns')) {
+        if (table.is('.FixedColumns')) {
             new jQuery.fn.dataTable.FixedColumns(table);
         } else if (x = this.className.match(/FixedColumns-(left|right)-([0-9])*/g)) {
             var l_n = 0;
