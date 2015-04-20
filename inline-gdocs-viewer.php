@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * Version: 0.9.1.1
+ * Version: 0.9.1.2
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: inline-gdocs-viewer
@@ -583,7 +583,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         $data = array(
             'lang_dir' => plugins_url('languages', __FILE__),
             'datatables_classes' => $dt_classes,
-            'datatables_defaults_object' => json_decode($options['datatables_defaults_object'])
+            'datatables_defaults_object' => $options['datatables_defaults_object']
         );
         return $data;
     }
@@ -736,8 +736,8 @@ esc_html__('Inline Google Spreadsheet Viewer is provided as free software, but s
                     $safe_input[$k] = sanitize_text_field($v);
                     break;
                 case 'datatables_defaults_object':
-                    if (empty($v)) { $v = json_decode($this->dt_defaults); }
-                    $safe_input[$k] = json_encode($v);
+                    if (empty($v)) { $v = $this->dt_defaults; }
+                    $safe_input[$k] = json_decode($v);
                     break;
             }
         }
@@ -780,7 +780,7 @@ esc_html__('Inline Google Spreadsheet Viewer is provided as free software, but s
                     id="<?php esc_attr_e($this->prefix);?>datatables_defaults_object"
                     name="<?php esc_attr_e($this->prefix);?>settings[datatables_defaults_object]"
                     placeholder='{ "searching": false, "ordering": false }'
-                ><?php if (!empty($options['datatables_defaults_object'])) { print json_decode($options['datatables_defaults_object']);}?></textarea>
+                ><?php if (!empty($options['datatables_defaults_object'])) { print json_encode($options['datatables_defaults_object']);}?></textarea>
                 <p class="description"><?php print sprintf(
                     esc_html__('Define a DataTables defaults initialization object. This is useful if you wish to change the default DataTables enhancements for all affected tables on your site at once. All DataTables-enhanced tables will use the DataTables options configured here unless explicitly overriden in the shortcode, HTML, or JavaScript initialization for the given table, itself. To learn more, read the %1$sDataTables manual section on Setting defaults%2$s and refer to the %3$sdocumentation for shortcode attributes available via this plugin%2$s. Leave blank to use the plugin default.'),
                     '<a href="https://datatables.net/manual/options#Setting-defaults">', '</a>',

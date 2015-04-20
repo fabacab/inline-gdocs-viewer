@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables
 Requires at least: 3.5
 Tested up to: 4.1.1
-Stable tag: 0.9.1.1
+Stable tag: 0.9.1.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -237,6 +237,10 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 
 == Change log ==
 
+= Version 0.9.1.2 =
+
+* Bugfix: Fix "catchable fatal error" when certain site-wide DataTables defaults are used.
+
 = Version 0.9.1.1 =
 
 * [Bugfix](https://wordpress.org/support/topic/setting-default?replies=2#post-6842799): Treat user-supplied DataTables defaults as JSON. This fixes an issue where user-supplied DataTables defaults were ignored.
@@ -257,7 +261,7 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 
 = Version 0.8.7 =
 
-* Developer: New `gdoc_query` filter lets you hook into the Google Visuaization API queries supplied in the `query` attribute of the shortcode. Useful for dynamically generating queries for pre-processing, such as `SELECT`ing only rows referencing the current WordPress user by username or other identification.
+* Developer: New `gdoc_query` filter lets you hook into the Google visualization API queries supplied in the `query` attribute of the shortcode. Useful for dynamically generating queries for pre-processing, such as `SELECT`ing only rows referencing the current WordPress user by username or other identification.
 
 = Version 0.8.6 =
 
