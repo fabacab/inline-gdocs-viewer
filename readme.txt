@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables
 Requires at least: 3.5
 Tested up to: 4.1.1
-Stable tag: 0.9.1
+Stable tag: 0.9.1.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -236,6 +236,10 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 7. This screenshot shows an example of what the previous screenshot might output with a given spreadsheet that contains data for the Aliens, Ninjas, Pirates, and Robots teams, and their player's respective points.
 
 == Change log ==
+
+= Version 0.9.1.1 =
+
+* [Bugfix](https://wordpress.org/support/topic/setting-default?replies=2#post-6842799): Treat user-supplied DataTables defaults as JSON. This fixes an issue where user-supplied DataTables defaults were ignored.
 
 = Version 0.9.1 =
 
