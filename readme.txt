@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables
 Requires at least: 3.5
 Tested up to: 4.1.1
-Stable tag: 0.9
+Stable tag: 0.9.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -236,6 +236,14 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 7. This screenshot shows an example of what the previous screenshot might output with a given spreadsheet that contains data for the Aliens, Ninjas, Pirates, and Robots teams, and their player's respective points.
 
 == Change log ==
+
+= Version 0.9.1 =
+
+* Feature: Apply DataTables enhancements to `<table>`s with arbitrary `class` values anywhere on your blog, not just those created with the `gdoc` shortcode.
+    * Go to the plugin's new settings screen to enter a space-separated list of `class` names that should have DataTables enhancements applied to them. This is useful if you use other plugins that generate HTML tables, or want to write your own HTML tables, and would like to have DataTables's searching, paging, sorting, and other enhancements applied to those tables, too.
+* Feature: Define site-wide DataTables defaults.
+    * The new plugin settings screen includes an advanced configuration option that lets you [supply site-wide DataTables defaults](https://datatables.net/manual/options#Setting-defaults). All DataTables-enhanced tables will use the specified defaults unless a given table overrides the defaults in its shortcode, HTML, or JavaScript initialization. This is useful if you use many tables with non-default settings and want to have one place to make changes to all of them, instead of repeating the non-default settings in each shortcode.
+    * If your tables have changed after updating to this version, **restore the plugin's defaults by visiting the plugin's settings screen and re-saving its options.** (This is sometimes necessary because default settings storage location have been moved around in this release. Sorry about any inconvenience.)
 
 = Version 0.9 =
 

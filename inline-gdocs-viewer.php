@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * Version: 0.9
+ * Version: 0.9.1
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: inline-gdocs-viewer
@@ -13,10 +13,21 @@
 class InlineGoogleSpreadsheetViewerPlugin {
 
     private $shortcode = 'gdoc';
+    private $dt_class = 'igsv-table'; //< Default table class.
+    private $dt_defaults; //< Defaults for DataTables defaults object.
     private $invocations = 0;
+    private $prefix; //< Internal prefix for settings, etc., derived from shortcode.
 
     public function __construct () {
+        // Initialize private defaults.
+        $this->prefix = $this->shortcode . '_';
+        $this->dt_defaults = json_encode(array(
+            'dom' => "TC<'clear'>lfrtip"
+        ));
+
         add_action('plugins_loaded', array($this, 'registerL10n'));
+        add_action('admin_init', array($this, 'registerSettings'));
+        add_action('admin_menu', array($this, 'registerAdminMenu'));
         add_action('admin_head', array($this, 'doAdminHeadActions'));
         add_action('admin_enqueue_scripts', array($this, 'addAdminScripts'));
         add_action('admin_print_footer_scripts', array($this, 'addQuickTagButton'));
@@ -31,6 +42,24 @@ class InlineGoogleSpreadsheetViewerPlugin {
 
     public function registerL10n () {
         load_plugin_textdomain('inline-gdocs-viewer', false, dirname(plugin_basename(__FILE__)) . '/languages/');
+    }
+
+    public function registerSettings () {
+        register_setting(
+            $this->prefix . 'settings',
+            $this->prefix . 'settings',
+            array($this, 'validateSettings')
+        );
+    }
+
+    public function registerAdminMenu () {
+        add_options_page(
+            __('Inline Google Spreadsheet Viewer Settings', 'inline-gdocs-viewer'),
+            __('Inline Google Spreadsheet Viewer', 'inline-gdocs-viewer'),
+            'manage_options',
+            $this->prefix . 'settings',
+            array($this, 'renderOptionsPage')
+        );
     }
 
     public function doAdminHeadActions () {
@@ -211,7 +240,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         $html  = '<table id="igsv-' . esc_attr($key) . '"';
         // Prepend a space character onto the 'class' value, if one exists.
         if (!empty($options['class'])) { $options['class'] = " {$options['class']}"; }
-        $html .= ' class="igsv-table' . esc_attr($options['class']) . '"';
+        $html .= ' class="' . $this->dt_class . esc_attr($options['class']) . '"';
         $html .= ' lang="' . esc_attr($options['lang']) . '"';
         $html .= ' summary="' . esc_attr($options['summary']) . '"';
         $html .= ' title="' . esc_attr($options['title']) . '"';
@@ -390,7 +419,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
             'datatables_defer_loading'   => false,
             'datatables_destroy'         => false,
             'datatables_display_start'   => false,
-            'datatables_dom'             => 'TC<"clear">lfrtip',
+            'datatables_dom'             => false,
             'datatables_length_menu'     => false,
             'datatables_order_cells_top' => false,
             'datatables_order_classes'   => false,
@@ -491,10 +520,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
                     array('jquery-datatables')
                 );
 
-                $plugin_vars = array(
-                    'lang_dir' => plugins_url('languages', __FILE__)
-                );
-                wp_localize_script('igsv-datatables', 'igsv_plugin_vars', $plugin_vars);
+                wp_localize_script('igsv-datatables', 'igsv_plugin_vars', $this->getLocalizedPluginVars());
             }
             try {
                 $data = NULL;
@@ -539,6 +565,27 @@ class InlineGoogleSpreadsheetViewerPlugin {
         }
 
         return $output;
+    }
+
+    /**
+     * Retrieves the global plugin options.
+     *
+     * @return array An array of data suitable for passing to wp_localize_script().
+     * @see https://codex.wordpress.org/Function_Reference/wp_localize_script
+     */
+    private function getLocalizedPluginVars () {
+        $options = get_option($this->prefix . 'settings');
+        $tmp = array();
+        foreach (explode(' ', $options['datatables_classes']) as $cls) {
+            $tmp[] = ".$cls:not(.no-datatables)";
+        }
+        $dt_classes = implode(', ', $tmp);
+        $data = array(
+            'lang_dir' => plugins_url('languages', __FILE__),
+            'datatables_classes' => $dt_classes,
+            'datatables_defaults_object' => json_decode($options['datatables_defaults_object'])
+        );
+        return $data;
     }
 
     private function getChartOptions($atts) {
@@ -677,6 +724,77 @@ esc_html__('Inline Google Spreadsheet Viewer is provided as free software, but s
 );?></p>
 </div>
 <?php
+    }
+
+    public function validateSettings ($input) {
+        $safe_input = array();
+        foreach ($input as $k => $v) {
+            switch ($k) {
+                // TODO
+                case 'datatables_classes':
+                    if (empty($v)) { $v = $this->dt_class; }
+                    $safe_input[$k] = sanitize_text_field($v);
+                    break;
+                case 'datatables_defaults_object':
+                    if (empty($v)) { $v = json_decode($this->dt_defaults); }
+                    $safe_input[$k] = json_encode($v);
+                    break;
+            }
+        }
+        return $safe_input;
+    }
+
+    public function renderOptionsPage () {
+        if (!current_user_can('manage_options')) {
+            wp_die(__('You do not have sufficient permissions to access this page.', 'inline-gdocs-viewer'));
+        }
+        $options = get_option($this->prefix . 'settings');
+?>
+<h2><?php esc_html_e('Inline Google Spreadsheet Viewer Settings', 'inline-gdocs-viewer');?></h2>
+<form method="post" action="options.php">
+<?php settings_fields($this->prefix . 'settings');?>
+<fieldset><legend><?php esc_html_e('DataTables defaults', 'inline-gdocs-viewer');?></legend>
+<table class="form-table" summary="<?php esc_attr_e('Site-wide defaults for DataTables-enhanced tables.', 'inline-gdocs-viewer');?>">
+    <tbody>
+        <tr>
+            <th>
+                <label for="<?php esc_attr_e($this->prefix);?>datatables_classes"><?php esc_html_e('DataTables classes', 'inline-gdocs-viewer');?></label>
+            </th>
+            <td>
+                <input id="<?php esc_attr_e($this->prefix);?>datatables_classes" name="<?php esc_attr_e($this->prefix);?>settings[datatables_classes]" value="<?php esc_attr_e($options['datatables_classes'])?>" placeholder="<?php esc_attr_e('class-1 class-2', 'inline-gdocs-viewer')?>" />
+                <p class="description">
+                    <?php print sprintf(
+                        esc_html__('A space-separated list of HTML %1$sclass%2$s values. %1$s<table>%2$s elements with these classes will automatically be enhanced with %3$sjQuery DataTables%4$s, unless the given table also has the special %1$sno-datatables%2$s class. Leave blank to use the plugin default.', 'inline-gdocs-viewer'),
+                        '<code>', '</code>',
+                        '<a href="https://datatables.net/">', '</a>'
+                    );?>
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <th>
+                <label for="<?php esc_attr_e($this->prefix);?>datatables_defaults_object"><?php esc_html_e('DataTables defaults object', 'inline-gdocs-viewer');?></label>
+            </th>
+            <td>
+                <textarea
+                    id="<?php esc_attr_e($this->prefix);?>datatables_defaults_object"
+                    name="<?php esc_attr_e($this->prefix);?>settings[datatables_defaults_object]"
+                    placeholder='{ "searching": false, "ordering": false }'
+                ><?php if (!empty($options['datatables_defaults_object'])) { print json_decode($options['datatables_defaults_object']);}?></textarea>
+                <p class="description"><?php print sprintf(
+                    esc_html__('Define a DataTables defaults initialization object. This is useful if you wish to change the default DataTables enhancements for all affected tables on your site at once. All DataTables-enhanced tables will use the DataTables options configured here unless explicitly overriden in the shortcode, HTML, or JavaScript initialization for the given table, itself. To learn more, read the %1$sDataTables manual section on Setting defaults%2$s and refer to the %3$sdocumentation for shortcode attributes available via this plugin%2$s. Leave blank to use the plugin default.'),
+                    '<a href="https://datatables.net/manual/options#Setting-defaults">', '</a>',
+                    '<a href="https://wordpress.org/plugins/inline-google-spreadsheet-viewer/other_notes/">'
+                );?></p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</fieldset>
+<?php submit_button();?>
+</form>
+<?php
+        $this->showDonationAppeal();
     }
 }
 

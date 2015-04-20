@@ -1,6 +1,9 @@
 // DataTables
 jQuery(document).ready(function () {
-    jQuery('.igsv-table:not(.no-datatables)').each(function () {
+    if (igsv_plugin_vars.datatables_defaults_object) {
+        jQuery.extend(jQuery.fn.dataTable.defaults, igsv_plugin_vars.datatables_defaults_object);
+    }
+    jQuery(igsv_plugin_vars.datatables_classes).each(function () {
         var table = jQuery(this);
         var dt_opts = {
             'responsive': true,
@@ -13,6 +16,9 @@ jQuery(document).ready(function () {
         };
         if (table.hasClass('no-responsive')) {
             delete dt_opts.responsive;
+        }
+        if (!table.attr('lang')) {
+            delete dt_opts.language;
         }
         table.DataTable(dt_opts);
 
