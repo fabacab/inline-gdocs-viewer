@@ -1,7 +1,11 @@
 // DataTables
 jQuery(document).ready(function () {
     if (igsv_plugin_vars.datatables_defaults_object) {
-        jQuery.extend(jQuery.fn.dataTable.defaults, igsv_plugin_vars.datatables_defaults_object);
+        try {
+            jQuery.extend(jQuery.fn.dataTable.defaults, JSON.parse(igsv_plugin_vars.datatables_defaults_object));
+        } catch (e) {
+            // TODO
+        }
     }
     jQuery(igsv_plugin_vars.datatables_classes).each(function () {
         var table = jQuery(this);
