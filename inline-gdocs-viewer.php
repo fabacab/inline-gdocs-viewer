@@ -577,6 +577,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         $options = get_option($this->prefix . 'settings');
         $tmp = array();
         foreach (explode(' ', $options['datatables_classes']) as $cls) {
+            $cls = (empty($cls)) ? $this->dt_class : $cls;
             $tmp[] = ".$cls:not(.no-datatables)";
         }
         $dt_classes = implode(', ', $tmp);
