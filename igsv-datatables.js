@@ -6,19 +6,17 @@ jQuery(document).ready(function () {
     jQuery(igsv_plugin_vars.datatables_classes).each(function () {
         var table = jQuery(this);
         var dt_opts = {
-            'responsive': true,
             'tableTools': {
                 'sSwfPath': '//datatables.net/release-datatables/extensions/TableTools/swf/copy_csv_xls_pdf.swf'
-            },
-            'language': {
-                'url': igsv_plugin_vars.lang_dir + '/datatables-' + table.attr('lang') + '.json'
             }
         };
-        if (table.hasClass('no-responsive')) {
-            delete dt_opts.responsive;
+        if (false === table.hasClass('no-responsive')) {
+            dt_opts.responsive = true;
         }
-        if (!table.attr('lang')) {
-            delete dt_opts.language;
+        if (table.attr('lang')) {
+            dt_opts.language = {
+                'url': igsv_plugin_vars.lang_dir + '/datatables-' + table.attr('lang') + '.json'
+            }
         }
         table.DataTable(dt_opts);
 
