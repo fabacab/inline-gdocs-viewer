@@ -21,7 +21,16 @@ jQuery(document).ready(function () {
         table.DataTable(dt_opts);
 
         var x;
-        if (table.is('.FixedColumns')) {
+        if (table.is('.FixedHeader')) {
+            new jQuery.fn.dataTable.FixedHeader(table);
+        } else if (x = this.className.match(/FixedHeader-(top|right|bottom|left)/g)) {
+            for (var i = 0; i < x.length; i++) {
+                var side = x[i].split('-')[1];
+                var fheader_opts = {};
+                fheader_opts[side] = true;
+            }
+            new jQuery.fn.dataTable.FixedHeader(table, fheader_opts);
+        } else if (table.is('.FixedColumns')) {
             new jQuery.fn.dataTable.FixedColumns(table);
         } else if (x = this.className.match(/FixedColumns-(left|right)-([0-9])*/g)) {
             var l_n = 0;

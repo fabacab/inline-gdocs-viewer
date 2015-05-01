@@ -3,8 +3,8 @@ Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: Google Docs, Google, Spreadsheet, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables
 Requires at least: 3.5
-Tested up to: 4.2
-Stable tag: 0.9.1.3
+Tested up to: 4.2.1
+Stable tag: 0.9.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -237,6 +237,12 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 
 == Change log ==
 
+= Version 0.9.2 =
+
+* Feature: [FixedHeader extension](https://www.datatables.net/extensions/fixedheader/) integration lets you freeze the table header (its `<thead>` element contents), the table footer (`<tfoot>`), left- or right-most column while scrolling vertically or horizontally by supplying a special `class` value.
+    * Use the special `class` value `FixedHeader-top` to freeze the table header, `FixedHeader-bottom` to freeze the table footer, and `FixedHeader-left` or `FixedHeader-right` to freeze the left- or right-most column, respectively.
+    * You can use more than one of the above `class` values for the same table. For instance, to freeze the table header, left, and right column all at once, use a shortcode like `[gdoc key="ABCDEFG" class="FixedHeader-top FixedHeader-left FixedHeader-right"]`.
+
 = Version 0.9.1.3 =
 
 * Bugfix: Fixes an issue where DataTables failed to initialize after first installation unless the Settings page was visited.
@@ -464,6 +470,9 @@ This plugin provides one shortcode (`gdoc`) that can do many things through a co
 * `class` - An optional custom HTML `class` value or space-separated list of values. The following class names are treated specially:
     * `no-datatables` deactivates all DataTables features.
     * `no-responsive` deactivates only DataTables' Responsive features.
+    * `FixedHeader` or its synonym, `FixedHeader-top` freezes the table header (its `<thead>` content) to the top of the window while scrolling vertically.
+    * `FixedHeader-bottom` freezes the table footer (its `<tfoot>` content) to the bottom of the window while scrolling vertically.
+    * `FixedHeader-left` or `FixedHeader-right` freezes the left- or right-most column of the table while scrolling horizontally. (You will also need to set `datatables_scroll_x="true"` in your shortcode to enable horizontal scrolling.)
     * `FixedColumns-left-N` or `FixedColumns-right-N` freezes the left- or right-most `N` columns in the table, respectively.
 * `expire_in` - How long to cache responses from Google for, in seconds. Set to `0` to cache forever. (Default: `600`, which is ten minutes.)
 * `gid` - The ID of a worksheet in a Google Spreadsheet to load, other than the first one, like `[gdoc key="ABCDEFG" gid="123"]`
