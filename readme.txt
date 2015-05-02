@@ -22,7 +22,7 @@ Easily turn data stored in a Google Spreadsheet or the output of a Google Apps S
 
 = Quick start =
 
-Paste the URL of your public [Google Spreadsheet][https://support.google.com/docs/answer/37579?hl=en] or [Google Apps Script Web App](https://developers.google.com/apps-script/guides/web) on its own line in your WordPress post or page, then save your post. That's it. :) Your spreadsheet will appear in a sorted, searchable HTML table. Web App output will be displayed using the HTML defined by the Web App. See the [screenshots](https://wordpress.org/plugins/inline-google-spreadsheet-viewer/screenshots/) for an example.
+Paste the URL of your public [Google Spreadsheet](https://support.google.com/docs/answer/37579?hl=en) or [Google Apps Script Web App](https://developers.google.com/apps-script/guides/web) on its own line in your WordPress post or page, then save your post. That's it. :) Your spreadsheet will appear in a sorted, searchable HTML table. Web App output will be displayed using the HTML defined by the Web App. See the [screenshots](https://wordpress.org/plugins/inline-google-spreadsheet-viewer/screenshots/) for an example.
 
 Your spreadsheet must be shared using either the "Public on the web" or "Anyone with the link" options [(learn how to share your spreadsheet)](https://support.google.com/drive/?p=visibility_options&hl=en_US). Currently, private Google Spreadsheets or Spreadsheets shared with "Specific people" are not supported. Web Apps must be deployed with the "Anyone, even anonymous" [access permissions](https://developers.google.com/apps-script/guides/web#permissions).
 
@@ -32,7 +32,8 @@ Your spreadsheet must be shared using either the "Public on the web" or "Anyone 
 
 You can transform your spreadsheet into an interactive chart or graph, embed documents other than spreadsheets, and customize the HTML of your table using a `[gdoc key=""]` [WordPress shortcode](https://codex.wordpress.org/Shortcode). The only required parameter is `key`, which specifies the document you'd like to retrieve. All additional attributes are optional.
 
-== Spreadsheets ==
+**Spreadsheets**
+
 After saving the appropriate Sharing setting, copy the URL you use to view the Spreadsheet from your browser's address bar into the shortcode. For example, to display the spreadsheet at `https://docs.google.com/spreadsheets/d/ABCDEFG/edit`, use the following shortcode in your WordPress post or page:
 
     [gdoc key="https://docs.google.com/spreadsheets/d/ABCDEFG/edit"]
@@ -45,7 +46,8 @@ Use the `gid` attribute to fetch data from a worksheet other than the first one 
 
     [gdoc key="ABCDEFG" gid="4"]
 
-== Charts ==
+**Charts**
+
 To create an interactive chart from your Spreadsheet's data, use the `chart` attribute with a supported chart type. These include:
 
 * `Area` charts
@@ -68,7 +70,8 @@ Depending on the type of chart you chose, you can customize your chart with a nu
 
     [gdoc key="ABCDEFG" chart="Pie" chart_colors="red green" chart_dimensions="3" chart_pie_slice_text="value"]
 
-== HTML Tables ==
+**HTML Tables**
+
 To render an HTML table with additional metadata, such as supplying the table's `title`, `summary`, `<caption>`, and a customized `class` value, you can do the following:
 
     [gdoc key="ABCDEFG" class="my-sheet" title="Tooltip text displayed on hover" summary="An example spreadsheet, with a summary."]This is the table's caption.[/gdoc]
@@ -98,14 +101,16 @@ Web addresses and email addresses in your data are turned into links. If this ca
 
     [gdoc key="ABCDEFG" linkify="no"]
 
-== Using Google Queries ==
+**Using Google Queries**
+
 You can pre-process your Google Spreadsheet before retrieving data from it by passing a [Google Charts API Query Language](https://developers.google.com/chart/interactive/docs/querylanguage#Language_Syntax) query to the shortcode's `query` attribute. This lets you interact with the data in your Google Spreadsheet as though the spreadsheet were a relational database table. For instance, if you wish to display the team that scored the most goals on your website, you might use a shortcode like this to query your Google Spreadsheet and display the highest-scoring team, where the team name is the first column (column `A`) and that team's score is the second column (column `B`):
 
     [gdoc key="ABCDEFG" query="select A where max(B)"]
 
 Queries are also useful if your spreadsheet contains complex data from which many different charts can be created, allowing you to select only the parts of your spreadsheet that you'd like to use to compose the interactive chart.
 
-== Using Google Apps Script Web Apps==
+**Using Google Apps Script Web Apps**
+
 You can also supply the URL endpoint of any Google Apps Script Web App to retrieve the output from that app and insert it directly into your WordPress post or page. This works exactly the same way as Google Spreadsheets do, so you can use this feature to display arbitrary data on your WordPress site.
 
 For example, suppose you maintain a GMail account for fans of your podcast to write you questions, and you want to automatically display some information from these emails on your website. Using [GMail filters](https://support.google.com/mail/answer/6579?hl=en) and [labels](https://support.google.com/mail/answer/118708?hl=en), you can access these emails through a [Google Apps Script](https://developers.google.com/apps-script/overview) that reads your email, counts the number of mail messages in your different labels, and returns that count as an HTML list fragment. [Deploy that Google Apps Script as a Web App](https://developers.google.com/apps-script/guides/web#deploying_a_script_as_a_web_app) and supply its URL to the `gdoc` shortcode:
@@ -114,7 +119,8 @@ For example, suppose you maintain a GMail account for fans of your podcast to wr
 
 Now your website is automatically updated whenever you receive a new question in email from your listeners.
 
-== Embedding other documents ==
+**Embedding other documents**
+
 You can also supply the URL of any file online to load a preview of that file on your blog. To do so, supply the file's URL as your `key`:
 
     [gdoc key="http://example.com/my_final_paper.pdf"]
