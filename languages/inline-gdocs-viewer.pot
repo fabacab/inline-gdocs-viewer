@@ -2,9 +2,9 @@
 # This file is distributed under the same license as the Inline Google Spreadsheet Viewer package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Inline Google Spreadsheet Viewer 0.9.1\n"
+"Project-Id-Version: Inline Google Spreadsheet Viewer 0.9.3\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/inline-gdocs-viewer\n"
-"POT-Creation-Date: 2015-04-20 04:41:37+00:00\n"
+"POT-Creation-Date: 2015-05-02 21:51:55+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -12,21 +12,21 @@ msgstr ""
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 
-#: inline-gdocs-viewer.php:57 inline-gdocs-viewer.php:753
+#: inline-gdocs-viewer.php:57 inline-gdocs-viewer.php:809
 msgid "Inline Google Spreadsheet Viewer Settings"
 msgstr ""
 
-#. #-#-#-#-#  inline-gdocs-viewer.pot (Inline Google Spreadsheet Viewer 0.9.1)  #-#-#-#-#
+#. #-#-#-#-#  inline-gdocs-viewer.pot (Inline Google Spreadsheet Viewer 0.9.3)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
 #: inline-gdocs-viewer.php:58
 msgid "Inline Google Spreadsheet Viewer"
 msgstr ""
 
-#: inline-gdocs-viewer.php:159
-msgid "Error requesting Google Spreadsheet data:"
+#: inline-gdocs-viewer.php:191
+msgid "Error requesting data from Google:"
 msgstr ""
 
-#: inline-gdocs-viewer.php:177
+#: inline-gdocs-viewer.php:209
 msgid ""
 "Error loading Google Spreadsheet data. Make sure your Google Spreadsheet is "
 "shared <a href=\"https://support.google.com/drive/answer/2494886?"
@@ -34,35 +34,43 @@ msgid ""
 "with the link\" options</a>."
 msgstr ""
 
-#: inline-gdocs-viewer.php:460
+#: inline-gdocs-viewer.php:486
+msgid "Error:"
+msgstr ""
+
+#: inline-gdocs-viewer.php:486
+msgid "Could not identify valid GDoc resource in shortcode."
+msgstr ""
+
+#: inline-gdocs-viewer.php:496
 msgid "Your Web browser must support inline frames to display this content:"
 msgstr ""
 
-#: inline-gdocs-viewer.php:631
+#: inline-gdocs-viewer.php:687
 msgid "Add Spreadsheet"
 msgstr ""
 
-#: inline-gdocs-viewer.php:658
+#: inline-gdocs-viewer.php:714
 msgid "Inline Google Spreadsheet shortcode"
 msgstr ""
 
-#: inline-gdocs-viewer.php:663
+#: inline-gdocs-viewer.php:719
 msgid "Insert inline Google Spreadsheet"
 msgstr ""
 
-#: inline-gdocs-viewer.php:664
+#: inline-gdocs-viewer.php:720
 msgid "Enter the key (web address) of your Google Spreadsheet"
 msgstr ""
 
-#: inline-gdocs-viewer.php:667
+#: inline-gdocs-viewer.php:723
 msgid "Key"
 msgstr ""
 
-#: inline-gdocs-viewer.php:668
+#: inline-gdocs-viewer.php:724
 msgid "paste your Spreadsheet URL here"
 msgstr ""
 
-#: inline-gdocs-viewer.php:683
+#: inline-gdocs-viewer.php:739
 msgid ""
 "You can insert a Google Spreadsheet in this post. To do so, type %s[gdoc key="
 "\"YOUR_SPREADSHEET_URL\"]%s wherever you would like the spreadsheet to "
@@ -70,13 +78,13 @@ msgid ""
 "your Google Spreadsheet."
 msgstr ""
 
-#: inline-gdocs-viewer.php:688
+#: inline-gdocs-viewer.php:744
 msgid ""
 "Only Google Spreadsheets that have been shared using either the \"Public on "
 "the web\" or \"anyone with the link\" options will be visible on this page."
 msgstr ""
 
-#: inline-gdocs-viewer.php:691
+#: inline-gdocs-viewer.php:747
 msgid ""
 "You can also transform your data into an interactive chart by using the "
 "%1$schart%2$s attribute. Supported chart types are Area, Bar, Bubble, "
@@ -88,14 +96,14 @@ msgid ""
 "depend on the chart you use."
 msgstr ""
 
-#: inline-gdocs-viewer.php:695
+#: inline-gdocs-viewer.php:751
 msgid ""
 "Refer to the %1$sshortcode attribute documentation%3$s for a complete list "
 "of shortcode attributes, and the %2$sGoogle Chart API documentation%3$s for "
 "more information about each option."
 msgstr ""
 
-#: inline-gdocs-viewer.php:701
+#: inline-gdocs-viewer.php:757
 msgid ""
 "If you are having trouble getting your Spreadsheet to show up on your "
 "website, you can %sget help from the plugin support forum%s. Consider "
@@ -103,46 +111,46 @@ msgid ""
 "answered before posting a new thread."
 msgstr ""
 
-#: inline-gdocs-viewer.php:712
+#: inline-gdocs-viewer.php:768
 msgid "Inserting a Google Spreadsheet"
 msgstr ""
 
-#: inline-gdocs-viewer.php:721
+#: inline-gdocs-viewer.php:777
 msgid ""
 "Inline Google Spreadsheet Viewer is provided as free software, but sadly "
 "grocery stores do not offer free food. If you like this plugin, please "
 "consider %1$s to its %2$s. &hearts; Thank you!"
 msgstr ""
 
-#: inline-gdocs-viewer.php:722
+#: inline-gdocs-viewer.php:778
 msgid "making a donation"
 msgstr ""
 
-#: inline-gdocs-viewer.php:723
+#: inline-gdocs-viewer.php:779
 msgid "houseless, jobless, nomadic developer"
 msgstr ""
 
-#: inline-gdocs-viewer.php:749
+#: inline-gdocs-viewer.php:805
 msgid "You do not have sufficient permissions to access this page."
 msgstr ""
 
-#: inline-gdocs-viewer.php:756
+#: inline-gdocs-viewer.php:812
 msgid "DataTables defaults"
 msgstr ""
 
-#: inline-gdocs-viewer.php:757
+#: inline-gdocs-viewer.php:813
 msgid "Site-wide defaults for DataTables-enhanced tables."
 msgstr ""
 
-#: inline-gdocs-viewer.php:761
+#: inline-gdocs-viewer.php:817
 msgid "DataTables classes"
 msgstr ""
 
-#: inline-gdocs-viewer.php:764
+#: inline-gdocs-viewer.php:820
 msgid "class-1 class-2"
 msgstr ""
 
-#: inline-gdocs-viewer.php:767
+#: inline-gdocs-viewer.php:823
 msgid ""
 "A space-separated list of HTML %1$sclass%2$s values. %1$s<table>%2$s "
 "elements with these classes will automatically be enhanced with %3$sjQuery "
@@ -150,11 +158,11 @@ msgid ""
 "%2$s class. Leave blank to use the plugin default."
 msgstr ""
 
-#: inline-gdocs-viewer.php:776
+#: inline-gdocs-viewer.php:832
 msgid "DataTables defaults object"
 msgstr ""
 
-#: inline-gdocs-viewer.php:785
+#: inline-gdocs-viewer.php:841
 msgid ""
 "Define a DataTables defaults initialization object. This is useful if you "
 "wish to change the default DataTables enhancements for all affected tables "
