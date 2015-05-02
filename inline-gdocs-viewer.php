@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * Version: 0.9.2
+ * Version: 0.9.3
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: inline-gdocs-viewer
@@ -35,7 +35,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         add_shortcode($this->shortcode, array($this, 'displayShortcode'));
         wp_embed_register_handler(
             $this->shortcode . 'spreadsheet',
-            '!https://docs.google.com/spreadsheets/d/([^/]+)!',
+            '!https://(?:docs.google.com/spreadsheets/d/|script.google.com/macros/s/)([^/]+)!',
             array($this, 'oEmbedHandler')
         );
     }
@@ -96,29 +96,61 @@ class InlineGoogleSpreadsheetViewerPlugin {
     }
 
     /**
+     * Lazily tests the provided Google Doc "key" (URL or document ID)
+     * to determine what type of document it really is. Valid doc
+     * types are one of: `spreadsheet`, `gasapp`, or `docsviewer`
+     *
+     * @param string $key The key passed from the shortcode.
+     * @return string A keyword referring to the type of document the key refers to.
+     */
+    private function getDocTypeByKey ($key) {
+        $type = '';
+        $key_parts = parse_url($key);
+        if (isset($key_parts['host'])) {
+            switch ($key_parts['host']) {
+                case 'script.google.com':
+                    $type = 'gasapp';
+                    break;
+                case 'docs.google.com':
+                    $type = 'spreadsheet';
+                    break;
+                default:
+                    $type = 'docsviewer';
+                    break;
+            }
+        } else {
+            // without a host part, assume an old-style Spreadsheet
+            $type = 'spreadsheet';
+        }
+        return $type;
+    }
+
+    /**
      * Lazily tests whether the provided key is likely a
      * Google Spreadsheet or if it's a URL for a file.
      *
      * This is later used to determine whether we load the
      * sheet shortcode or the Google Docs Viewer's <iframe>.
+     *
+     * @return bool True if the key refers to a spreadsheet, false otherwise.
      */
     private function isGoogleSpreadsheetKey ($key) {
-        $is_sheet = true;
-        $key_parts = parse_url($key);
-        if (isset($key_parts['path'])) {
-            $path_info = pathinfo($key_parts['path']);
-            if (!empty($path_info['extension'])) {
-                $is_sheet = false;
-            }
-        }
-        return $is_sheet;
+        return ('spreadsheet' === $this->getDocTypeByKey($key)) ? true : false;
+    }
+
+    private function isGDocsViewerKey ($key) {
+        return ('docsviewer' === $this->getDocTypeByKey($key)) ? true : false;
+    }
+
+    private function isWebAppKey ($key) {
+        return ('gasapp' === $this->getDocTypeByKey($key)) ? true : false;
     }
 
     private function getDocUrl ($key, $gid, $query) {
         $url = '';
         // Assume a full link.
         $m = array();
-        if (preg_match('/\/(edit|pubhtml).*$/', $key, $m) && 'http' === substr($key, 0, 4)) {
+        if (preg_match('/\/(edit|view|pubhtml|htmlview).*$/', $key, $m) && 'http' === substr($key, 0, 4)) {
             $parts = parse_url($key);
             $key = $parts['scheme'] . '://' . $parts['host'] . $parts['path'];
             $action = ($query)
@@ -156,7 +188,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
     private function fetchData ($url) {
         $resp = wp_remote_get($url);
         if (is_wp_error($resp)) { // bail on error
-            throw new Exception('[' . __('Error requesting Google Spreadsheet data:', 'inline-gdocs-viewer') . $resp->get_error_message() . ']');
+            throw new Exception('[' . __('Error requesting data from Google:', 'inline-gdocs-viewer') . $resp->get_error_message() . ']');
         }
         return $resp;
     }
@@ -446,8 +478,12 @@ class InlineGoogleSpreadsheetViewerPlugin {
         if ($this->isGoogleSpreadsheetKey($x['key'])) {
             $x['query'] = apply_filters($this->shortcode . '_query', $x['query'], $x);
             $output = $this->getSpreadsheetOutput($x, $content);
-        } else {
+        } else if ($this->isWebAppKey($x['key'])) {
+            $output = $this->getWebAppOutput($x);
+        } else if ($this->isGDocsViewerKey($x['key'])) {
             $output = $this->getGDocsViewerOutput($x);
+        } else {
+            $output = '[' . __('Error:', 'inline-gdocs-viewer') . ' ' . __('Could not identify valid GDoc resource in shortcode.', 'inline-gdocs-viewer') . ']';
         }
         $this->invocations++;
         return $output;
@@ -461,6 +497,16 @@ class InlineGoogleSpreadsheetViewerPlugin {
         $output .= ' <a href="' . esc_attr($x['key']) . '">' . esc_html($x['title']) . '</a>';
         $output .= '</iframe>';
         return apply_filters($this->shortcode . '_viewer_html', $output);
+    }
+
+    private function getWebAppOutput ($x) {
+        try {
+            $resp = $this->fetchData($x['key']);
+            $output = $resp['body'];
+        } catch (Exception $e) {
+            $output = $e->getMessage();
+        }
+        return apply_filters($this->shortcode . '_webapp_html', $output);
     }
 
     private function getSpreadsheetOutput ($x, $content) {

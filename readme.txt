@@ -1,29 +1,30 @@
 === Plugin Name ===
 Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
-Tags: Google Docs, Google, Spreadsheet, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables
+Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables
 Requires at least: 3.5
 Tested up to: 4.2.1
-Stable tag: 0.9.2
+Stable tag: 0.9.3
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Embeds a public Google Spreadsheet in a WordPress post or page as an HTML table or interactive chart.
+Embeds public Google Spreadsheets or Apps Scripts in a WordPress post or page as HTML tables or interactive charts, and more.
 
 == Description ==
 
-Easily turn data stored in a Google Spreadsheet into a beautiful interactive chart or graph, a sortable and searchable table, or both! Embed live previews of PDF, XLS, DOC, and other file formats supported by the [Google Docs Viewer](https://docs.google.com/viewer). A built-in cache provides extra speed.
+Easily turn data stored in a Google Spreadsheet or the output of a Google Apps Script into a beautiful interactive chart or graph, a sortable and searchable table, or both, and more! Embed live previews of PDF, XLS, DOC, and other file formats supported by the [Google Docs Viewer](https://docs.google.com/viewer). A built-in cache provides extra speed.
 
 * Update your blog post or page whenever your Google Spreadsheet changes.
 * Create beautiful interactive graphs and charts from your spreadsheet with ease.
+* Customize the table's or chart's look and feel using a powerful and flexible query language and a plethora of configuration options.
+* Show the output of any public [Google Apps Script](https://developers.google.com/apps-script/overview) that has been [deployed as a Web App](https://developers.google.com/apps-script/guides/web#deploying_a_script_as_a_web_app) on your WordPress site.
 * Embed almost any online document to view without leaving your blog.
-* Use a powerful and flexible query language and a plethora of configuration options.
 
 = Quick start =
 
-Paste the URL of your public Google Spreadsheet on its own line in your WordPress post or page, then save your post. That's it. :) Your spreadsheet will appear in a sorted, searchable HTML table. See the [screenshots](https://wordpress.org/plugins/inline-google-spreadsheet-viewer/screenshots/) for an example.
+Paste the URL of your public [Google Spreadsheet][https://support.google.com/docs/answer/37579?hl=en] or [Google Apps Script Web App](https://developers.google.com/apps-script/guides/web) on its own line in your WordPress post or page, then save your post. That's it. :) Your spreadsheet will appear in a sorted, searchable HTML table. Web App output will be displayed using the HTML defined by the Web App. See the [screenshots](https://wordpress.org/plugins/inline-google-spreadsheet-viewer/screenshots/) for an example.
 
-Your spreadsheet must be shared using either the "Public on the web" or "Anyone with the link" options [(learn how to share your spreadsheet)](https://support.google.com/drive/?p=visibility_options&hl=en_US). Currently, private Google Spreadsheets or Spreadsheets shared with "Specific people" are not supported.
+Your spreadsheet must be shared using either the "Public on the web" or "Anyone with the link" options [(learn how to share your spreadsheet)](https://support.google.com/drive/?p=visibility_options&hl=en_US). Currently, private Google Spreadsheets or Spreadsheets shared with "Specific people" are not supported. Web Apps must be deployed with the "Anyone, even anonymous" [access permissions](https://developers.google.com/apps-script/guides/web#permissions).
 
 *Donations for this plugin make up a chunk of my income. If you continue to enjoy this plugin, please consider [making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted). :) Thank you for your support!*
 
@@ -31,7 +32,8 @@ Your spreadsheet must be shared using either the "Public on the web" or "Anyone 
 
 You can transform your spreadsheet into an interactive chart or graph, embed documents other than spreadsheets, and customize the HTML of your table using a `[gdoc key=""]` [WordPress shortcode](https://codex.wordpress.org/Shortcode). The only required parameter is `key`, which specifies the document you'd like to retrieve. All additional attributes are optional.
 
-After setting the appropriate Sharing setting, copy the URL you use to view the Spreadsheet from your browser's address bar into the shortcode. For example, to display the spreadsheet at `https://docs.google.com/spreadsheets/d/ABCDEFG/edit`, use the following shortcode in your WordPress post or page:
+== Spreadsheets ==
+After saving the appropriate Sharing setting, copy the URL you use to view the Spreadsheet from your browser's address bar into the shortcode. For example, to display the spreadsheet at `https://docs.google.com/spreadsheets/d/ABCDEFG/edit`, use the following shortcode in your WordPress post or page:
 
     [gdoc key="https://docs.google.com/spreadsheets/d/ABCDEFG/edit"]
 
@@ -43,6 +45,7 @@ Use the `gid` attribute to fetch data from a worksheet other than the first one 
 
     [gdoc key="ABCDEFG" gid="4"]
 
+== Charts ==
 To create an interactive chart from your Spreadsheet's data, use the `chart` attribute with a supported chart type. These include:
 
 * `Area` charts
@@ -65,6 +68,7 @@ Depending on the type of chart you chose, you can customize your chart with a nu
 
     [gdoc key="ABCDEFG" chart="Pie" chart_colors="red green" chart_dimensions="3" chart_pie_slice_text="value"]
 
+== HTML Tables ==
 To render an HTML table with additional metadata, such as supplying the table's `title`, `summary`, `<caption>`, and a customized `class` value, you can do the following:
 
     [gdoc key="ABCDEFG" class="my-sheet" title="Tooltip text displayed on hover" summary="An example spreadsheet, with a summary."]This is the table's caption.[/gdoc]
@@ -94,13 +98,24 @@ Web addresses and email addresses in your data are turned into links. If this ca
 
     [gdoc key="ABCDEFG" linkify="no"]
 
+== Using Google Queries ==
 You can pre-process your Google Spreadsheet before retrieving data from it by passing a [Google Charts API Query Language](https://developers.google.com/chart/interactive/docs/querylanguage#Language_Syntax) query to the shortcode's `query` attribute. This lets you interact with the data in your Google Spreadsheet as though the spreadsheet were a relational database table. For instance, if you wish to display the team that scored the most goals on your website, you might use a shortcode like this to query your Google Spreadsheet and display the highest-scoring team, where the team name is the first column (column `A`) and that team's score is the second column (column `B`):
 
     [gdoc key="ABCDEFG" query="select A where max(B)"]
 
 Queries are also useful if your spreadsheet contains complex data from which many different charts can be created, allowing you to select only the parts of your spreadsheet that you'd like to use to compose the interactive chart.
 
-You can also supply the URL of any file online to load a preview of that document on your blog. To do so, supply the file's URL as your `key`:
+== Using Google Apps Script Web Apps==
+You can also supply the URL endpoint of any Google Apps Script Web App to retrieve the output from that app and insert it directly into your WordPress post or page. This works exactly the same way as Google Spreadsheets do, so you can use this feature to display arbitrary data on your WordPress site.
+
+For example, suppose you maintain a GMail account for fans of your podcast to write you questions, and you want to automatically display some information from these emails on your website. Using [GMail filters](https://support.google.com/mail/answer/6579?hl=en) and [labels](https://support.google.com/mail/answer/118708?hl=en), you can access these emails through a [Google Apps Script](https://developers.google.com/apps-script/overview) that reads your email, counts the number of mail messages in your different labels, and returns that count as an HTML list fragment. [Deploy that Google Apps Script as a Web App](https://developers.google.com/apps-script/guides/web#deploying_a_script_as_a_web_app) and supply its URL to the `gdoc` shortcode:
+
+    [gdoc key="https://script.google.com/macros/s/ABCDEFG/exec"]
+
+Now your website is automatically updated whenever you receive a new question in email from your listeners.
+
+== Embedding other documents ==
+You can also supply the URL of any file online to load a preview of that file on your blog. To do so, supply the file's URL as your `key`:
 
     [gdoc key="http://example.com/my_final_paper.pdf"]
 
@@ -141,6 +156,9 @@ Finally, both rows and cells (based on columns) are assigned an additional class
 
 = A table appears, but it's not my spreadsheet's data! And it looks weird! =
 If you're still using the "old" Google Spreadsheets, you should triple-check that you've published your spreadsheet. Google provides instructions for doing this. Be sure to follow steps 1 and 2 in [Google Spreadsheets Help: Publishing to the Web](http://docs.google.com/support/bin/answer.py?hl=en&answer=47134). If you're using the "new" Google Spreadsheets, be sure you've selected either the ["Public on the web" or "Anyone with the link" Sharing options](https://support.google.com/drive/answer/2494886?p=visibility_options) for your Google Spreadsheet.
+
+= A Google Login page appears where my Google Apps Script output should be. =
+If a Google Login page appears instead of the output of your GAS Web App, double check that you've deployed your Web App with the "Anyone, even anonymous" access permission. [Learn more about GAS Web App permissions](https://developers.google.com/apps-script/guides/web#permissions).
 
 = Nothing appears where my chart should be. =
 The best way to determine what's wrong with a chart that isn't displaying properly is to try displaying the chart's data as a simple HTML table (by removing the `chart` attribute from your shortcode), and seeing what the tabular data source looks like.
@@ -236,6 +254,12 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 7. This screenshot shows an example of what the previous screenshot might output with a given spreadsheet that contains data for the Aliens, Ninjas, Pirates, and Robots teams, and their player's respective points.
 
 == Change log ==
+
+= Version 0.9.3 =
+
+* Feature: [Google Apps Script Web Apps](https://developers.google.com/apps-script/guides/web) integration. This feature lets you display the output of any public GAS Web App on your WordPress post or page the same way you display a spreadsheet. Instead of a table or chart, however, the output is defined by the Web App itself. This lets you display any arbitrary data you want in any way you want via [Google Apps Script](https://developers.google.com/apps-script/overview) (a kind of web service macro), without necessarily storing that data in a spreadsheet.
+    * To retrieve the output of the Web App, supply its public URL as the `key` of the shortcode, like `[gdoc key="https://script.google.com/macros/s/ABCDEFG/exec"]`
+    * The new `gdoc_webapp_html` filter lets you hook the HTTP response body of the Web App in the same fashion as you might filter `the_content` of a WordPress post.
 
 = Version 0.9.2 =
 
@@ -451,9 +475,10 @@ This plugin provides one shortcode (`gdoc`) that can do many things through a co
 
 * `key` - Specifies the document to retrieve.
     * **required** Every `gdoc` shortcode must have one and only one `key` attribute. (All other attributes are optional.)
-    * `key` can be one of three types:
-        * The fully-qualified URL of a Google Spreadsheet that has been publicly shared, like `[gdoc key="https://docs.google.com/spreadsheets/d/ABCDEFG/edit"]`
+    * `key` can be one of four types:
+        * The fully-qualified URL of a Google Spreadsheet that has been publicly shared, like `[gdoc key="https://docs.google.com/spreadsheets/d/ABCDEFG/htmlview"]`
         * The document ID of an old-style Google Spreadsheet that has been "Published to the web," like `[gdoc key="ABCDEFG"]`
+        * The fully-qualified URL of a Google Apps Script Web App, like `[gdoc key="https://script.google.com/macros/s/ABCDEFG/exec"]`
         * The fully-qualified URL of a document on the Web. PDF, DOC, XLS, and other file formats supported by the [Google Docs Viewer](https://docs.google.com/viewer) will be rendered using the Viewer, like `[gdoc key="http://example.com/my_final_paper.pdf"]`
 * `chart` - Displays Google Sheet data as a chart instead of a table. Valid values are:
     * `Area`
@@ -602,5 +627,6 @@ This section documents hooks that the plugin implements. Developers of other plu
     * Another related use case for this filter is to allow [WordPress shortcodes](https://codex.wordpress.org/Shortcode) that are present in the data source to be evaluated at runtime. See [this thread](https://wordpress.org/support/topic/using-filter-hooks-1) for a brief discussion of that use case. However, this can also be problematic and is not recommended unless you are certain the shortcodes being used will not cause issues like invalid and broken markup, since most shortcode functions do not expect to be inside of an HTML `<table>`.
     * This filter runs immediately after HTML conversion is complete, but *before* that HTML is processed through the [`make_clickable()`](https://codex.wordpress.org/Function_Reference/make_clickable) function. This means that the value of the `linkify` shortcode attribute will affect the ultimate output of the shortcode invocation regardless of your filter function, and also means you should not call `make_clickable()` yourself.
 * `gdoc_viewer_html` - Same as above, but applied to the `<iframe>` that loads the [Google Docs Viewer](https://docs.google.com/viewer). Use this filter to, for intance, customize the fallback content in the case that the user's browser does not support `<iframe>` elements.
+* `gdoc_webapp_html` - Same as above, but applied to the HTTP response body of the [Google Apps Script Web App](https://developers.google.com/apps-script/guides/web). Use this filter to, for intance, customize the content returned by your GAS Web App similarly to how you might filter `the_content` of a WordPress post.
 * `gdoc_query` - Filters the Google Visualization API query language query. The first argument is the string supplied to the `query` attribute, or `false` if no query was supplied. The second argument is an array of all the attributes and their values passed to the current invocation of the shortcode.
     * A common use case for this filter is to query a Google Spreadsheet using dynamically generated content, such as the email address or username of a logged-in user.
