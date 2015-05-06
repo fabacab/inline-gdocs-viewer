@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * Version: 0.9.3
+ * Version: 0.9.4
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: inline-gdocs-viewer
@@ -17,6 +17,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
     private $dt_defaults; //< Defaults for DataTables defaults object.
     private $invocations = 0;
     private $prefix; //< Internal prefix for settings, etc., derived from shortcode.
+    private $gdoc_url_regex = '!https://(?:docs\.google\.com/spreadsheets/d/|script\.google\.com/macros/s/)([^/]+)!';
 
     public function __construct () {
         // Initialize private defaults.
@@ -35,9 +36,20 @@ class InlineGoogleSpreadsheetViewerPlugin {
         add_shortcode($this->shortcode, array($this, 'displayShortcode'));
         wp_embed_register_handler(
             $this->shortcode . 'spreadsheet',
-            '!https://(?:docs.google.com/spreadsheets/d/|script.google.com/macros/s/)([^/]+)!',
+            $this->gdoc_url_regex,
             array($this, 'oEmbedHandler')
         );
+
+        register_activation_hook(__FILE__, array($this, 'activate'));
+    }
+
+    public function activate () {
+        $options = get_option($this->prefix . 'settings');
+        if (!isset($options['datatables_classes'])) { $options['datatables_classes'] = $this->dt_class; }
+        if (empty($options['datatables_defaults_object'])) {
+            $options['datatables_defaults_object'] = json_decode($this->dt_defaults);
+        }
+        update_option($this->prefix . 'settings', $options);
     }
 
     public function registerL10n () {
@@ -179,21 +191,38 @@ class InlineGoogleSpreadsheetViewerPlugin {
         // Assume a full link.
         if ('http' === substr($key, 0, 4)) {
             $m = array();
-            preg_match('/docs\.google\.com\/spreadsheets\/d\/([^\/]*)/i', $key, $m);
+            preg_match($this->gdoc_url_regex, $key, $m);
             $key = $m[1];
         }
         return esc_attr($key);
     }
 
-    private function fetchData ($url) {
-        $resp = wp_remote_get($url);
+    /**
+     * Performs an HTTP request as instructed by the shortcode's parameters.
+     *
+     * @param string $url The URL to request.
+     * @param string $http_opts A JSON string representing options to pass to the WordPress HTTP API.
+     * @return array $resp The HTTP response from the WordPress HTTP API.
+     */
+    private function fetchData ($url, $opts) {
+        $http_args = array();
+        if ($opts) {
+            try {
+                foreach (json_decode($opts) as $k => $v) {
+                    $http_args[$k] = $v;
+                }
+            } catch (Exception $e) {
+                throw new Exception('[' . __('Error parsing HTTP options attribute:', 'inline-gdocs-viewer') . $e->getMessage() . ']');
+            }
+        }
+        $resp = (empty($http_args)) ? wp_remote_get($url) : wp_remote_request($url, $http_args);
         if (is_wp_error($resp)) { // bail on error
             throw new Exception('[' . __('Error requesting data from Google:', 'inline-gdocs-viewer') . $resp->get_error_message() . ']');
         }
         return $resp;
     }
 
-    private function parseCsv ($csv_str) {
+    public function parseCsv ($csv_str) {
         return $this->str_getcsv($csv_str); // Yo, why is PHP's built-in str_getcsv() frakking things up?
     }
 
@@ -251,13 +280,17 @@ class InlineGoogleSpreadsheetViewerPlugin {
     }
 
     /**
+     * Converts a two-dimensional array representing rows and cells of data
+     * into an HTML representation of that data, according to any additional
+     * options passed to it.
+     *
      * @param array $r Multidimensional array representing table data.
      * @param array $options Values passed from the shortcode.
      * @param string $caption Passed via shortcode, should be the table caption.
      * @return An HTML string of the complete <table> element.
      * @see displayShortcode
      */
-    private function dataToHtml ($r, $options, $caption) {
+    public function dataToHtml ($r, $options, $caption = '') {
         if ($options['strip'] > 0) { $r = array_slice($r, $options['strip']); } // discard
 
         // Split into table headers and body.
@@ -362,6 +395,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
             'strip'    => 0,                    // If spreadsheet, how many rows to omit from top
             'header_rows' => 1,                 // Number of rows in <thead>
             'use_cache' => true,                // Whether to use Transients API for fetched data.
+            'http_opts' => false,               // Arguments to pass to the WordPress HTTP API.
             // TODO: Make a plugin option setting for default transient expiry time.
             'expire_in' => 10*MINUTE_IN_SECONDS,// Custom time-to-live of cached transient data.
             'lang'     => get_bloginfo('language'),
@@ -475,6 +509,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
             'datatables_column_defs' => false,
             'datatables_columns'     => false
         ), $atts, $this->shortcode);
+        $x['key'] = $this->sanitizeKey($x['key']);
         if ($this->isGoogleSpreadsheetKey($x['key'])) {
             $x['query'] = apply_filters($this->shortcode . '_query', $x['query'], $x);
             $output = $this->getSpreadsheetOutput($x, $content);
@@ -489,6 +524,16 @@ class InlineGoogleSpreadsheetViewerPlugin {
         return $output;
     }
 
+    /**
+     * WordPress mangles some HTML in subtle ways. Clean that up.
+     *
+     * @param string $key The value passed to the shortcode's `key` attribute.
+     * @return string The "sanitized" key value.
+     */
+    function sanitizeKey ($key) {
+        return str_replace('&#038;', '&', $key);
+    }
+
     private function getGDocsViewerOutput ($x) {
         $output  = '<iframe src="';
         $output .= esc_attr('https://docs.google.com/viewer?url=' . esc_url($x['key']) . '&embedded=true');
@@ -501,12 +546,12 @@ class InlineGoogleSpreadsheetViewerPlugin {
 
     private function getWebAppOutput ($x) {
         try {
-            $resp = $this->fetchData($x['key']);
+            $resp = $this->fetchData($x['key'], $x['http_opts']);
             $output = $resp['body'];
         } catch (Exception $e) {
             $output = $e->getMessage();
         }
-        return apply_filters($this->shortcode . '_webapp_html', $output);
+        return apply_filters($this->shortcode . '_webapp_html', $output, $x);
     }
 
     private function getSpreadsheetOutput ($x, $content) {
@@ -582,10 +627,10 @@ class InlineGoogleSpreadsheetViewerPlugin {
                 $transient = $this->getTransientName($x['key'], $x['query'], $x['gid']);
                 if (false === $x['use_cache'] || 'no' === strtolower($x['use_cache'])) {
                     delete_transient($transient);
-                    $data = $this->fetchData($url);
+                    $data = $this->fetchData($url, $x['http_opts']);
                 } else {
                     if (false === ($data = $this->getTransient($transient))) {
-                        $data = $this->fetchData($url);
+                        $data = $this->fetchData($url, $x['http_opts']);
                         $this->setTransient($transient, $data, (int) $x['expire_in']);
                     }
                 }
@@ -654,7 +699,15 @@ class InlineGoogleSpreadsheetViewerPlugin {
         return $opts;
     }
 
-    private function displayData($resp, $atts, $content) {
+    /**
+     * Converts an HTTP response to an HTML table.
+     *
+     * @param array $resp A HTTP response array (in the format of `wp_remote_get()` from the WordPress HTTP API).
+     * @param array $atts An array of attribute/value pairs passed to the shortcode.
+     * @param string $content Any additional content passed from the shortcode as its contents.
+     * @return string An HTML string representing a parsed and formatted table.
+     */
+    private function displayData ($resp, $atts, $content) {
         $type = explode(';', $resp['headers']['content-type']);
         switch ($type[0]) {
             case 'text/html':

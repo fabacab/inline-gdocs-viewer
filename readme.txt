@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables
 Requires at least: 3.5
 Tested up to: 4.2.1
-Stable tag: 0.9.3
+Stable tag: 0.9.4
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -261,6 +261,13 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 
 == Change log ==
 
+= Version 0.9.4 =
+
+* Feature: Per-shortcode configurable [HTTP transport options](https://codex.wordpress.org/HTTP_API). Use the new `http_opts` shortcode attribute to configure an individual shortcode's HTTP behavior. The attribute value is expected to be a JSON object. This is particularly useful in conjunction with the new Google Apps Script Web App integration, allowing you to send `POST` as well as `GET` queries, control script execution blocking, network timeouts, and more. All of WordPress's HTTP API arguments are supported.
+    * For example, if your spreadsheet or Web App response is very large and you have a very slow connection, you can increase the HTTP timeout from the default 5 seconds to 20 seconds with a shortcode like this: `[gdoc key="ABCDEFG" http_opts='{"timeout": 20}']`
+* Developer: The `gdoc_webapp_html` filter now passes a second argument, which is an array of the shortcode's attributes and their values.
+* Bugfix: Fix an issue where GAS Web App requests with more than one URL querystring parameter failed to send the remaining parameters properly encoded.
+
 = Version 0.9.3 =
 
 * Feature: [Google Apps Script Web Apps](https://developers.google.com/apps-script/guides/web) integration. This feature lets you display the output of any public GAS Web App on your WordPress post or page the same way you display a spreadsheet. Instead of a table or chart, however, the output is defined by the Web App itself. This lets you display any arbitrary data you want in any way you want via [Google Apps Script](https://developers.google.com/apps-script/overview) (a kind of web service macro), without necessarily storing that data in a spreadsheet.
@@ -509,6 +516,7 @@ This plugin provides one shortcode (`gdoc`) that can do many things through a co
 * `gid` - The ID of a worksheet in a Google Spreadsheet to load, other than the first one, like `[gdoc key="ABCDEFG" gid="123"]`
 * `header_rows` - A number specifying how many rows to place in the output's `<thead>` element. (Default: `1`.)
 * `height` - Height of the containing HTML element. Tables ignore this, use `style` instead. (Default: automatically calculated.)
+* `http_opts` - A JSON string representing options to pass to the [WordPress HTTP API](https://codex.wordpress.org/HTTP_API), like `[gdoc key="ABCDEFG" http_opts='{"method": "POST", "blocking": false}, "user-agent": "My Custom User Agent String"']`.
 * `lang` - The [ISO 639](http://www.iso.org/iso/home/standards/language_codes.htm) language code declaring the human language of the spreadsheet's contents. For instance, use `nl-NL` to declare that content is in Dutch. (Default: your site's [global language setting](https://codex.wordpress.org/WordPress_in_Your_Language).)
 * `linkify` - Whether or not to automatically turn URLs, email addresses, and so on, into clickable links. Set to `no` to disable this behavior. (Default: `true`.)
 * `query` - A [Google Charts API Query Language](https://developers.google.com/chart/interactive/docs/querylanguage#Language_Syntax) query string, like `[gdoc key="ABCDEFG" query="select A where max(B)"]`. *Note:* Arrow bracktets (`<` and `>`) in queries must be URL-encoded (`%3C` and `%3E`, respectively) to avoid confusing the WordPress HTML parser. (Default: none.)
@@ -633,6 +641,6 @@ This section documents hooks that the plugin implements. Developers of other plu
     * Another related use case for this filter is to allow [WordPress shortcodes](https://codex.wordpress.org/Shortcode) that are present in the data source to be evaluated at runtime. See [this thread](https://wordpress.org/support/topic/using-filter-hooks-1) for a brief discussion of that use case. However, this can also be problematic and is not recommended unless you are certain the shortcodes being used will not cause issues like invalid and broken markup, since most shortcode functions do not expect to be inside of an HTML `<table>`.
     * This filter runs immediately after HTML conversion is complete, but *before* that HTML is processed through the [`make_clickable()`](https://codex.wordpress.org/Function_Reference/make_clickable) function. This means that the value of the `linkify` shortcode attribute will affect the ultimate output of the shortcode invocation regardless of your filter function, and also means you should not call `make_clickable()` yourself.
 * `gdoc_viewer_html` - Same as above, but applied to the `<iframe>` that loads the [Google Docs Viewer](https://docs.google.com/viewer). Use this filter to, for intance, customize the fallback content in the case that the user's browser does not support `<iframe>` elements.
-* `gdoc_webapp_html` - Same as above, but applied to the HTTP response body of the [Google Apps Script Web App](https://developers.google.com/apps-script/guides/web). Use this filter to, for intance, customize the content returned by your GAS Web App similarly to how you might filter `the_content` of a WordPress post.
+* `gdoc_webapp_html` - Same as above, but applied to the HTTP response body of the [Google Apps Script Web App](https://developers.google.com/apps-script/guides/web). Use this filter to, for intance, customize the content returned by your GAS Web App similarly to how you might filter `the_content` of a WordPress post. The first argument is the HTTP response body of the request. The second argument is an array of all the attributes and their values passed to the current invocation of the shortcode.
 * `gdoc_query` - Filters the Google Visualization API query language query. The first argument is the string supplied to the `query` attribute, or `false` if no query was supplied. The second argument is an array of all the attributes and their values passed to the current invocation of the shortcode.
     * A common use case for this filter is to query a Google Spreadsheet using dynamically generated content, such as the email address or username of a logged-in user.
