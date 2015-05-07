@@ -3,8 +3,8 @@ Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables
 Requires at least: 3.5
-Tested up to: 4.2.1
-Stable tag: 0.9.4
+Tested up to: 4.2.2
+Stable tag: 0.9.5
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -261,6 +261,12 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 
 == Change log ==
 
+= Version 0.9.5 =
+
+* Feature: Convert any CSV data into a feature-rich HTML table or interactive chart, even if that data is *not* sourced from a Google Spreadsheet or Apps Script output.
+    * This feature works exactly like the standard Google Spreadsheet viewer functions, supporting all the same shortcode attributes such as `chart` and the various DataTables enhancements (but not `query`), except it can take any properly formatted CSV file as input. The plugin also detects files served with the `text/csv` HTTP Content-Type header and parses those similarly, so you can supply a web service endpoint that produces CSV output as well as a `.csv` file.
+* Bugfix: Fix an issue where DataTables enhancements were not applied to tables with custom classes unless they were rendered on the same page as a shortcode-invoked table.
+
 = Version 0.9.4 =
 
 * Feature: Per-shortcode configurable [HTTP transport options](https://codex.wordpress.org/HTTP_API). Use the new `http_opts` shortcode attribute to configure an individual shortcode's HTTP behavior. The attribute value is expected to be a JSON object. This is particularly useful in conjunction with the new Google Apps Script Web App integration, allowing you to send `POST` as well as `GET` queries, control script execution blocking, network timeouts, and more. All of WordPress's HTTP API arguments are supported.
@@ -488,10 +494,11 @@ This plugin provides one shortcode (`gdoc`) that can do many things through a co
 
 * `key` - Specifies the document to retrieve.
     * **required** Every `gdoc` shortcode must have one and only one `key` attribute. (All other attributes are optional.)
-    * `key` can be one of four types:
+    * `key` can be one of five types:
         * The fully-qualified URL of a Google Spreadsheet that has been publicly shared, like `[gdoc key="https://docs.google.com/spreadsheets/d/ABCDEFG/htmlview"]`
         * The document ID of an old-style Google Spreadsheet that has been "Published to the web," like `[gdoc key="ABCDEFG"]`
         * The fully-qualified URL of a Google Apps Script Web App, like `[gdoc key="https://script.google.com/macros/s/ABCDEFG/exec"]`
+        * The fully-qualified URL of a CSV file or a web service endpoint that produces CSV data, like `[gdoc key="http://viewportsizes.com/devices.csv"]`
         * The fully-qualified URL of a document on the Web. PDF, DOC, XLS, and other file formats supported by the [Google Docs Viewer](https://docs.google.com/viewer) will be rendered using the Viewer, like `[gdoc key="http://example.com/my_final_paper.pdf"]`
 * `chart` - Displays Google Sheet data as a chart instead of a table. Valid values are:
     * `Area`

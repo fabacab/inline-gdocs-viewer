@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * Version: 0.9.4
+ * Version: 0.9.5
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: inline-gdocs-viewer
@@ -32,6 +32,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
         add_action('admin_head', array($this, 'doAdminHeadActions'));
         add_action('admin_enqueue_scripts', array($this, 'addAdminScripts'));
         add_action('admin_print_footer_scripts', array($this, 'addQuickTagButton'));
+
+        add_action('wp_enqueue_scripts', array($this, 'addFrontEndScripts'));
 
         add_shortcode($this->shortcode, array($this, 'displayShortcode'));
         wp_embed_register_handler(
@@ -83,6 +85,79 @@ class InlineGoogleSpreadsheetViewerPlugin {
         wp_enqueue_script('jquery-ui-dialog');
     }
 
+    public function addFrontEndScripts () {
+        // Core DataTables.
+        wp_enqueue_style(
+            'jquery-datatables',
+            '//cdn.datatables.net/1.10.6/css/jquery.dataTables.min.css'
+        );
+        wp_enqueue_script(
+            'jquery-datatables',
+            '//cdn.datatables.net/1.10.6/js/jquery.dataTables.min.js',
+            array('jquery')
+        );
+        // DataTables extensions.
+        wp_enqueue_style(
+            'datatables-colvis',
+            '//cdn.datatables.net/colvis/1.1.0/css/dataTables.colVis.css'
+        );
+        wp_enqueue_script(
+            'datatables-colvis',
+            '//cdn.datatables.net/colvis/1.1.0/js/dataTables.colVis.min.js',
+            array('jquery-datatables')
+        );
+        wp_enqueue_style(
+            'datatables-tabletools',
+            '//cdn.datatables.net/tabletools/2.2.1/css/dataTables.tableTools.css'
+        );
+        wp_enqueue_script(
+            'datatables-tabletools',
+            '//cdn.datatables.net/tabletools/2.2.1/js/dataTables.tableTools.min.js',
+            array('jquery-datatables')
+        );
+        wp_enqueue_style(
+            'datatables-fixedheader',
+            '//datatables.net/release-datatables/extensions/FixedHeader/css/dataTables.fixedHeader.css'
+        );
+        wp_enqueue_script(
+            'datatables-fixedheader',
+            '//datatables.net/release-datatables/extensions/FixedHeader/js/dataTables.fixedHeader.js',
+            array('jquery-datatables')
+        );
+        wp_enqueue_style(
+            'datatables-fixedcolumns',
+            '//datatables.net/release-datatables/extensions/FixedColumns/css/dataTables.fixedColumns.css'
+        );
+        wp_enqueue_script(
+            'datatables-fixedcolumns',
+            '//datatables.net/release-datatables/extensions/FixedColumns/js/dataTables.fixedColumns.js',
+            array('jquery-datatables')
+        );
+        wp_enqueue_style(
+            'datatables-responsive',
+            '//cdn.datatables.net/responsive/1.0.4/css/dataTables.responsive.css'
+        );
+        wp_enqueue_script(
+            'datatables-responsive',
+            '//cdn.datatables.net/responsive/1.0.4/js/dataTables.responsive.js',
+            array('jquery-datatables')
+        );
+        wp_enqueue_script(
+            'igsv-datatables',
+            plugins_url('igsv-datatables.js', __FILE__),
+            array('jquery-datatables')
+        );
+        wp_localize_script('igsv-datatables', 'igsv_plugin_vars', $this->getLocalizedPluginVars());
+
+        // Google Charts and Visualization libraries
+        wp_enqueue_script('google-ajax-api', '//www.google.com/jsapi');
+        wp_enqueue_script(
+            'igsv-gvizcharts',
+            plugins_url('igsv-gvizcharts.js', __FILE__),
+            array('google-ajax-api')
+        );
+    }
+
     /**
      * Deterministically makes a unique transient name.
      *
@@ -110,21 +185,23 @@ class InlineGoogleSpreadsheetViewerPlugin {
     /**
      * Lazily tests the provided Google Doc "key" (URL or document ID)
      * to determine what type of document it really is. Valid doc
-     * types are one of: `spreadsheet`, `gasapp`, or `docsviewer`
+     * types are one of: `spreadsheet`, `gasapp`, `docsviewer`, or `csv`.
      *
      * @param string $key The key passed from the shortcode.
      * @return string A keyword referring to the type of document the key refers to.
      */
     private function getDocTypeByKey ($key) {
         $type = '';
-        $key_parts = parse_url($key);
-        if (isset($key_parts['host'])) {
-            switch ($key_parts['host']) {
-                case 'script.google.com':
-                    $type = 'gasapp';
-                    break;
+        $p = parse_url($key);
+        if ('csv' === strtolower(pathinfo($p['path'], PATHINFO_EXTENSION))) {
+            $type = 'csv';
+        } else if (isset($p['host'])) {
+            switch ($p['host']) {
                 case 'docs.google.com':
                     $type = 'spreadsheet';
+                    break;
+                case 'script.google.com':
+                    $type = 'gasapp';
                     break;
                 default:
                     $type = 'docsviewer';
@@ -137,28 +214,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         return $type;
     }
 
-    /**
-     * Lazily tests whether the provided key is likely a
-     * Google Spreadsheet or if it's a URL for a file.
-     *
-     * This is later used to determine whether we load the
-     * sheet shortcode or the Google Docs Viewer's <iframe>.
-     *
-     * @return bool True if the key refers to a spreadsheet, false otherwise.
-     */
-    private function isGoogleSpreadsheetKey ($key) {
-        return ('spreadsheet' === $this->getDocTypeByKey($key)) ? true : false;
-    }
-
-    private function isGDocsViewerKey ($key) {
-        return ('docsviewer' === $this->getDocTypeByKey($key)) ? true : false;
-    }
-
-    private function isWebAppKey ($key) {
-        return ('gasapp' === $this->getDocTypeByKey($key)) ? true : false;
-    }
-
-    private function getDocUrl ($key, $gid, $query) {
+    private function getSpreadsheetUrl ($key, $gid, $query) {
         $url = '';
         // Assume a full link.
         $m = array();
@@ -187,14 +243,17 @@ class InlineGoogleSpreadsheetViewerPlugin {
         return $url;
     }
 
-    private function getDocKey ($key) {
-        // Assume a full link.
+    private function getDocId ($key) {
         if ('http' === substr($key, 0, 4)) {
             $m = array();
             preg_match($this->gdoc_url_regex, $key, $m);
-            $key = $m[1];
+            if (!empty($m[1])) {
+                $id = $m[1];
+            } else {
+                $id = sanitize_title_with_dashes($key);
+            }
         }
-        return esc_attr($key);
+        return $id;
     }
 
     /**
@@ -224,38 +283,6 @@ class InlineGoogleSpreadsheetViewerPlugin {
 
     public function parseCsv ($csv_str) {
         return $this->str_getcsv($csv_str); // Yo, why is PHP's built-in str_getcsv() frakking things up?
-    }
-
-    private function parseHtml ($html_str, $gid = 0) {
-        $ret = array();
-
-        $dom = new DOMDocument();
-        @$dom->loadHTML($html_str);
-        $tables = $dom->getElementsByTagName('table');
-
-        // Error early, if no tables were found.
-        if (0 === $tables->length) {
-            throw new Exception('[' . __('Error loading Google Spreadsheet data. Make sure your Google Spreadsheet is shared <a href="https://support.google.com/drive/answer/2494886?p=visibility_options">using either the "Public on the web" or "Anyone with the link" options</a>.', 'inline-gdocs-viewer') . ']');
-        }
-
-        for ($i = 0; $i < $tables->length; $i++) {
-            $rows = $tables->item($i)->getElementsByTagName('tr');
-            for ($z = 0; $z < $rows->length; $z++) {
-                $ths = $rows->item($z)->getElementsByTagName('th');
-                foreach ($ths as $k => $node) {
-                    $ret[$i][$z][$k] = $node->nodeValue;
-                }
-                $tds = $rows->item($z)->getElementsByTagName('td');
-                foreach ($tds as $k => $node) {
-                    $ret[$i][$z][$k] = $node->nodeValue;
-                }
-            }
-        }
-
-        // The 0'th table is the sheet names, the 1'st is the first sheet's data
-        array_shift($ret);
-        // Only return the correct "sheet."
-        return $ret[$gid];
     }
 
     /**
@@ -301,8 +328,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
         $ic = 1; // column number counter
 
         // Extract the document ID from the key, if a full URL was given.
-        $key = $this->getDocKey($options['key']);
-        $html  = '<table id="igsv-' . esc_attr($key) . '"';
+        $id = $this->getDocId($options['key']);
+        $html  = '<table id="igsv-' . esc_attr($id) . '"';
         // Prepend a space character onto the 'class' value, if one exists.
         if (!empty($options['class'])) { $options['class'] = " {$options['class']}"; }
         $html .= ' class="' . $this->dt_class . esc_attr($options['class']) . '"';
@@ -509,16 +536,50 @@ class InlineGoogleSpreadsheetViewerPlugin {
             'datatables_column_defs' => false,
             'datatables_columns'     => false
         ), $atts, $this->shortcode);
+
         $x['key'] = $this->sanitizeKey($x['key']);
-        if ($this->isGoogleSpreadsheetKey($x['key'])) {
+        $url = $x['key'];
+        $type = $this->getDocTypeByKey($x['key']);
+        if ('spreadsheet' === $type) {
+            $url = $this->getSpreadsheetUrl($x['key'], $x['gid'], $x['query']);
             $x['query'] = apply_filters($this->shortcode . '_query', $x['query'], $x);
-            $output = $this->getSpreadsheetOutput($x, $content);
-        } else if ($this->isWebAppKey($x['key'])) {
-            $output = $this->getWebAppOutput($x);
-        } else if ($this->isGDocsViewerKey($x['key'])) {
+        }
+        if ('docsviewer' === $type) {
             $output = $this->getGDocsViewerOutput($x);
         } else {
-            $output = '[' . __('Error:', 'inline-gdocs-viewer') . ' ' . __('Could not identify valid GDoc resource in shortcode.', 'inline-gdocs-viewer') . ']';
+            if (false === $x['chart']) {
+                try {
+                    $transient = $this->getTransientName($x['key'], $x['query'], $x['gid']);
+                    if (false === $x['use_cache'] || 'no' === strtolower($x['use_cache'])) {
+                        delete_transient($transient);
+                        $http_response = $this->fetchData($url, $x['http_opts']);
+                    } else {
+                        if (false === ($http_response = $this->getTransient($transient))) {
+                            $http_response = $this->fetchData($url, $x['http_opts']);
+                            $this->setTransient($transient, $http_response, (int) $x['expire_in']);
+                        }
+                    }
+                    $http_content_type = explode(';', $http_response['headers']['content-type']);
+                    switch ($http_content_type[0]) {
+                        case 'text/csv':
+                            // This catches any HTTP response served as text/csv
+                            $output = $this->csvToDataTable($http_response['body'], $x, $content);
+                            break;
+                        default:
+                            $output = apply_filters($this->shortcode . '_webapp_html', $http_response['body'], $x);
+                            if ('csv' === $type) {
+                                // even if the response is text/plain, parse as CSV if the filename
+                                // we detected earlier (by using the key attribute) suggests it is.
+                                $output = $this->csvToDataTable($output, $x, $content);
+                            }
+                            break;
+                    }
+                } catch (Exception $e) {
+                    $output = $e->getMessage();
+                }
+            } else {
+                $output = $this->getGVizChartOutput($url, $x);
+            }
         }
         $this->invocations++;
         return $output;
@@ -530,8 +591,13 @@ class InlineGoogleSpreadsheetViewerPlugin {
      * @param string $key The value passed to the shortcode's `key` attribute.
      * @return string The "sanitized" key value.
      */
-    function sanitizeKey ($key) {
+    private function sanitizeKey ($key) {
         return str_replace('&#038;', '&', $key);
+    }
+
+    public function csvToDataTable ($csv, $x, $content) {
+        $data = $this->parseCsv($csv);
+        return $this->dataToHtml($data, $x, $content);
     }
 
     private function getGDocsViewerOutput ($x) {
@@ -544,126 +610,23 @@ class InlineGoogleSpreadsheetViewerPlugin {
         return apply_filters($this->shortcode . '_viewer_html', $output);
     }
 
-    private function getWebAppOutput ($x) {
-        try {
-            $resp = $this->fetchData($x['key'], $x['http_opts']);
-            $output = $resp['body'];
-        } catch (Exception $e) {
-            $output = $e->getMessage();
+    public function getGVizChartOutput ($url, $x) {
+        if ('spreadsheet' === $this->getDocTypeByKey($x['key']) && false === $x['query']) {
+            $url = preg_replace('/export\?format=csv/', 'gviz/tq?', $url); // trailing ? in case of `gid` param
         }
-        return apply_filters($this->shortcode . '_webapp_html', $output, $x);
-    }
-
-    private function getSpreadsheetOutput ($x, $content) {
-        $url = $this->getDocUrl($x['key'], $x['gid'], $x['query']);
-        if (false === $x['chart']) {
-            if (false === strpos($x['class'], 'no-datatables')) {
-                // Core DataTables.
-                wp_enqueue_style(
-                    'jquery-datatables',
-                    '//cdn.datatables.net/1.10.6/css/jquery.dataTables.min.css'
-                );
-                wp_enqueue_script(
-                    'jquery-datatables',
-                    '//cdn.datatables.net/1.10.6/js/jquery.dataTables.min.js',
-                    array('jquery')
-                );
-                // DataTables extensions.
-                wp_enqueue_style(
-                    'datatables-colvis',
-                    '//cdn.datatables.net/colvis/1.1.0/css/dataTables.colVis.css'
-                );
-                wp_enqueue_script(
-                    'datatables-colvis',
-                    '//cdn.datatables.net/colvis/1.1.0/js/dataTables.colVis.min.js',
-                    array('jquery-datatables')
-                );
-                wp_enqueue_style(
-                    'datatables-tabletools',
-                    '//cdn.datatables.net/tabletools/2.2.1/css/dataTables.tableTools.css'
-                );
-                wp_enqueue_script(
-                    'datatables-tabletools',
-                    '//cdn.datatables.net/tabletools/2.2.1/js/dataTables.tableTools.min.js',
-                    array('jquery-datatables')
-                );
-                wp_enqueue_style(
-                    'datatables-fixedheader',
-                    '//datatables.net/release-datatables/extensions/FixedHeader/css/dataTables.fixedHeader.css'
-                );
-                wp_enqueue_script(
-                    'datatables-fixedheader',
-                    '//datatables.net/release-datatables/extensions/FixedHeader/js/dataTables.fixedHeader.js',
-                    array('jquery-datatables')
-                );
-                wp_enqueue_style(
-                    'datatables-fixedcolumns',
-                    '//datatables.net/release-datatables/extensions/FixedColumns/css/dataTables.fixedColumns.css'
-                );
-                wp_enqueue_script(
-                    'datatables-fixedcolumns',
-                    '//datatables.net/release-datatables/extensions/FixedColumns/js/dataTables.fixedColumns.js',
-                    array('jquery-datatables')
-                );
-                wp_enqueue_style(
-                    'datatables-responsive',
-                    '//cdn.datatables.net/responsive/1.0.4/css/dataTables.responsive.css'
-                );
-                wp_enqueue_script(
-                    'datatables-responsive',
-                    '//cdn.datatables.net/responsive/1.0.4/js/dataTables.responsive.js',
-                    array('jquery-datatables')
-                );
-                wp_enqueue_script(
-                    'igsv-datatables',
-                    plugins_url('igsv-datatables.js', __FILE__),
-                    array('jquery-datatables')
-                );
-
-                wp_localize_script('igsv-datatables', 'igsv_plugin_vars', $this->getLocalizedPluginVars());
-            }
-            try {
-                $data = NULL;
-                $transient = $this->getTransientName($x['key'], $x['query'], $x['gid']);
-                if (false === $x['use_cache'] || 'no' === strtolower($x['use_cache'])) {
-                    delete_transient($transient);
-                    $data = $this->fetchData($url, $x['http_opts']);
-                } else {
-                    if (false === ($data = $this->getTransient($transient))) {
-                        $data = $this->fetchData($url, $x['http_opts']);
-                        $this->setTransient($transient, $data, (int) $x['expire_in']);
-                    }
-                }
-                $output = $this->displayData($data, $x, $content);
-            } catch (Exception $e) {
-                $output = $e->getMessage();
-            }
-        } else {
-            // If a chart but no query, just query for entire spreadsheet
-            if (false === $x['query']) {
-                $url = preg_replace('/export\?format=csv/', 'gviz/tq?', $url); // trailing ? in case of `gid` param
-            }
-            wp_enqueue_script('google-ajax-api', '//www.google.com/jsapi');
-            wp_enqueue_script(
-                'igsv-gvizcharts',
-                plugins_url('igsv-gvizcharts.js', __FILE__),
-                array('google-ajax-api')
-            );
-            $chart_id = 'igsv-' . $this->invocations . '-' . $x['chart'] . 'chart-'  . $this->getDocKey($x['key']);
-            $output  = '<div id="' . $chart_id . '" class="igsv-chart" title="' . esc_attr($x['title']) . '"';
-            $output .= ' data-chart-type="' . esc_attr(ucfirst($x['chart'])) . '"';
-            $output .= ' data-datasource-href="' . esc_attr($url) . '"';
-            if ($chart_opts = $this->getChartOptions($x)) {
-                foreach ($chart_opts as $k => $v) {
-                    if (!empty($v)) {
-                        // use single-quoted attribute-value syntax for later JSON parsing in JavaScript
-                        $output .= ' data-' . str_replace('_', '-', $k) . "='" . $v . "'";
-                    }
+        $chart_id = 'igsv-' . $this->invocations . '-' . $x['chart'] . 'chart-'  . $this->getDocId($x['key']);
+        $output  = '<div id="' . esc_attr($chart_id) . '" class="igsv-chart" title="' . esc_attr($x['title']) . '"';
+        $output .= ' data-chart-type="' . esc_attr(ucfirst($x['chart'])) . '"';
+        $output .= ' data-datasource-href="' . esc_attr($url) . '"';
+        if ($chart_opts = $this->getChartOptions($x)) {
+            foreach ($chart_opts as $k => $v) {
+                if (!empty($v)) {
+                    // use single-quoted attribute-value syntax for later JSON parsing in JavaScript
+                    $output .= ' data-' . str_replace('_', '-', $k) . "='" . $v . "'";
                 }
             }
-            $output .= '></div>'; // .igsv-chart
         }
-
+        $output .= '></div>'; // .igsv-chart
         return $output;
     }
 
@@ -697,29 +660,6 @@ class InlineGoogleSpreadsheetViewerPlugin {
             }
         }
         return $opts;
-    }
-
-    /**
-     * Converts an HTTP response to an HTML table.
-     *
-     * @param array $resp A HTTP response array (in the format of `wp_remote_get()` from the WordPress HTTP API).
-     * @param array $atts An array of attribute/value pairs passed to the shortcode.
-     * @param string $content Any additional content passed from the shortcode as its contents.
-     * @return string An HTML string representing a parsed and formatted table.
-     */
-    private function displayData ($resp, $atts, $content) {
-        $type = explode(';', $resp['headers']['content-type']);
-        switch ($type[0]) {
-            case 'text/html':
-                $gid = ($atts['gid']) ? $atts['gid'] : 0;
-                $r = $this->parseHtml($resp['body'], $gid);
-                break;
-            case 'text/csv':
-            default:
-                $r = $this->parseCsv($resp['body']);
-            break;
-        }
-        return $this->dataToHtml($r, $atts, $content);
     }
 
     public function addQuickTagButton () {
