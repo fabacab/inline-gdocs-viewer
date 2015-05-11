@@ -220,6 +220,11 @@ class InlineGoogleSpreadsheetViewerPlugin {
         $m = array();
         if (preg_match('/\/(edit|view|pubhtml|htmlview).*$/', $key, $m) && 'http' === substr($key, 0, 4)) {
             $parts = parse_url($key);
+            if (!empty($parts['fragment'])) {
+                $frag = array();
+                parse_str($parts['fragment'], $frag);
+                if ($frag['gid']) { $gid = $frag['gid']; }
+            }
             $key = $parts['scheme'] . '://' . $parts['host'] . $parts['path'];
             $action = ($query)
                 // Due to shortcode parsing limitations of angle brackets (< and > characters),
