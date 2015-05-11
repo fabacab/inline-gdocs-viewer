@@ -27,6 +27,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         ));
 
         add_action('plugins_loaded', array($this, 'registerL10n'));
+        add_action('init', array($this, 'maybeFetchGvizDataSource'));
         add_action('admin_init', array($this, 'registerSettings'));
         add_action('admin_menu', array($this, 'registerAdminMenu'));
         add_action('admin_head', array($this, 'doAdminHeadActions'));
@@ -244,12 +245,10 @@ class InlineGoogleSpreadsheetViewerPlugin {
 
     private function getGVizDataSourceUrl ($key, $query, $format) {
         $format = ($format) ? $format : 'json';
-        $url = plugins_url('vistable-proxy.php', __FILE__);
-        $url .= '?url=' . rawurlencode($key);
-        $tq = $this->sanitizeQuery($query);
-        $url .= "&tq=$tq";
-        $url .= "&tqx=out:$format";
-        return $url;
+        $base = trailingslashit(get_site_url()) . '?';
+        $qs = 'url=';
+        $qs .= rawurlencode($key .  '?tq=' . $this->sanitizeQuery($query) . "&tqx=out:$format");
+        return $base . $qs;
     }
 
     private function sanitizeQuery ($query) {
@@ -295,7 +294,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         }
         $resp = (empty($http_args)) ? wp_remote_get($url) : wp_remote_request($url, $http_args);
         if (is_wp_error($resp)) { // bail on error
-            throw new Exception('[' . __('Error requesting data from Google:', 'inline-gdocs-viewer') . $resp->get_error_message() . ']');
+            throw new Exception('[' . __('Error requesting data:', 'inline-gdocs-viewer') . ' ' . $resp->get_error_message() . ']');
         }
         return $resp;
     }
@@ -423,6 +422,48 @@ class InlineGoogleSpreadsheetViewerPlugin {
 
     public function oEmbedHandler ($matches, $attr, $url, $rawattr) {
         return $this->displayShortcode(array('key' => $url));
+    }
+
+    public function maybeFetchGvizDataSource () {
+        if (
+            !isset($_GET[$this->prefix . 'get_datasource_nonce'])
+            ||
+            !$this->isValidNonce($_GET[$this->prefix . 'get_datasource_nonce'], $this->prefix . 'get_datasource_nonce')
+        ) { return; }
+        require_once dirname(__FILE__) . '/lib/vistable.php';
+        $url = rawurldecode($_GET['url']);
+        $http_response = $this->fetchData($url, false);
+
+        $p = parse_url($url);
+        $qs = array();
+        parse_str($p['query'], $qs);
+        $tqx  = (isset($qs['tqx']))  ? $qs['tqx'] : '';
+        $tq   = (isset($qs['tq']))   ? $qs['tq']  : '';
+        $tqrt = (isset($qs['tqrt'])) ? $qs['tqrt']: '';
+        $tz   = (isset($qs['tz']))   ? $qs['tz']  : 'PDT'; // TODO: will get_option('timezone_string') work?
+        $vt = new csv_vistable($tqx, $tq, $tqrt, $tz, get_locale(), array());
+        $vt->setup_table($http_response['body']);
+        print $vt->execute();
+        exit;
+    }
+
+    private function makeNonceUrl ($url) {
+        $options = get_option($this->prefix . 'settings');
+        $options[$this->prefix . 'get_datasource_nonce'] = wp_create_nonce($this->prefix . 'get_datasource_nonce');
+        update_option($this->prefix . 'settings', $options);
+        $p = parse_url($url);
+        return $p['scheme']
+            . '://' . $p['host'] . $p['path']
+            . '?' . $p['query'] . '&'
+            . $this->prefix . 'get_datasource_nonce=' . $options[$this->prefix . 'get_datasource_nonce'];
+    }
+
+    private function isValidNonce ($nonce, $nonce_name) {
+        $options = get_option($this->prefix . 'settings');
+        $is_valid = ($nonce === $options[$nonce_name]) ? true : false;
+        unset($options[$this->prefix . 'get_datasource_nonce']);
+        update_option($this->prefix . 'settings', $options);
+        return $is_valid;
     }
 
     /**
@@ -567,7 +608,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
             if (!empty($x['query'])) {
                 if (!empty($x['chart'])) { $fmt = 'json'; }
                 else { $fmt = 'csv'; }
-                $url = $this->getGVizDataSourceUrl($x['key'], $x['query'], $fmt);
+                $url = $this->makeNonceUrl($this->getGVizDataSourceUrl($x['key'], $x['query'], $fmt));
             }
         }
 
