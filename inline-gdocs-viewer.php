@@ -227,13 +227,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
             }
             $key = $parts['scheme'] . '://' . $parts['host'] . $parts['path'];
             $action = ($query)
-                // Due to shortcode parsing limitations of angle brackets (< and > characters),
-                // manually decode only the URL encoded values for those values, which are
-                // themselves expected to be entered manually by the user. That is, to supply
-                // the shortcode with a less than sign, the user ought enter %3C, but after
-                // the initial urlencode($query), this will encode the percent sign, returning
-                // instead the value %253C, so we manually replace this in the query ourselves.
-                ? 'gviz/tq?tqx=out:csv&tq=' . str_replace('%253E', '%3E', str_replace('%253C', '%3C', urlencode($query)))
+                ? 'gviz/tq?tqx=out:csv&tq=' . $this->sanitizeQuery($query)
                 : 'export?format=csv';
             $url = str_replace($m[1], $action, $key);
             if ($gid) {
@@ -246,6 +240,26 @@ class InlineGoogleSpreadsheetViewerPlugin {
             }
         }
         return $url;
+    }
+
+    private function getGVizDataSourceUrl ($key, $query, $format) {
+        $format = ($format) ? $format : 'json';
+        $url = plugins_url('vistable-proxy.php', __FILE__);
+        $url .= '?url=' . rawurlencode($key);
+        $tq = $this->sanitizeQuery($query);
+        $url .= "&tq=$tq";
+        $url .= "&tqx=out:$format";
+        return $url;
+    }
+
+    private function sanitizeQuery ($query) {
+        // Due to shortcode parsing limitations of angle brackets (< and > characters),
+        // manually decode only the URL encoded values for those values, which are
+        // themselves expected to be entered manually by the user. That is, to supply
+        // the shortcode with a less than sign, the user ought enter %3C, but after
+        // the initial urlencode($query), this will encode the percent sign, returning
+        // instead the value %253C, so we manually replace this in the query ourselves.
+        return str_replace('%253E', '%3E', str_replace('%253C', '%3C', urlencode($query)));
     }
 
     private function getDocId ($key) {
@@ -544,12 +558,20 @@ class InlineGoogleSpreadsheetViewerPlugin {
 
         $x['key'] = $this->sanitizeKey($x['key']);
         $url = $x['key'];
-        $type = $this->getDocTypeByKey($x['key']);
-        if ('spreadsheet' === $type) {
+        $x['query'] = apply_filters($this->shortcode . '_query', $x['query'], $x);
+        $key_type = $this->getDocTypeByKey($x['key']);
+
+        if ('spreadsheet' === $key_type) {
             $url = $this->getSpreadsheetUrl($x['key'], $x['gid'], $x['query']);
-            $x['query'] = apply_filters($this->shortcode . '_query', $x['query'], $x);
+        } else {
+            if (!empty($x['query'])) {
+                if (!empty($x['chart'])) { $fmt = 'json'; }
+                else { $fmt = 'csv'; }
+                $url = $this->getGVizDataSourceUrl($x['key'], $x['query'], $fmt);
+            }
         }
-        if ('docsviewer' === $type) {
+
+        if ('docsviewer' === $key_type) {
             $output = $this->getGDocsViewerOutput($x);
         } else {
             if (false === $x['chart']) {
@@ -572,7 +594,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
                             break;
                         default:
                             $output = apply_filters($this->shortcode . '_webapp_html', $http_response['body'], $x);
-                            if ('csv' === $type) {
+                            if ('csv' === $key_type) {
                                 // even if the response is text/plain, parse as CSV if the filename
                                 // we detected earlier (by using the key attribute) suggests it is.
                                 $output = $this->csvToDataTable($output, $x, $content);
@@ -616,9 +638,6 @@ class InlineGoogleSpreadsheetViewerPlugin {
     }
 
     public function getGVizChartOutput ($url, $x) {
-        if ('spreadsheet' === $this->getDocTypeByKey($x['key']) && false === $x['query']) {
-            $url = preg_replace('/export\?format=csv/', 'gviz/tq?', $url); // trailing ? in case of `gid` param
-        }
         $chart_id = 'igsv-' . $this->invocations . '-' . $x['chart'] . 'chart-'  . $this->getDocId($x['key']);
         $output  = '<div id="' . esc_attr($chart_id) . '" class="igsv-chart" title="' . esc_attr($x['title']) . '"';
         $output .= ' data-chart-type="' . esc_attr(ucfirst($x['chart'])) . '"';
