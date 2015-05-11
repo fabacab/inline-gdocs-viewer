@@ -4,11 +4,11 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 3.5
 Tested up to: 4.2.2
-Stable tag: 0.9.5
+Stable tag: 0.9.6
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Embeds public Google Spreadsheets or Apps Scripts in a WordPress post or page as HTML tables or interactive charts, and more.
+Embeds public Google Spreadsheets, Apps Scripts, or CSV files in WordPress posts or pages as HTML tables or interactive charts, and more.
 
 == Description ==
 
@@ -34,9 +34,9 @@ You can transform your spreadsheet into an interactive chart or graph, embed doc
 
 **Spreadsheets**
 
-After saving the appropriate Sharing setting, copy the URL you use to view the Spreadsheet from your browser's address bar into the shortcode. For example, to display the spreadsheet at `https://docs.google.com/spreadsheets/d/ABCDEFG/edit`, use the following shortcode in your WordPress post or page:
+After saving the appropriate Sharing setting, copy the URL you use to view the Spreadsheet from your browser's address bar into the shortcode. For example, to display the spreadsheet at `https://docs.google.com/spreadsheets/d/ABCDEFG/edit#gid=123456`, use the following shortcode in your WordPress post or page:
 
-    [gdoc key="https://docs.google.com/spreadsheets/d/ABCDEFG/edit"]
+    [gdoc key="https://docs.google.com/spreadsheets/d/ABCDEFG/edit#gid=123456"]
 
 If your spreadsheet uses the "old" Google Spreadsheets, you need to [ensure that your spreadsheet is "Published to the Web"](https://docs.google.com/support/bin/answer.py?hl=en&answer=47134) and you need to copy only the "key" out of the URL. For instance, if the URL of your old Google Spreadsheet is `https://docs.google.com/spreadsheets/pub?key=ABCDEFG`, then your shortcode should look like this:
 
@@ -171,7 +171,7 @@ The best way to determine what's wrong with a chart that isn't displaying proper
 
 Charts most likely fail to display because of a mismatch between the chart you are using and the format of your spreadsheet.
 
-Each type of chart expects to retrieve data with a certain number of rows and/or columns. If your Google Spreadsheet is not already designed to create data for a chart, you might be able to use the `query` attribute to select only the rows and/or columns that the `chart` you're using expects. Otherwise, consider creating a new sheet with the proper formatting and using the `gid` attribute in your shortcode.
+Each type of chart expects to retrieve data with a certain number of rows and/or columns. If your Google Spreadsheet is not already designed to create data for a chart, you might be able to use the `query` attribute to select only the rows and/or columns that the `chart` you're using expects. Otherwise, consider creating a new sheet with the proper formatting and setting it as the `key` in your shortcode.
 
 To learn more about the correct spreadsheet formats for each chart type, please refer to [Google's Chart Gallery documentation](https://google-developers.appspot.com/chart/interactive/docs/gallery) for the type of chart you are using.
 
@@ -241,7 +241,7 @@ See [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-viewer
 
 = Why am I getting errors when I try to use the `query` attribute? =
 
-If your `query` includes an angle bracket, such as a less than (`<`) or a greater than (`>`) sign, [WordPress will assume you are trying to write HTML](https://core.trac.wordpress.org/ticket/28564) and strip everything except the first word of your query, resulting in syntax error. Instead, use the URL-encoded equivalents of these characters (`%3C` and `%3E`, for `<` and `>`, respectively), which WordPress will pass to the plugin unmolested and which the plugin is specifically aware of how to handle correctly.
+If your `query` includes an angle bracket, such as a less than (`<`) or a greater than (`>`) sign, [WordPress will assume you are trying to write HTML](https://core.trac.wordpress.org/ticket/28564) and strip everything except the first word of your query, resulting in a syntax error. Instead, use the URL-encoded equivalents of these characters (`%3C` and `%3E`, for `<` and `>`, respectively), which WordPress will pass to the plugin unmolested and which the plugin is specifically aware of how to handle correctly.
 
 == Screenshots ==
 
@@ -261,10 +261,15 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 
 == Change log ==
 
+= Version 0.9.6 =
+
+* Feature: The `query` attribute now works with arbitrary CSV inputs. This means you can perform [Google Query Language](https://developers.google.com/chart/interactive/docs/querylanguage) operations on the data in any CSV file.
+* Usability: The `gid` attribute is no longer required when loading non-default worksheets from new Google Sheets. Simply include the full URL (including the `#gid=123456` fragment) as your `key` and the `gid` part will be automatically detected. Old-style Google Spreadsheets still need to explicitly set the `gid` attribute to load a non-default worksheet.
+
 = Version 0.9.5 =
 
-* Feature: Convert any CSV data into a feature-rich HTML table or interactive chart, even if that data is *not* sourced from a Google Spreadsheet or Apps Script output.
-    * This feature works exactly like the standard Google Spreadsheet viewer functions, supporting all the same shortcode attributes such as `chart` and the various DataTables enhancements (but not `query`), except it can take any properly formatted CSV file as input. The plugin also detects files served with the `text/csv` HTTP Content-Type header and parses those similarly, so you can supply a web service endpoint that produces CSV output as well as a `.csv` file.
+* Feature: Convert any CSV data into a feature-rich HTML table, even if that data is *not* sourced from a Google Spreadsheet or Apps Script output.
+    * This feature works exactly like the standard Google Spreadsheet viewer functions, supporting all the same shortcode attributes and the various DataTables enhancements (but not `query` or `chart`), except it can take any properly formatted CSV file as input. The plugin also detects files served with the `text/csv` HTTP Content-Type header and parses those similarly, so you can supply a web service endpoint that produces CSV output as well as a `.csv` file.
 * Bugfix: Fix an issue where DataTables enhancements were not applied to tables with custom classes unless they were rendered on the same page as a shortcode-invoked table.
 
 = Version 0.9.4 =
@@ -495,7 +500,7 @@ This plugin provides one shortcode (`gdoc`) that can do many things through a co
 * `key` - Specifies the document to retrieve.
     * **required** Every `gdoc` shortcode must have one and only one `key` attribute. (All other attributes are optional.)
     * `key` can be one of five types:
-        * The fully-qualified URL of a Google Spreadsheet that has been publicly shared, like `[gdoc key="https://docs.google.com/spreadsheets/d/ABCDEFG/htmlview"]`
+        * The fully-qualified URL of a Google Spreadsheet that has been publicly shared, like `[gdoc key="https://docs.google.com/spreadsheets/d/ABCDEFG/htmlview#gid=123456"]`
         * The document ID of an old-style Google Spreadsheet that has been "Published to the web," like `[gdoc key="ABCDEFG"]`
         * The fully-qualified URL of a Google Apps Script Web App, like `[gdoc key="https://script.google.com/macros/s/ABCDEFG/exec"]`
         * The fully-qualified URL of a CSV file or a web service endpoint that produces CSV data, like `[gdoc key="http://viewportsizes.com/devices.csv"]`
@@ -520,7 +525,7 @@ This plugin provides one shortcode (`gdoc`) that can do many things through a co
     * `FixedHeader-left` or `FixedHeader-right` freezes the left- or right-most column of the table while scrolling horizontally. (You will also need to set `datatables_scroll_x="true"` in your shortcode to enable horizontal scrolling.)
     * `FixedColumns-left-N` or `FixedColumns-right-N` freezes the left- or right-most `N` columns in the table, respectively.
 * `expire_in` - How long to cache responses from Google for, in seconds. Set to `0` to cache forever. (Default: `600`, which is ten minutes.)
-* `gid` - The ID of a worksheet in a Google Spreadsheet to load, other than the first one, like `[gdoc key="ABCDEFG" gid="123"]`
+* `gid` - For old-style Google Spreadsheets, the ID of a worksheet in a Google Spreadsheet to load, other than the first one, like `[gdoc key="ABCDEFG" gid="123"]`. (This attribute is deprecated for new Google Sheets.)
 * `header_rows` - A number specifying how many rows to place in the output's `<thead>` element. (Default: `1`.)
 * `height` - Height of the containing HTML element. Tables ignore this, use `style` instead. (Default: automatically calculated.)
 * `http_opts` - A JSON string representing options to pass to the [WordPress HTTP API](https://codex.wordpress.org/HTTP_API), like `[gdoc key="ABCDEFG" http_opts='{"method": "POST", "blocking": false, "user-agent": "My Custom User Agent String"}']`.
