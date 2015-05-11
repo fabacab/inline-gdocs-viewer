@@ -99,7 +99,7 @@ class visparser {
             while (($ch = substr($q,++$end,1)) !== FALSE && $ch != '`')
                 ;
 
-            $ret = array(TYPE => ID, VALUE => strtolower(substr($q, $start+1, $end - $start - 1)));
+            $ret = array(TYPE => ID, VALUE => substr($q, $start+1, $end - $start - 1));
             ++$end;
         } else if (ctype_digit($ch) || $ch == '.') {
             $ndot = $ch == '.' ? 1 : 0;
@@ -154,7 +154,7 @@ class visparser {
                    (ctype_alnum($ch) || $ch == '_'))
                 {
                 }
-            $ret = strtolower(substr($q, $start, $end-$start));
+            $ret = substr($q, $start, $end-$start);
             
             if (isset($this->reserved[$ret])) {
                 $ret = array(TYPE => RESID, VALUE => $ret);
