@@ -12,7 +12,7 @@ Embeds public Google Spreadsheets, Apps Scripts, or CSV files in WordPress posts
 
 == Description ==
 
-Easily turn data stored in a Google Spreadsheet, CSV file, or the output of a Google Apps Script into a beautiful interactive chart or graph, a sortable and searchable table, or both. Embed live previews of PDF, XLS, DOC, and other file formats supported by the [Google Docs Viewer](https://docs.google.com/viewer). A built-in cache provides extra speed.
+Easily turn data stored in a Google Spreadsheet, [CSV file](https://en.wikipedia.org/wiki/Comma-separated_values), or the output of a Google Apps Script into a beautiful interactive chart or graph, a sortable and searchable table, or both. Embed live previews of PDF, XLS, DOC, and other file formats supported by the [Google Docs Viewer](https://docs.google.com/viewer). A built-in cache provides extra speed.
 
 * Update your blog post or page whenever a Google Spreadsheet or CSV file changes.
 * Create beautiful interactive graphs and charts from your spreadsheet or CSV data with ease.
@@ -24,7 +24,7 @@ Easily turn data stored in a Google Spreadsheet, CSV file, or the output of a Go
 
 = Quick start =
 
-Paste the URL of your public [Google Spreadsheet](https://support.google.com/docs/answer/37579?hl=en), publicly-accessible [CSV file](https://en.wikipedia.org/wiki/Comma-separated_values), or [Google Apps Script Web App](https://developers.google.com/apps-script/guides/web) on its own line in your WordPress post or page, then save your post. That's it. :) Your data will appear in a sorted, searchable HTML table. Web App output will be displayed using the HTML defined by the Web App. See the [screenshots](https://wordpress.org/plugins/inline-google-spreadsheet-viewer/screenshots/) for an example.
+Paste the URL of your public [Google Spreadsheet](https://support.google.com/docs/answer/37579?hl=en) or [Google Apps Script Web App](https://developers.google.com/apps-script/guides/web) on its own line in your WordPress post or page, then save your post. That's it. :) Your data will appear in a sorted, searchable HTML table. Web App output will be displayed using the HTML defined by the Web App. See the [screenshots](https://wordpress.org/plugins/inline-google-spreadsheet-viewer/screenshots/) for an example.
 
 If using a Google Spreadsheet, the spreadsheet must be shared using either the "Public on the web" or "Anyone with the link" options [(learn how to share your spreadsheet)](https://support.google.com/drive/?p=visibility_options&hl=en_US). Currently, private Google Spreadsheets or Spreadsheets shared with "Specific people" are not supported. Web Apps must be deployed with the "Anyone, even anonymous" [access permissions](https://developers.google.com/apps-script/guides/web#permissions). CSV files must be available to the public, without the need to log in to the site where they're hosted.
 
