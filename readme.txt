@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 3.5
 Tested up to: 4.2.2
-Stable tag: 0.9.6
+Stable tag: 0.9.6.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -12,21 +12,21 @@ Embeds public Google Spreadsheets, Apps Scripts, or CSV files in WordPress posts
 
 == Description ==
 
-Easily turn data stored in a Google Spreadsheet or the output of a Google Apps Script into a beautiful interactive chart or graph, a sortable and searchable table, or both, and more! Embed live previews of PDF, XLS, DOC, and other file formats supported by the [Google Docs Viewer](https://docs.google.com/viewer). A built-in cache provides extra speed.
+Easily turn data stored in a Google Spreadsheet, CSV file, or the output of a Google Apps Script into a beautiful interactive chart or graph, a sortable and searchable table, or both. Embed live previews of PDF, XLS, DOC, and other file formats supported by the [Google Docs Viewer](https://docs.google.com/viewer). A built-in cache provides extra speed.
 
-* Update your blog post or page whenever your Google Spreadsheet changes.
-* Create beautiful interactive graphs and charts from your spreadsheet with ease.
+* Update your blog post or page whenever a Google Spreadsheet or CSV file changes.
+* Create beautiful interactive graphs and charts from your spreadsheet or CSV data with ease.
 * Customize the table's or chart's look and feel using a powerful and flexible query language and a plethora of configuration options.
 * Show the output of any public [Google Apps Script](https://developers.google.com/apps-script/overview) that has been [deployed as a Web App](https://developers.google.com/apps-script/guides/web#deploying_a_script_as_a_web_app) on your WordPress site.
 * Embed almost any online document to view without leaving your blog.
 
+*Donations for this plugin make up a chunk of my income. If you continue to enjoy this plugin, please consider [making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted). :) Thank you for your support!*
+
 = Quick start =
 
-Paste the URL of your public [Google Spreadsheet](https://support.google.com/docs/answer/37579?hl=en) or [Google Apps Script Web App](https://developers.google.com/apps-script/guides/web) on its own line in your WordPress post or page, then save your post. That's it. :) Your spreadsheet will appear in a sorted, searchable HTML table. Web App output will be displayed using the HTML defined by the Web App. See the [screenshots](https://wordpress.org/plugins/inline-google-spreadsheet-viewer/screenshots/) for an example.
+Paste the URL of your public [Google Spreadsheet](https://support.google.com/docs/answer/37579?hl=en), publicly-accessible [CSV file](https://en.wikipedia.org/wiki/Comma-separated_values), or [Google Apps Script Web App](https://developers.google.com/apps-script/guides/web) on its own line in your WordPress post or page, then save your post. That's it. :) Your data will appear in a sorted, searchable HTML table. Web App output will be displayed using the HTML defined by the Web App. See the [screenshots](https://wordpress.org/plugins/inline-google-spreadsheet-viewer/screenshots/) for an example.
 
-Your spreadsheet must be shared using either the "Public on the web" or "Anyone with the link" options [(learn how to share your spreadsheet)](https://support.google.com/drive/?p=visibility_options&hl=en_US). Currently, private Google Spreadsheets or Spreadsheets shared with "Specific people" are not supported. Web Apps must be deployed with the "Anyone, even anonymous" [access permissions](https://developers.google.com/apps-script/guides/web#permissions).
-
-*Donations for this plugin make up a chunk of my income. If you continue to enjoy this plugin, please consider [making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted). :) Thank you for your support!*
+If using a Google Spreadsheet, the spreadsheet must be shared using either the "Public on the web" or "Anyone with the link" options [(learn how to share your spreadsheet)](https://support.google.com/drive/?p=visibility_options&hl=en_US). Currently, private Google Spreadsheets or Spreadsheets shared with "Specific people" are not supported. Web Apps must be deployed with the "Anyone, even anonymous" [access permissions](https://developers.google.com/apps-script/guides/web#permissions). CSV files must be available to the public, without the need to log in to the site where they're hosted.
 
 = User guide =
 
@@ -260,6 +260,10 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 7. This screenshot shows an example of what the previous screenshot might output with a given spreadsheet that contains data for the Aliens, Ninjas, Pirates, and Robots teams, and their player's respective points.
 
 == Change log ==
+
+= Version 0.9.6.1 =
+
+* Security: A [Cross-Site Request Forgery (CSRF)](https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29) vulnerability existed in version 0.9.1 of Inline Google Spreadsheet Viewer that could result in denial of service if an attacker sent specially-crafted HTTP `GET` requests to the site. This patch addresses the issue by adding a [synchronizer token](https://www.owasp.org/index.php/CSRF_Prevention_Cheat_Sheet#General_Recommendation:_Synchronizer_Token_Pattern) to verify that requests originated from the plugin itself. Only version 0.9.6 is known vulnerable, but all users are encouraged to update.
 
 = Version 0.9.6 =
 
