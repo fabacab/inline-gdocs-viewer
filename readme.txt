@@ -263,7 +263,7 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 
 = Version 0.9.6.1 =
 
-* Security: A [Cross-Site Request Forgery (CSRF)](https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29) vulnerability existed in version 0.9.1 of Inline Google Spreadsheet Viewer that could result in denial of service if an attacker sent specially-crafted HTTP `GET` requests to the site. This patch addresses the issue by adding a [synchronizer token](https://www.owasp.org/index.php/CSRF_Prevention_Cheat_Sheet#General_Recommendation:_Synchronizer_Token_Pattern) to verify that requests originated from the plugin itself. Only version 0.9.6 is known vulnerable, but all users are encouraged to update.
+* Security: A [Cross-Site Request Forgery (CSRF)](https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29) vulnerability existed in version 0.9.6 of Inline Google Spreadsheet Viewer that could result in denial of service if an attacker sent specially-crafted HTTP `GET` requests to the site. This patch addresses the issue by adding a [synchronizer token](https://www.owasp.org/index.php/CSRF_Prevention_Cheat_Sheet#General_Recommendation:_Synchronizer_Token_Pattern) to verify that requests originated from the plugin itself. Only version 0.9.6 is known vulnerable, but all users are encouraged to update.
 
 = Version 0.9.6 =
 
