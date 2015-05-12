@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 3.5
 Tested up to: 4.2.2
-Stable tag: 0.9.6.1
+Stable tag: 0.9.6.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -260,6 +260,10 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 7. This screenshot shows an example of what the previous screenshot might output with a given spreadsheet that contains data for the Aliens, Ninjas, Pirates, and Robots teams, and their player's respective points.
 
 == Change log ==
+
+= Version 0.9.6.2 =
+
+* [Bugfix](https://wordpress.org/support/topic/datatables-doesnt-load-on-secondary-tabs): Fix an issue where using multiple `gdoc` shortcodes all with the same `key` failed to apply some DataTables-enhanced features to invocations of the shortcode after the first one.
 
 = Version 0.9.6.1 =
 

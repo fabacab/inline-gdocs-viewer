@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * Version: 0.9.6.1
+ * Version: 0.9.6.2
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: inline-gdocs-viewer
@@ -365,9 +365,10 @@ class InlineGoogleSpreadsheetViewerPlugin {
         $ir = 1; // row number counter
         $ic = 1; // column number counter
 
-        // Extract the document ID from the key, if a full URL was given.
-        $id = $this->getDocId($options['key']);
-        $html  = '<table id="igsv-' . esc_attr($id) . '"';
+        $id = (0 === $this->invocations)
+            ? 'igsv-' . $this->getDocId($options['key'])
+            : "igsv-{$this->invocations}-" . $this->getDocId($options['key']);
+        $html  = '<table id="' . esc_attr($id) . '"';
         // Prepend a space character onto the 'class' value, if one exists.
         if (!empty($options['class'])) { $options['class'] = " {$options['class']}"; }
         $html .= ' class="' . $this->dt_class . esc_attr($options['class']) . '"';
