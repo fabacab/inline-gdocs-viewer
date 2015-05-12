@@ -275,13 +275,33 @@ class InlineGoogleSpreadsheetViewerPlugin {
     }
 
     /**
+     * Retrieves data from the transient cache if available, or via HTTP if not.
+     *
+     * @param string $url The URL to fetch, if not in cache.
+     * @param array $x Values from the shortcode attributes.
+     */
+    private function fetchData ($url, $x) {
+        $transient = $this->getTransientName($x['key'], $x['query'], $x['gid']);
+        if (false === $x['use_cache'] || 'no' === strtolower($x['use_cache'])) {
+            delete_transient($transient);
+            $http_response = $this->doHttpRequest($url, $x['http_opts']);
+        } else {
+            if (false === ($http_response = $this->getTransient($transient))) {
+                $http_response = $this->doHttpRequest($url, $x['http_opts']);
+                $this->setTransient($transient, $http_response, (int) $x['expire_in']);
+            }
+        }
+        return $http_response;
+    }
+
+    /**
      * Performs an HTTP request as instructed by the shortcode's parameters.
      *
      * @param string $url The URL to request.
      * @param string $http_opts A JSON string representing options to pass to the WordPress HTTP API.
      * @return array $resp The HTTP response from the WordPress HTTP API.
      */
-    private function fetchData ($url, $opts) {
+    private function doHttpRequest ($url, $opts) {
         $http_args = array();
         if ($opts) {
             try {
@@ -432,7 +452,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         ) { return; }
         require_once dirname(__FILE__) . '/lib/vistable.php';
         $url = rawurldecode($_GET['url']);
-        $http_response = $this->fetchData($url, false);
+        $http_response = $this->doHttpRequest($url, false);
 
         $p = parse_url($url);
         $qs = array();
@@ -598,35 +618,31 @@ class InlineGoogleSpreadsheetViewerPlugin {
         ), $atts, $this->shortcode);
 
         $x['key'] = $this->sanitizeKey($x['key']);
-        $url = $x['key'];
         $x['query'] = apply_filters($this->shortcode . '_query', $x['query'], $x);
-        $key_type = $this->getDocTypeByKey($x['key']);
 
+        // Set up datasource URL.
+        $url = $x['key']; // in the default case, the URL is the shortcode's key
+        $key_type = $this->getDocTypeByKey($x['key']);
         if ('spreadsheet' === $key_type) {
+            // if a Google Spreadsheet, the URL to fetch needs to be modified.
             $url = $this->getSpreadsheetUrl($x['key'], $x['gid'], $x['query']);
         } else {
             if (!empty($x['query'])) {
+                // if a CSV file or GAS Web App that has a query,
                 if (!empty($x['chart'])) { $fmt = 'json'; }
                 else { $fmt = 'csv'; }
+                // the url should be proxied through this plugin
                 $url = $this->makeNonceUrl($this->getGVizDataSourceUrl($x['key'], $x['query'], $fmt));
             }
         }
 
+        // Retrieve and set HTML output.
         if ('docsviewer' === $key_type) {
             $output = $this->getGDocsViewerOutput($x);
         } else {
             if (false === $x['chart']) {
                 try {
-                    $transient = $this->getTransientName($x['key'], $x['query'], $x['gid']);
-                    if (false === $x['use_cache'] || 'no' === strtolower($x['use_cache'])) {
-                        delete_transient($transient);
-                        $http_response = $this->fetchData($url, $x['http_opts']);
-                    } else {
-                        if (false === ($http_response = $this->getTransient($transient))) {
-                            $http_response = $this->fetchData($url, $x['http_opts']);
-                            $this->setTransient($transient, $http_response, (int) $x['expire_in']);
-                        }
-                    }
+                    $http_response = $this->fetchData($url, $x);
                     $http_content_type = explode(';', $http_response['headers']['content-type']);
                     switch ($http_content_type[0]) {
                         case 'text/csv':
