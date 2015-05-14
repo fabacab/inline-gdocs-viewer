@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves data from a public Google Spreadsheet or CSV file and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * Version: 0.9.6.3
+ * Version: 0.9.7
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: inline-gdocs-viewer
@@ -18,7 +18,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
     private $invocations = 0;
     private $prefix; //< Internal prefix for settings, etc., derived from shortcode.
     private $capabilities; //< List of custom capabilities.
-    private $gdoc_url_regex = '!https://(?:docs\.google\.com/spreadsheets/d/|script\.google\.com/macros/s/)([^/]+)!';
+    private $gdoc_url_regex =
+        '!https://(?:docs\.google\.com/spreadsheets/d/|script\.google\.com/macros/s/)([^/]+)!';
 
     public function __construct () {
         // Initialize private defaults.
@@ -279,6 +280,9 @@ class InlineGoogleSpreadsheetViewerPlugin {
         } else {
             $id = sanitize_title_with_dashes($key);
         }
+        if ('mysql' === $this->getDocTypeByKey($key)) {
+            $id = hash('md5', $key);
+        }
         return $id;
     }
 
@@ -328,7 +332,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
     }
 
     private function runtimeError ($msg) {
-        throw new Exception("[$msg]");
+        throw new Exception(esc_html("[{$this->shortcode} $msg]"));
     }
 
     public function parseCsv ($csv_str) {
@@ -715,6 +719,12 @@ class InlineGoogleSpreadsheetViewerPlugin {
      * @return string The HTML output as requested by the shortcode or an error message.
      */
     private function getSqlOutput ($atts, $content) {
+        if (!$this->isSqlDbEnabled()) {
+            $this->runtimeError(
+                esc_html__('Error:', 'inline-gdocs-viewer') . ' '
+                . esc_html__('SQL datasources are disabled.', 'inline-gdocs-viewer')
+            );
+        }
         if (!$this->canQuerySqlDatabases()) {
             $this->runtimeError(
                 esc_html__('Error:', 'inline-gdocs-viewer') . ' '
@@ -765,6 +775,15 @@ class InlineGoogleSpreadsheetViewerPlugin {
         return $output;
     }
 
+    /**
+     * Whether or not the "Allow SQL queries in shortcodes" option is enabled.
+     *
+     * @return bool
+     */
+    private function isSqlDbEnabled () {
+        $options = get_option($this->prefix . 'settings');
+        return isset($options['allow_sql_db_queries']);
+    }
     /**
      * Determines if a user has the required capability to run a SQL query from the shortcode.
      *
