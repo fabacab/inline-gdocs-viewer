@@ -202,6 +202,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
         $p = parse_url($key);
         if ('csv' === strtolower(pathinfo($p['path'], PATHINFO_EXTENSION))) {
             $type = 'csv';
+        } else if (!isset($p['scheme']) && 'wordpress' === $p['path']) {
+            $type = 'wpdb';
         } else if ('mysql' === $p['scheme']) {
             $type = 'mysql';
         } else if (isset($p['host'])) {
@@ -270,14 +272,12 @@ class InlineGoogleSpreadsheetViewerPlugin {
     }
 
     private function getDocId ($key) {
-        if ('http' === substr($key, 0, 4)) {
-            $m = array();
-            preg_match($this->gdoc_url_regex, $key, $m);
-            if (!empty($m[1])) {
-                $id = $m[1];
-            } else {
-                $id = sanitize_title_with_dashes($key);
-            }
+        $m = array();
+        preg_match($this->gdoc_url_regex, $key, $m);
+        if (!empty($m[1])) {
+            $id = $m[1];
+        } else {
+            $id = sanitize_title_with_dashes($key);
         }
         return $id;
     }
@@ -317,14 +317,18 @@ class InlineGoogleSpreadsheetViewerPlugin {
                     $http_args[$k] = $v;
                 }
             } catch (Exception $e) {
-                throw new Exception('[' . __('Error parsing HTTP options attribute:', 'inline-gdocs-viewer') . $e->getMessage() . ']');
+                $this->runtimeError(__('Error parsing HTTP options attribute:', 'inline-gdocs-viewer') . $e->getMessage());
             }
         }
         $resp = (empty($http_args)) ? wp_remote_get($url) : wp_remote_request($url, $http_args);
         if (is_wp_error($resp)) { // bail on error
-            throw new Exception('[' . __('Error requesting data:', 'inline-gdocs-viewer') . ' ' . $resp->get_error_message() . ']');
+            $this->runtimeError(__('Error requesting data:', 'inline-gdocs-viewer') . ' ' . $resp->get_error_message());
         }
         return $resp;
+    }
+
+    private function runtimeError ($msg) {
+        throw new Exception("[$msg]");
     }
 
     public function parseCsv ($csv_str) {
@@ -499,7 +503,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
      * WordPress Shortcode handler.
      */
     public function displayShortcode ($atts, $content = null) {
-        $x = shortcode_atts(array(
+        $atts = shortcode_atts(array(
             'key'      => false,                // Google Doc URL or ID
             'title'    => '',                   // Title (attribute) text or visible chart title
             'class'    => '',                   // Container element's custom class value
@@ -631,9 +635,34 @@ class InlineGoogleSpreadsheetViewerPlugin {
             'datatables_table_tools' => false
         ), $atts, $this->shortcode);
 
-        $x['key'] = $this->sanitizeKey($x['key']);
-        $x['query'] = apply_filters($this->shortcode . '_query', $x['query'], $x);
+        $atts['key'] = $this->sanitizeKey($atts['key']);
+        $atts['query'] = apply_filters($this->shortcode . '_query', $atts['query'], $atts);
 
+        try {
+            switch ($this->getDocTypeByKey($atts['key'])) {
+                case 'wpdb':
+                case 'mysql':
+                    $output = $this->getSqlOutput($atts, $content);
+                    break;
+                default:
+                    $output = $this->getHttpOutput($atts, $content);
+                break;
+            }
+        } catch (Exception $e) {
+            $output = $e->getMessage();
+        }
+        $this->invocations++;
+        return $output;
+    }
+
+    /**
+     * Returns the output of an HTTP datasource.
+     *
+     * @param array $x The shortcode attributes.
+     * @param string $content The content of the shortcode.
+     * @return string The HTML output as requested by the shortcode or an error message.
+     */
+    private function getHttpOutput ($x, $content) {
         // Set up datasource URL.
         $url = $x['key']; // in the default case, the URL is the shortcode's key
         $key_type = $this->getDocTypeByKey($x['key']);
@@ -655,32 +684,95 @@ class InlineGoogleSpreadsheetViewerPlugin {
             $output = $this->getGDocsViewerOutput($x);
         } else {
             if (false === $x['chart']) {
-                try {
-                    $http_response = $this->fetchData($url, $x);
-                    $http_content_type = explode(';', $http_response['headers']['content-type']);
-                    switch ($http_content_type[0]) {
-                        case 'text/csv':
-                            // This catches any HTTP response served as text/csv
-                            $output = $this->csvToDataTable($http_response['body'], $x, $content);
-                            break;
-                        default:
-                            $output = apply_filters($this->shortcode . '_webapp_html', $http_response['body'], $x);
-                            if ('csv' === $key_type) {
-                                // even if the response is text/plain, parse as CSV if the filename
-                                // we detected earlier (by using the key attribute) suggests it is.
-                                $output = $this->csvToDataTable($output, $x, $content);
-                            }
-                            break;
-                    }
-                } catch (Exception $e) {
-                    $output = $e->getMessage();
+                $http_response = $this->fetchData($url, $x);
+                $http_content_type = explode(';', $http_response['headers']['content-type']);
+                switch ($http_content_type[0]) {
+                    case 'text/csv':
+                        // This catches any HTTP response served as text/csv
+                        $output = $this->csvToDataTable($http_response['body'], $x, $content);
+                        break;
+                    default:
+                        $output = apply_filters($this->shortcode . '_webapp_html', $http_response['body'], $x);
+                        if ('csv' === $key_type) {
+                            // even if the response is text/plain, parse as CSV if the filename
+                            // we detected earlier (by using the key attribute) suggests it is.
+                            $output = $this->csvToDataTable($output, $x, $content);
+                        }
+                        break;
                 }
             } else {
                 $output = $this->getGVizChartOutput($url, $x);
             }
         }
-        $this->invocations++;
         return $output;
+    }
+
+    /**
+     * Returns the output of a SQL datasource.
+     *
+     * @param array $atts The shortcode attributes.
+     * @param string $content The content of the shortcode.
+     * @return string The HTML output as requested by the shortcode or an error message.
+     */
+    private function getSqlOutput ($atts, $content) {
+        if (!$this->canQuerySqlDatabases()) {
+            $this->runtimeError(
+                esc_html__('Error:', 'inline-gdocs-viewer') . ' '
+                . esc_html__('The author does not have permission to perform a SQL query.', 'inline-gdocs-viewer')
+            );
+        }
+
+        $query = trim($atts['query']);
+        if (empty($query)) {
+            $this->runtimeError(
+                esc_html__('Error:', 'inline-gdocs-viewer') . ' '
+                . esc_html__('Missing query.', 'inline-gdocs-viewer')
+            );
+        }
+
+        if (0 !== strpos(strtoupper($query), 'SELECT')) {
+            $this->runtimeError(
+                esc_html__('Error:', 'inline-gdocs-viewer') . ' '
+                . esc_html__('Unsupported query:', 'inline-gdocs-viewer')
+                . ' ' . esc_html($query)
+            );
+        }
+
+        if ('wpdb' === $this->getDocTypeByKey($atts['key'])) {
+            global $wpdb;
+        } else {
+            $p = parse_url($atts['key']);
+            $wpdb = new wpdb(
+                isset($p['user']) ? $p['user'] : '',
+                isset($p['pass']) ? $p['pass'] : '',
+                isset($p['path']) ? basename($p['path']) : '',
+                isset($p['port']) ? "{$p['host']}:{$p['port']}" : $p['host']
+            );
+        }
+        $data = $wpdb->get_results($query, ARRAY_A);
+        if (empty($data)) {
+            $this->runtimeError(
+                esc_html__('Error:', 'inline-gdocs-viewer') . ' '
+                . esc_html__('Query produced zero results:', 'inline-gdocs-viewer')
+                . ' ' . esc_html($query)
+            );
+        }
+        $header = array(array()); // 2D
+        foreach ($data[0] as $k => $v) {
+            $header[0][] = $k;
+        }
+        $output = $this->dataToHtml(array_merge($header, $data), $atts, $content);
+        return $output;
+    }
+
+    /**
+     * Determines if a user has the required capability to run a SQL query from the shortcode.
+     *
+     * @return bool Whether or not the author of the current post can do SQL queries.
+     */
+    private function canQuerySqlDatabases () {
+        $author = get_userdata(get_the_author_meta('ID'));
+        return $author->has_cap($this->prefix . 'query_sql_databases');
     }
 
     /**
