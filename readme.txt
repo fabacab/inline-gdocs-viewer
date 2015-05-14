@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 3.5
 Tested up to: 4.2.2
-Stable tag: 0.9.6.3
+Stable tag: 0.9.7
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -12,10 +12,11 @@ Embeds public Google Spreadsheets, Apps Scripts, or CSV files in WordPress posts
 
 == Description ==
 
-Easily turn data stored in a Google Spreadsheet, [CSV file](https://en.wikipedia.org/wiki/Comma-separated_values), or the output of a Google Apps Script into a beautiful interactive chart or graph, a sortable and searchable table, or both. Embed live previews of PDF, XLS, DOC, and other file formats supported by the [Google Docs Viewer](https://docs.google.com/viewer). A built-in cache provides extra speed.
+Easily turn data stored in a [Google Spreadsheet](https://sheets.google.com/), [CSV file](https://en.wikipedia.org/wiki/Comma-separated_values), a [MySQL database](https://mysql.com/), or the output of a [Google Apps Script](https://www.google.com/script/start/) into a beautiful interactive chart or graph, a sortable and searchable table, or both. Embed live previews of PDF, XLS, DOC, and other file formats supported by the [Google Docs Viewer](https://docs.google.com/viewer). A built-in cache provides extra speed.
 
 * Update your blog post or page whenever a Google Spreadsheet or CSV file changes.
-* Create beautiful interactive graphs and charts from your spreadsheet or CSV data with ease.
+* Create beautiful interactive graphs and charts from your spreadsheet data with ease.
+* Display custom data stored in the site's database as a sortable and searchable table.
 * Customize the table's or chart's look and feel using a powerful and flexible query language and a plethora of configuration options.
 * Show the output of any public [Google Apps Script](https://developers.google.com/apps-script/overview) that has been [deployed as a Web App](https://developers.google.com/apps-script/guides/web#deploying_a_script_as_a_web_app) on your WordPress site.
 * Embed almost any online document to view without leaving your blog.
@@ -32,9 +33,9 @@ If using a Google Spreadsheet, the spreadsheet must be shared using either the "
 
 You can transform your spreadsheet into an interactive chart or graph, embed documents other than spreadsheets, and customize the HTML of your table using a `[gdoc key=""]` [WordPress shortcode](https://codex.wordpress.org/Shortcode). The only required parameter is `key`, which specifies the document you'd like to retrieve. All additional attributes are optional.
 
-**Spreadsheets**
+**Google Spreadsheets**
 
-After saving the appropriate Sharing setting, copy the URL you use to view the Spreadsheet from your browser's address bar into the shortcode. For example, to display the spreadsheet at `https://docs.google.com/spreadsheets/d/ABCDEFG/edit#gid=123456`, use the following shortcode in your WordPress post or page:
+After saving the appropriate Sharing setting, copy the URL you use to view the Google Spreadsheet from your browser's address bar into the shortcode. For example, to display the spreadsheet at `https://docs.google.com/spreadsheets/d/ABCDEFG/edit#gid=123456`, use the following shortcode in your WordPress post or page:
 
     [gdoc key="https://docs.google.com/spreadsheets/d/ABCDEFG/edit#gid=123456"]
 
@@ -72,7 +73,7 @@ Depending on the type of chart you chose, you can customize your chart with a nu
 
 **HTML Tables**
 
-To render an HTML table with additional metadata, such as supplying the table's `title`, `summary`, `<caption>`, and a customized `class` value, you can do the following:
+All data sources (Google Spreadsheets, CSV files, or MySQL database queries) will be rendered in an HTML table, unless you add the `chart` attribute as described above. The HTML of the resulting table is highly customizable. To render an HTML table with additional metadata, such as supplying the table's `title`, `summary`, `<caption>`, and a customized `class` value, you can do the following:
 
     [gdoc key="ABCDEFG" class="my-sheet" title="Tooltip text displayed on hover" summary="An example spreadsheet, with a summary."]This is the table's caption.[/gdoc]
 
@@ -101,13 +102,35 @@ Web addresses and email addresses in your data are turned into links. If this ca
 
     [gdoc key="ABCDEFG" linkify="no"]
 
-**Using Google Queries**
+**Using a MySQL Database**
 
-You can pre-process your Google Spreadsheet before retrieving data from it by passing a [Google Charts API Query Language](https://developers.google.com/chart/interactive/docs/querylanguage#Language_Syntax) query to the shortcode's `query` attribute. This lets you interact with the data in your Google Spreadsheet as though the spreadsheet were a relational database table. For instance, if you wish to display the team that scored the most goals on your website, you might use a shortcode like this to query your Google Spreadsheet and display the highest-scoring team, where the team name is the first column (column `A`) and that team's score is the second column (column `B`):
+After an administrator enables the SQL queries option in the plugin's settings screen, privileged users can also retrieve data from the WordPress database by supplying the keyword `wordpress` to the `key` attribute of your shortcode along with a valid [MySQL `SELECT` statement](https://dev.mysql.com/doc/refman/5.5/en/select.html). This can be useful for displaying information that other plugins save in your website's database or that WordPress itself maintains for you.
+
+For example, to show a table of user registration dates from the current blog:
+
+    [gdoc key="wordpress" query="SELECT display_name AS Name, user_registered AS 'Registration Date' FROM wp_users"]
+
+Remote MySQL databases are also accessible by supplying a MySQL connection URL with valid access credentials. For example, to show the prices from an `inventory` database hosted by a MySQL server at `server.example.com` by logging in as `user` with the password `password` and querying for items that are in stock:
+
+    [gdoc key="mysql://user:password@server.example.com/inventory" query="SELECT sku AS 'Item No.', product_name AS Product, price AS Price WHERE in_stock=TRUE"]
+
+**Using Queries**
+
+You can pre-process your Google Spreadsheet or CSV file before retrieving data from it by passing a [Google Charts API Query Language](https://developers.google.com/chart/interactive/docs/querylanguage#Language_Syntax) query to the shortcode's `query` attribute. This lets you interact with the data in your Google Spreadsheet as though the spreadsheet were a relational database table. For instance, if you wish to display the team that scored the most goals on your website, you might use a shortcode like this to query your Google Spreadsheet and display the highest-scoring team, where the team name is the first column (column `A`) and that team's score is the second column (column `B`):
 
     [gdoc key="ABCDEFG" query="select A where max(B)"]
 
 Queries are also useful if your spreadsheet contains complex data from which many different charts can be created, allowing you to select only the parts of your spreadsheet that you'd like to use to compose the interactive chart.
+
+**Using a CSV file**
+
+You can use a CSV file exactly like you might use a Google Spreadsheet. Set the `key` to the URL of the file to display it as an HTML table:
+
+    [gdoc key="http://example.com/research_data.csv"]
+
+You can even use Google Data Queries on CSV data:
+
+    [gdoc key="http://example.com/research_data.csv" query="select `City`, `Air Quality`, `Population` where `Air Quality`='Fair'"]
 
 **Using Google Apps Script Web Apps**
 
@@ -260,6 +283,11 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 7. This screenshot shows an example of what the previous screenshot might output with a given spreadsheet that contains data for the Aliens, Ninjas, Pirates, and Robots teams, and their player's respective points.
 
 == Change log ==
+
+= Version 0.9.7 =
+
+* Feature: MySQL databases can now be used as a data source. Use the keyword `wordpress` as the value of the `key` attribute and a valid [MySQL `SELECT` statement](https://dev.mysql.com/doc/refman/5.5/en/select.html) as the value for the `query` attribute to retrieve data from your WordPress database. A MySQL connection URL (like `mysql://user:password@example.com/database`) can be used to connect to remote MySQL servers.
+    * This feature must be enabled by an administrator in the plugin's settings screen before it is available. Even after it's enabled, only users granted the special `gdoc_query_sql_databases` capability can author shortcodes that take advantage of this feature.
 
 = Version 0.9.6.3 =
 
@@ -511,12 +539,14 @@ This plugin provides one shortcode (`gdoc`) that can do many things through a co
 
 * `key` - Specifies the document to retrieve.
     * **required** Every `gdoc` shortcode must have one and only one `key` attribute. (All other attributes are optional.)
-    * `key` can be one of five types:
+    * `key` can be one of seven types:
         * The fully-qualified URL of a Google Spreadsheet that has been publicly shared, like `[gdoc key="https://docs.google.com/spreadsheets/d/ABCDEFG/htmlview#gid=123456"]`
         * The document ID of an old-style Google Spreadsheet that has been "Published to the web," like `[gdoc key="ABCDEFG"]`
         * The fully-qualified URL of a Google Apps Script Web App, like `[gdoc key="https://script.google.com/macros/s/ABCDEFG/exec"]`
         * The fully-qualified URL of a CSV file or a web service endpoint that produces CSV data, like `[gdoc key="http://viewportsizes.com/devices.csv"]`
         * The fully-qualified URL of a document on the Web. PDF, DOC, XLS, and other file formats supported by the [Google Docs Viewer](https://docs.google.com/viewer) will be rendered using the Viewer, like `[gdoc key="http://example.com/my_final_paper.pdf"]`
+        * The keyword `wordpress` to make a SQL query against the current blog's database, like [gdoc key="wordpress" query="SELECT * FROM custom_table"]`
+        * A MySQL connection URL to make a SQL query against an arbitrary MySQL server, like `[gdoc key="mysql://user:password@server.example.com:12345/database" query="SELECT * FROM custom_table"]`
 * `chart` - Displays Google Sheet data as a chart instead of a table. Valid values are:
     * `Area`
     * `Bar`
