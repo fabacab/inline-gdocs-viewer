@@ -615,7 +615,12 @@ class InlineGoogleSpreadsheetViewerPlugin {
             // DataTables Columns
             // @see https://www.datatables.net/reference/option/#Columnes
             'datatables_column_defs' => false,
-            'datatables_columns'     => false
+            'datatables_columns'     => false,
+
+            // DataTables extensions
+            // TableTools
+            // @see https://www.datatables.net/extensions/tabletools/initialisation
+            'datatables_table_tools' => false
         ), $atts, $this->shortcode);
 
         $x['key'] = $this->sanitizeKey($x['key']);
@@ -911,7 +916,7 @@ esc_html__('Inline Google Spreadsheet Viewer is provided as free software, but s
                     id="<?php esc_attr_e($this->prefix);?>datatables_defaults_object"
                     name="<?php esc_attr_e($this->prefix);?>settings[datatables_defaults_object]"
                     placeholder='{ "searching": false, "ordering": false }'
-                ><?php if (!empty($options['datatables_defaults_object'])) { print json_encode($options['datatables_defaults_object']);}?></textarea>
+                ><?php if (!empty($options['datatables_defaults_object'])) { print stripslashes(json_encode($options['datatables_defaults_object']));}?></textarea>
                 <p class="description"><?php print sprintf(
                     esc_html__('Define a DataTables defaults initialization object. This is useful if you wish to change the default DataTables enhancements for all affected tables on your site at once. All DataTables-enhanced tables will use the DataTables options configured here unless explicitly overriden in the shortcode, HTML, or JavaScript initialization for the given table, itself. To learn more, read the %1$sDataTables manual section on Setting defaults%2$s and refer to the %3$sdocumentation for shortcode attributes available via this plugin%2$s. Leave blank to use the plugin default.'),
                     '<a href="https://datatables.net/manual/options#Setting-defaults">', '</a>',
