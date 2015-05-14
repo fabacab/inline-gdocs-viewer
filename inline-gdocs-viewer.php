@@ -239,7 +239,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
             }
             $key = $parts['scheme'] . '://' . $parts['host'] . $parts['path'];
             $action = ($query)
-                ? 'gviz/tq?tqx=out:csv&tq=' . $this->sanitizeQuery($query)
+                ? 'gviz/tq?tqx=out:csv&tq=' . rawurlencode($query)
                 : 'export?format=csv';
             $url = str_replace($m[1], $action, $key);
             if ($gid) {
@@ -258,7 +258,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         $format = ($format) ? $format : 'json';
         $base = trailingslashit(get_site_url()) . '?';
         $qs = 'url=';
-        $qs .= rawurlencode($key .  '?tq=' . $this->sanitizeQuery($query) . "&tqx=out:$format");
+        $qs .= rawurlencode("$key?tq=" . rawurlencode($query) . "&tqx=out:$format");
         return $base . $qs;
     }
 
@@ -269,7 +269,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         // the shortcode with a less than sign, the user ought enter %3C, but after
         // the initial urlencode($query), this will encode the percent sign, returning
         // instead the value %253C, so we manually replace this in the query ourselves.
-        return str_replace('%253E', '%3E', str_replace('%253C', '%3C', urlencode($query)));
+        return urldecode(str_replace('%253E', '%3E', str_replace('%253C', '%3C', urlencode($query))));
     }
 
     private function getDocId ($key) {
@@ -640,7 +640,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         ), $atts, $this->shortcode);
 
         $atts['key'] = $this->sanitizeKey($atts['key']);
-        $atts['query'] = apply_filters($this->shortcode . '_query', $atts['query'], $atts);
+        $atts['query'] = apply_filters($this->shortcode . '_query', $this->sanitizeQuery($atts['query']), $atts);
 
         try {
             switch ($this->getDocTypeByKey($atts['key'])) {
