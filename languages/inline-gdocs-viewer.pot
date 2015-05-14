@@ -2,9 +2,9 @@
 # This file is distributed under the same license as the Inline Google Spreadsheet Viewer package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Inline Google Spreadsheet Viewer 0.9.5\n"
+"Project-Id-Version: Inline Google Spreadsheet Viewer 0.9.6.3\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/inline-gdocs-viewer\n"
-"POT-Creation-Date: 2015-05-07 11:34:26+00:00\n"
+"POT-Creation-Date: 2015-05-14 02:08:51+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -12,53 +12,53 @@ msgstr ""
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 
-#: inline-gdocs-viewer.php:71 inline-gdocs-viewer.php:802
+#: inline-gdocs-viewer.php:78 inline-gdocs-viewer.php:899
 msgid "Inline Google Spreadsheet Viewer Settings"
 msgstr ""
 
-#. #-#-#-#-#  inline-gdocs-viewer.pot (Inline Google Spreadsheet Viewer 0.9.5)  #-#-#-#-#
+#. #-#-#-#-#  inline-gdocs-viewer.pot (Inline Google Spreadsheet Viewer 0.9.6.3)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
-#: inline-gdocs-viewer.php:72
+#: inline-gdocs-viewer.php:79
 msgid "Inline Google Spreadsheet Viewer"
 msgstr ""
 
-#: inline-gdocs-viewer.php:274
+#: inline-gdocs-viewer.php:320
 msgid "Error parsing HTTP options attribute:"
 msgstr ""
 
-#: inline-gdocs-viewer.php:279
-msgid "Error requesting data from Google:"
+#: inline-gdocs-viewer.php:325
+msgid "Error requesting data:"
 msgstr ""
 
-#: inline-gdocs-viewer.php:607
+#: inline-gdocs-viewer.php:705
 msgid "Your Web browser must support inline frames to display this content:"
 msgstr ""
 
-#: inline-gdocs-viewer.php:680
+#: inline-gdocs-viewer.php:775
 msgid "Add Spreadsheet"
 msgstr ""
 
-#: inline-gdocs-viewer.php:707
+#: inline-gdocs-viewer.php:802
 msgid "Inline Google Spreadsheet shortcode"
 msgstr ""
 
-#: inline-gdocs-viewer.php:712
+#: inline-gdocs-viewer.php:807
 msgid "Insert inline Google Spreadsheet"
 msgstr ""
 
-#: inline-gdocs-viewer.php:713
+#: inline-gdocs-viewer.php:808
 msgid "Enter the key (web address) of your Google Spreadsheet"
 msgstr ""
 
-#: inline-gdocs-viewer.php:716
+#: inline-gdocs-viewer.php:811
 msgid "Key"
 msgstr ""
 
-#: inline-gdocs-viewer.php:717
+#: inline-gdocs-viewer.php:812
 msgid "paste your Spreadsheet URL here"
 msgstr ""
 
-#: inline-gdocs-viewer.php:732
+#: inline-gdocs-viewer.php:827
 msgid ""
 "You can insert a Google Spreadsheet in this post. To do so, type %s[gdoc key="
 "\"YOUR_SPREADSHEET_URL\"]%s wherever you would like the spreadsheet to "
@@ -66,13 +66,13 @@ msgid ""
 "your Google Spreadsheet."
 msgstr ""
 
-#: inline-gdocs-viewer.php:737
+#: inline-gdocs-viewer.php:832
 msgid ""
 "Only Google Spreadsheets that have been shared using either the \"Public on "
 "the web\" or \"anyone with the link\" options will be visible on this page."
 msgstr ""
 
-#: inline-gdocs-viewer.php:740
+#: inline-gdocs-viewer.php:835
 msgid ""
 "You can also transform your data into an interactive chart by using the "
 "%1$schart%2$s attribute. Supported chart types are Area, Bar, Bubble, "
@@ -84,14 +84,14 @@ msgid ""
 "depend on the chart you use."
 msgstr ""
 
-#: inline-gdocs-viewer.php:744
+#: inline-gdocs-viewer.php:839
 msgid ""
 "Refer to the %1$sshortcode attribute documentation%3$s for a complete list "
 "of shortcode attributes, and the %2$sGoogle Chart API documentation%3$s for "
 "more information about each option."
 msgstr ""
 
-#: inline-gdocs-viewer.php:750
+#: inline-gdocs-viewer.php:845
 msgid ""
 "If you are having trouble getting your Spreadsheet to show up on your "
 "website, you can %sget help from the plugin support forum%s. Consider "
@@ -99,46 +99,46 @@ msgid ""
 "answered before posting a new thread."
 msgstr ""
 
-#: inline-gdocs-viewer.php:761
+#: inline-gdocs-viewer.php:856
 msgid "Inserting a Google Spreadsheet"
 msgstr ""
 
-#: inline-gdocs-viewer.php:770
+#: inline-gdocs-viewer.php:865
 msgid ""
 "Inline Google Spreadsheet Viewer is provided as free software, but sadly "
 "grocery stores do not offer free food. If you like this plugin, please "
 "consider %1$s to its %2$s. &hearts; Thank you!"
 msgstr ""
 
-#: inline-gdocs-viewer.php:771
+#: inline-gdocs-viewer.php:866
 msgid "making a donation"
 msgstr ""
 
-#: inline-gdocs-viewer.php:772
+#: inline-gdocs-viewer.php:867
 msgid "houseless, jobless, nomadic developer"
 msgstr ""
 
-#: inline-gdocs-viewer.php:798
+#: inline-gdocs-viewer.php:895
 msgid "You do not have sufficient permissions to access this page."
 msgstr ""
 
-#: inline-gdocs-viewer.php:805
+#: inline-gdocs-viewer.php:902
 msgid "DataTables defaults"
 msgstr ""
 
-#: inline-gdocs-viewer.php:806
+#: inline-gdocs-viewer.php:903
 msgid "Site-wide defaults for DataTables-enhanced tables."
 msgstr ""
 
-#: inline-gdocs-viewer.php:810
+#: inline-gdocs-viewer.php:907
 msgid "DataTables classes"
 msgstr ""
 
-#: inline-gdocs-viewer.php:813
+#: inline-gdocs-viewer.php:910
 msgid "class-1 class-2"
 msgstr ""
 
-#: inline-gdocs-viewer.php:816
+#: inline-gdocs-viewer.php:913
 msgid ""
 "A space-separated list of HTML %1$sclass%2$s values. %1$s<table>%2$s "
 "elements with these classes will automatically be enhanced with %3$sjQuery "
@@ -146,11 +146,11 @@ msgid ""
 "%2$s class. Leave blank to use the plugin default."
 msgstr ""
 
-#: inline-gdocs-viewer.php:825
+#: inline-gdocs-viewer.php:922
 msgid "DataTables defaults object"
 msgstr ""
 
-#: inline-gdocs-viewer.php:834
+#: inline-gdocs-viewer.php:931
 msgid ""
 "Define a DataTables defaults initialization object. This is useful if you "
 "wish to change the default DataTables enhancements for all affected tables "
@@ -162,15 +162,36 @@ msgid ""
 "%2$s. Leave blank to use the plugin default."
 msgstr ""
 
+#: inline-gdocs-viewer.php:940
+msgid "Advanced options"
+msgstr ""
+
+#: inline-gdocs-viewer.php:941
+msgid "Advanced Options"
+msgstr ""
+
+#: inline-gdocs-viewer.php:945
+msgid "Allow SQL queries in shortcodes?"
+msgstr ""
+
+#: inline-gdocs-viewer.php:951
+msgid ""
+"Enabling this option permits SQL queries against arbitrary MySQL databases "
+"to be inserted as part of a %1$s shortcode. This is useful but can also be "
+"easily abused, so it is disabled by default. Even once enabled, such queries "
+"will only work in posts whose author has been granted the %2$s capability. "
+"(Only Administrators have this capability by default.)"
+msgstr ""
+
 #. Plugin URI of the plugin/theme
 msgid "http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/"
 msgstr ""
 
 #. Description of the plugin/theme
 msgid ""
-"Retrieves a published, public Google Spreadsheet and displays it as an HTML "
-"table or interactive chart. <strong>Like this plugin? Please <a href="
-"\"https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;"
+"Retrieves data from a public Google Spreadsheet or CSV file and displays it "
+"as an HTML table or interactive chart. <strong>Like this plugin? Please <a "
+"href=\"https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;"
 "business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet"
 "%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;"
 "currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted"

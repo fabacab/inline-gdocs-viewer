@@ -613,7 +613,7 @@ The **complete list of attributes for configurable chart options** is below. Ref
 
 To use DataTables customization options, you must not supply the `no-datatables` class.
 
-The **complete list of DataTables customization attributes** is below. Please refer to the [DataTables Options reference](https://datatables.net/reference/option/) for more information about each particular option.
+The **complete list of core DataTables customization attributes** is below. Please refer to the [DataTables Options reference](https://datatables.net/reference/option/) for more information about each particular option.
 
 * `datatables_auto_width`
 * `datatables_defer_render`
@@ -653,6 +653,10 @@ The **complete list of DataTables customization attributes** is below. Please re
 * `datatables_tab_index`
 * `datatables_column_defs`
 * `datatables_columns`
+
+In addition to the above, the following included DataTables extensions can be customized through these additional shortcode attributes:
+
+* `datatables_table_tools` for customizing the [DataTables TableTools extension](https://www.datatables.net/extensions/tabletools/)
 
 = Plugin hooks =
 

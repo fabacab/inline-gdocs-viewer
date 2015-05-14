@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
- * Description: Retrieves a published, public Google Spreadsheet and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
+ * Description: Retrieves data from a public Google Spreadsheet or CSV file and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
  * Version: 0.9.6.3
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
@@ -17,6 +17,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
     private $dt_defaults; //< Defaults for DataTables defaults object.
     private $invocations = 0;
     private $prefix; //< Internal prefix for settings, etc., derived from shortcode.
+    private $capabilities; //< List of custom capabilities.
     private $gdoc_url_regex = '!https://(?:docs\.google\.com/spreadsheets/d/|script\.google\.com/macros/s/)([^/]+)!';
 
     public function __construct () {
@@ -25,6 +26,9 @@ class InlineGoogleSpreadsheetViewerPlugin {
         $this->dt_defaults = json_encode(array(
             'dom' => "TC<'clear'>lfrtip"
         ));
+        $this->capabilities = array(
+            $this->prefix . 'query_sql_databases'
+        );
 
         add_action('plugins_loaded', array($this, 'registerL10n'));
         add_action('init', array($this, 'maybeFetchGvizDataSource'));
@@ -53,6 +57,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
             $options['datatables_defaults_object'] = json_decode($this->dt_defaults);
         }
         update_option($this->prefix . 'settings', $options);
+        $admin_role = get_role('administrator');
+        $admin_role->add_cap($this->prefix . 'query_sql_databases', true);
     }
 
     public function registerL10n () {
@@ -196,6 +202,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
         $p = parse_url($key);
         if ('csv' === strtolower(pathinfo($p['path'], PATHINFO_EXTENSION))) {
             $type = 'csv';
+        } else if ('mysql' === $p['scheme']) {
+            $type = 'mysql';
         } else if (isset($p['host'])) {
             switch ($p['host']) {
                 case 'docs.google.com':
@@ -866,7 +874,9 @@ esc_html__('Inline Google Spreadsheet Viewer is provided as free software, but s
         $safe_input = array();
         foreach ($input as $k => $v) {
             switch ($k) {
-                // TODO
+                case 'allow_sql_db_queries':
+                    $safe_input[$k] = intval($v);
+                    break;
                 case 'datatables_classes':
                     if (empty($v)) { $v = $this->dt_class; }
                     $safe_input[$k] = sanitize_text_field($v);
@@ -922,6 +932,28 @@ esc_html__('Inline Google Spreadsheet Viewer is provided as free software, but s
                     '<a href="https://datatables.net/manual/options#Setting-defaults">', '</a>',
                     '<a href="https://wordpress.org/plugins/inline-google-spreadsheet-viewer/other_notes/">'
                 );?></p>
+            </td>
+        </tr>
+    </tbody>
+</table>
+</fieldset>
+<fieldset><legend><?php esc_html_e('Advanced options', 'inline-gdocs-viewer');?></legend>
+<table class="form-table" summary="<?php esc_attr_e('Advanced Options', 'inline-gdocs-viewer');?>">
+    <tbody>
+        <tr>
+            <th>
+                <label for="<?php esc_attr_e($this->prefix);?>allow_sql_db_queries"><?php esc_html_e('Allow SQL queries in shortcodes?', 'inline-gdocs-viewer');?></label>
+            </th>
+            <td>
+                <input type="checkbox" <?php if (isset($options['allow_sql_db_queries'])) : print 'checked="checked"'; endif; ?> value="1" id="<?php esc_attr_e($this->prefix);?>allow_sql_db_queries" name="<?php esc_attr_e($this->prefix);?>settings[allow_sql_db_queries]" />
+                <label for="<?php esc_attr_e($this->prefix);?>allow_sql_db_queries"><span class="description"><?php
+        print sprintf(
+            esc_html__('Enabling this option permits SQL queries against arbitrary MySQL databases to be inserted as part of a %1$s shortcode. This is useful but can also be easily abused, so it is disabled by default. Even once enabled, such queries will only work in posts whose author has been granted the %2$s capability. (Only Administrators have this capability by default.)', 'inline-gdocs-viewer'),
+            $this->shortcode,
+            "<code>{$this->prefix}query_sql_databases</code>"
+        );
+                ?></span></label>
+            </td>
             </td>
         </tr>
     </tbody>

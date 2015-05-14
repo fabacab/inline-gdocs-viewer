@@ -26,3 +26,14 @@ $wpdb->query($wpdb->prepare(
     ",
     $wpdb->esc_like('_transient_timeout_gdoc') . '%'
 ));
+
+// Delete RBAC settings.
+global $wp_roles;
+$delete_caps = array(
+    'gdoc_query_sql_databases'
+);
+foreach ($delete_caps as $cap) {
+    foreach (array_keys($wp_roles->roles) as $role) {
+        $wp_roles->remove_cap($role, $cap);
+    }
+}
