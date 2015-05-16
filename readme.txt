@@ -284,7 +284,7 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 
 == Change log ==
 
-= Version 0.9.7 =
+= Version 0.9.7.1 =
 
 * [Bugfix](https://wordpress.org/support/topic/update-wiped-out-datatables-defaults-object?replies=6#post-6956998): Fix an issue wherein DataTables defaults, when applied via HTML5 `data-` attributes, were inherited across some DataTables invocations.
 
