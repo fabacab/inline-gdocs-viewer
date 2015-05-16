@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves data from a public Google Spreadsheet or CSV file and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * Version: 0.9.7.1
+ * Version: 0.9.8
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: inline-gdocs-viewer
@@ -258,7 +258,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         $format = ($format) ? $format : 'json';
         $base = trailingslashit(get_site_url()) . '?';
         $qs = 'url=';
-        $qs .= rawurlencode("$key?tq=" . rawurlencode($query) . "&tqx=out:$format");
+        $qs .= rawurlencode($key) . '&tq=' . rawurlencode($query) . "&tqx=out:$format";
         return $base . $qs;
     }
 
@@ -269,7 +269,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         // the shortcode with a less than sign, the user ought enter %3C, but after
         // the initial urlencode($query), this will encode the percent sign, returning
         // instead the value %253C, so we manually replace this in the query ourselves.
-        return urldecode(str_replace('%253E', '%3E', str_replace('%253C', '%3C', urlencode($query))));
+        return rawurldecode(str_replace('%253E', '%3E', str_replace('%253C', '%3C', rawurlencode($query))));
     }
 
     private function getDocId ($key) {
@@ -467,21 +467,67 @@ class InlineGoogleSpreadsheetViewerPlugin {
             ||
             !$this->isValidNonce($_GET[$this->prefix . 'get_datasource_nonce'], $this->prefix . 'get_datasource_nonce')
         ) { return; }
-        require_once dirname(__FILE__) . '/lib/vistable.php';
         $url = rawurldecode($_GET['url']);
         $http_response = $this->doHttpRequest($url, false);
 
-        $p = parse_url($url);
-        $qs = array();
-        parse_str($p['query'], $qs);
-        $tqx  = (isset($qs['tqx']))  ? $qs['tqx'] : '';
-        $tq   = (isset($qs['tq']))   ? $qs['tq']  : '';
-        $tqrt = (isset($qs['tqrt'])) ? $qs['tqrt']: '';
-        $tz   = (isset($qs['tz']))   ? $qs['tz']  : 'PDT'; // TODO: will get_option('timezone_string') work?
-        $vt = new csv_vistable($tqx, $tq, $tqrt, $tz, get_locale(), array());
+        if (isset($_GET['chart'])) {
+            $http_response['body'] = $this->setGVizCsvDataTypes($http_response['body']);
+        }
+
+        require_once dirname(__FILE__) . '/lib/vistable.php';
+        $vt = new csv_vistable(
+            (isset($_GET['tqx']))  ? $_GET['tqx'] : '',
+            (isset($_GET['tq']))   ? $_GET['tq']  : '',
+            (isset($_GET['tqrt'])) ? $_GET['tqrt']: '',
+            (isset($_GET['tz']))   ? $_GET['tz']  : 'PDT', // TODO: will get_option('timezone_string') work?
+            get_locale(),
+            array()
+        );
         $vt->setup_table($http_response['body']);
-        print $vt->execute();
+        print @$vt->execute();
         exit;
+    }
+
+    /**
+     * When trying to do a chart on standard CSV data,
+     * the vistable library needs help to hint at the
+     * data types of columns, or else it'll always treat
+     * the data as a string.
+     *
+     * @param string $csv_str The raw CSV data.
+     * @return string The same CSV data with a type-hinted header row.
+     */
+    private function setGVizCsvDataTypes ($csv_str) {
+        $data = $this->parseCsv($csv_str);
+        $head = array_shift($data);
+        $cols = array();
+        // peek at lines 2 through 20 (not the header)
+        $peek = (count($data) > 20) ? 20 : count($data);
+        for ($i = 0; $i < $peek; $i++) {
+            foreach ($data[$i] as $k => $v) {
+                if (ctype_digit($v) || preg_match('/^[0-9]+(?:\.[0-9]*)?$/', $v)) {
+                    $cols[$k] = 'number';
+                } else if (strtotime($v)) {
+                    $cols[$k] = 'datetime';
+                } else {
+                    $cols[$k] = 'string';
+                }
+            }
+        }
+        $head_typed = array();
+        foreach ($head as $k => $v) {
+            if ('string' === $cols[$k]) {
+                $head_typed[] = $v;
+            } else {
+                $head_typed[] = $v . ' as ' . $cols[$k];
+            }
+        }
+        array_unshift($data, $head_typed);
+        $lines = array();
+        foreach ($data as $row) {
+            $lines[] = implode(',', $row);
+        }
+        return implode("\n", $lines);
     }
 
     private function makeNonceUrl ($url) {
@@ -674,13 +720,10 @@ class InlineGoogleSpreadsheetViewerPlugin {
             // if a Google Spreadsheet, the URL to fetch needs to be modified.
             $url = $this->getSpreadsheetUrl($x['key'], $x['gid'], $x['query']);
         } else {
-            if (!empty($x['query'])) {
-                // if a CSV file or GAS Web App that has a query,
-                if (!empty($x['chart'])) { $fmt = 'json'; }
-                else { $fmt = 'csv'; }
-                // the url should be proxied through this plugin
-                $url = $this->makeNonceUrl($this->getGVizDataSourceUrl($x['key'], $x['query'], $fmt));
-            }
+            if (!empty($x['chart'])) { $fmt = 'json'; }
+            else { $fmt = 'csv'; }
+            // the url should be proxied through this plugin
+            $url = $this->makeNonceUrl($this->getGVizDataSourceUrl($x['key'], $x['query'], $fmt));
         }
 
         // Retrieve and set HTML output.
@@ -823,7 +866,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         $chart_id = 'igsv-' . $this->invocations . '-' . $x['chart'] . 'chart-'  . $this->getDocId($x['key']);
         $output  = '<div id="' . esc_attr($chart_id) . '" class="igsv-chart" title="' . esc_attr($x['title']) . '"';
         $output .= ' data-chart-type="' . esc_attr(ucfirst($x['chart'])) . '"';
-        $output .= ' data-datasource-href="' . esc_attr($url) . '"';
+        $output .= ' data-datasource-href="' . esc_attr($url) . '&chart=true"';
         if ($chart_opts = $this->getChartOptions($x)) {
             foreach ($chart_opts as $k => $v) {
                 if (!empty($v)) {

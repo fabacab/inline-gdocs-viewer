@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 3.5
 Tested up to: 4.2.2
-Stable tag: 0.9.7.1
+Stable tag: 0.9.8
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -12,13 +12,12 @@ Embeds public Google Spreadsheets, Apps Scripts, or CSV files in WordPress posts
 
 == Description ==
 
-Easily turn data stored in a [Google Spreadsheet](https://sheets.google.com/), [CSV file](https://en.wikipedia.org/wiki/Comma-separated_values), a [MySQL database](https://mysql.com/), or the output of a [Google Apps Script](https://www.google.com/script/start/) into a beautiful interactive chart or graph, a sortable and searchable table, or both. Embed live previews of PDF, XLS, DOC, and other file formats supported by the [Google Docs Viewer](https://docs.google.com/viewer). A built-in cache provides extra speed.
+Easily turn data stored in a [Google Spreadsheet](https://sheets.google.com/), [CSV file](https://en.wikipedia.org/wiki/Comma-separated_values), [MySQL database](https://mysql.com/), or the output of a [Google Apps Script](https://www.google.com/script/start/) into a beautiful interactive chart or graph, a sortable and searchable table, or both. Embed live previews of PDF, XLS, DOC, and other file formats supported by the [Google Docs Viewer](https://docs.google.com/viewer). A built-in cache provides extra speed.
 
 * Update your blog post or page whenever a Google Spreadsheet or CSV file changes.
-* Create beautiful interactive graphs and charts from your spreadsheet data with ease.
-* Display custom data stored in the site's database as a sortable and searchable table.
+* Create beautiful interactive graphs and charts from your Google Spreadsheet or CSV files with ease.
 * Customize the table's or chart's look and feel using a powerful and flexible query language and a plethora of configuration options.
-* Show the output of any public [Google Apps Script](https://developers.google.com/apps-script/overview) that has been [deployed as a Web App](https://developers.google.com/apps-script/guides/web#deploying_a_script_as_a_web_app) on your WordPress site.
+* Use data from a variety of different sources: Google Spreadsheets, Google Apps Scripts, CSV files, your WordPress database, or a remote MySQL database.
 * Embed almost any online document to view without leaving your blog.
 
 *Donations for this plugin make up a chunk of my income. If you continue to enjoy this plugin, please consider [making a donation](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted). :) Thank you for your support!*
@@ -47,9 +46,38 @@ Use the `gid` attribute to fetch data from a worksheet other than the first one 
 
     [gdoc key="ABCDEFG" gid="4"]
 
+**CSV files**
+
+Using a CSV file works the same way as Google Spreadsheets. Set the `key` to the URL of the file to display it as an HTML table:
+
+    [gdoc key="http://example.com/research_data.csv"]
+
+**HTML Tables**
+
+Customizing the HTML tables that are produced is easy. For instance, to supply the table's `title`, `summary`, `<caption>`, and a customized `class` value, you can do the following:
+
+    [gdoc key="ABCDEFG" class="my-sheet" title="Tooltip text displayed on hover" summary="An example spreadsheet, with a summary."]This is the table's caption.[/gdoc]
+
+The above shortcode will produce HTML that looks something like the following:
+
+    <table id="igsv-ABCDEFG" class="igsv-table my-sheet" title="Tooltip text displayed on hover" summary="An example spreadsheet, with a summary.">
+        <caption>This is the table's caption.</caption>
+        <!-- ...rest of table code using spreadsheet data here... -->
+    </table>
+
+By default, all tables are progressively enhanced with jQuery [DataTables](https://datatables.net/) to provide sorting, searching, and pagination functions on the table display itself. If you'd like a specific table not to include this functionality, use the `no-datatables` `class` in your shortcode. For instance:
+
+    [gdoc key="ABCDEFG" class="no-datatables"]
+
+Web addresses and email addresses in your data are turned into links. If this causes problems, you can disable this behavior by specifying `no` to the `linkify` attribute in your shortcode. For instance:
+
+    [gdoc key="ABCDEFG" linkify="no"]
+
+Each table can be customized per-table, using shortcode attributes, or globally for your entire site, using the plugin's settings screen. You can freeze the table header, columns, control pagination length, and more. Refer to the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-viewer/other_notes/) section for a full listing of supported customization attributes.
+
 **Charts**
 
-To create an interactive chart from your Spreadsheet's data, use the `chart` attribute with a supported chart type. These include:
+Data from Google Spreadsheets or CSV files can be graphed in interactive charts. To visualize your data as a chart, add the `chart` attribute to your shortcode and supply a supported chart type. You can make:
 
 * `Area` charts
 * `Bar` charts
@@ -63,44 +91,21 @@ To create an interactive chart from your Spreadsheet's data, use the `chart` att
 * `Scatter` charts
 * `Stepped` area charts
 
-For example, if you have a Google Spreadsheet for a sports league that records the goals each team has scored (where the first column is the team name and the second column is their total goals), you can create a bar chart, with an optional title, from that data using a shortcode like this:
+For example, if you have data for a sports league that records the goals each team has scored (where the first column is the team name and the second column is their total goals), you can create a bar chart, with an optional title, from that data using a shortcode like this:
 
     [gdoc key="ABCDEFG" chart="Bar" title="Total goals per team"]
 
-Depending on the type of chart you chose, you can customize your chart with a number of options, such as colors. For example, to create a 3D red and green pie chart whose slices are labelled with your data's values:
+You can customize your chart with a number of options, such as colors. For example, to create a 3D red and green pie chart whose slices are labelled with your data's values:
 
     [gdoc key="ABCDEFG" chart="Pie" chart_colors="red green" chart_dimensions="3" chart_pie_slice_text="value"]
 
-**HTML Tables**
+**Pre-processing data with Google Queries**
 
-All data sources (Google Spreadsheets, CSV files, or MySQL database queries) will be rendered in an HTML table, unless you add the `chart` attribute as described above. The HTML of the resulting table is highly customizable. To render an HTML table with additional metadata, such as supplying the table's `title`, `summary`, `<caption>`, and a customized `class` value, you can do the following:
+You can pre-process your Google Spreadsheets or CSV files before retrieving data from them by passing a [Google Charts API Query Language](https://developers.google.com/chart/interactive/docs/querylanguage#Language_Syntax) query to the shortcode's `query` attribute. This lets you interact with the data in your Google Spreadsheet or CSV file as though it were a relational database table. For instance, if you wish to display the team that scored the most goals on your website, you might use a shortcode like this to query your Google Spreadsheet and display the highest-scoring team, where the team name is the first column (column `A`) and that team's score is the second column (column `B`):
 
-    [gdoc key="ABCDEFG" class="my-sheet" title="Tooltip text displayed on hover" summary="An example spreadsheet, with a summary."]This is the table's caption.[/gdoc]
+    [gdoc key="ABCDEFG" query="select A where max(B)"]
 
-The above shortcode will produce HTML that looks something like the following:
-
-    <table id="igsv-ABCDEFG" class="igsv-table my-sheet" title="Tooltip text displayed on hover" summary="An example spreadsheet, with a summary.">
-        <caption>This is the table's caption.</caption>
-        <!-- ...rest of table code using spreadsheet data here... -->
-    </table>
-
-You can also `strip` a certain number of rows (e.g., `strip="3"` omits the top 3 rows of the spreadsheet).
-
-The `header_rows` attribute lets you specify how many rows should be rendered as the [table header](http://reference.sitepoint.com/html/thead). For example, to render a worksheet's top 3 rows inside the `<thead>` element, use:
-
-    [gdoc key="ABCDEFG" header_rows="3"]
-
-By default, all tables are progressively enhanced with jQuery [DataTables](https://datatables.net/) to provide sorting, searching, and pagination functions on the table display itself. If you'd like a specific table not to include this functionality, use the `no-datatables` `class` in your shortcode. For instance:
-
-    [gdoc key="ABCDEFG" class="no-datatables"]
-
-For DataTables-enhanced tables, you can also specify columns that you'd like to "freeze" when the user scrolls large tables horizontally. To do so, use the `FixedColumns-left-N` and `FixedColumns-right-N` classes, where `N` is the number of columns you'd like to freeze. For instance, to display the three left-most columns and the right-most column in a fixed (frozen) position, use the following in your shortcode:
-
-    [gdoc key="ABCDEFG" class="FixedColumns-left-3 FixedColumns-right-1"]
-
-Web addresses and email addresses in your data are turned into links. If this causes problems, you can disable this behavior by specifying `no` to the `linkify` attribute in your shortcode. For instance:
-
-    [gdoc key="ABCDEFG" linkify="no"]
+Queries are also useful if your spreadsheet contains complex data from which many different charts can be created, allowing you to select only the parts of your spreadsheet that you'd like to use to compose the interactive chart.
 
 **Using a MySQL Database**
 
@@ -113,24 +118,6 @@ For example, to show a table of user registration dates from the current blog:
 Remote MySQL databases are also accessible by supplying a MySQL connection URL with valid access credentials. For example, to show the prices from an `inventory` database hosted by a MySQL server at `server.example.com` by logging in as `user` with the password `password` and querying for items that are in stock:
 
     [gdoc key="mysql://user:password@server.example.com/inventory" query="SELECT sku AS 'Item No.', product_name AS Product, price AS Price WHERE in_stock=TRUE"]
-
-**Using Queries**
-
-You can pre-process your Google Spreadsheet or CSV file before retrieving data from it by passing a [Google Charts API Query Language](https://developers.google.com/chart/interactive/docs/querylanguage#Language_Syntax) query to the shortcode's `query` attribute. This lets you interact with the data in your Google Spreadsheet as though the spreadsheet were a relational database table. For instance, if you wish to display the team that scored the most goals on your website, you might use a shortcode like this to query your Google Spreadsheet and display the highest-scoring team, where the team name is the first column (column `A`) and that team's score is the second column (column `B`):
-
-    [gdoc key="ABCDEFG" query="select A where max(B)"]
-
-Queries are also useful if your spreadsheet contains complex data from which many different charts can be created, allowing you to select only the parts of your spreadsheet that you'd like to use to compose the interactive chart.
-
-**Using a CSV file**
-
-You can use a CSV file exactly like you might use a Google Spreadsheet. Set the `key` to the URL of the file to display it as an HTML table:
-
-    [gdoc key="http://example.com/research_data.csv"]
-
-You can even use Google Data Queries on CSV data:
-
-    [gdoc key="http://example.com/research_data.csv" query="select `City`, `Air Quality`, `Population` where `Air Quality`='Fair'"]
 
 **Using Google Apps Script Web Apps**
 
@@ -283,6 +270,10 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 7. This screenshot shows an example of what the previous screenshot might output with a given spreadsheet that contains data for the Aliens, Ninjas, Pirates, and Robots teams, and their player's respective points.
 
 == Change log ==
+
+= Version 0.9.8 =
+
+* Feature: The `chart` attribute can now be used with CSV `key`s. This means you can make a Google Chart out of the data in any CSV file.
 
 = Version 0.9.7.1 =
 
@@ -577,7 +568,7 @@ This plugin provides one shortcode (`gdoc`) that can do many things through a co
 * `http_opts` - A JSON string representing options to pass to the [WordPress HTTP API](https://codex.wordpress.org/HTTP_API), like `[gdoc key="ABCDEFG" http_opts='{"method": "POST", "blocking": false, "user-agent": "My Custom User Agent String"}']`.
 * `lang` - The [ISO 639](http://www.iso.org/iso/home/standards/language_codes.htm) language code declaring the human language of the spreadsheet's contents. For instance, use `nl-NL` to declare that content is in Dutch. (Default: your site's [global language setting](https://codex.wordpress.org/WordPress_in_Your_Language).)
 * `linkify` - Whether or not to automatically turn URLs, email addresses, and so on, into clickable links. Set to `no` to disable this behavior. (Default: `true`.)
-* `query` - A [Google Charts API Query Language](https://developers.google.com/chart/interactive/docs/querylanguage#Language_Syntax) query string, like `[gdoc key="ABCDEFG" query="select A where max(B)"]`. *Note:* Arrow bracktets (`<` and `>`) in queries must be URL-encoded (`%3C` and `%3E`, respectively) to avoid confusing the WordPress HTML parser. (Default: none.)
+* `query` - A [Google Query Language](https://developers.google.com/chart/interactive/docs/querylanguage#Language_Syntax) query if the data source is a Google Spreadsheet or CSV file, or a SQL `SELECT` statement if the data source is a MySQL database. *Note:* Arrow bracktets (`<` and `>`) in queries must be URL-encoded (`%3C` and `%3E`, respectively) to avoid confusing the WordPress HTML parser. (Default: none.)
 * `strip` - The number of leading rows to omit from the resulting HTML table. (Default: `0`.)
 * `style` - An inline CSS rule applied to the containing HTML element. For example, to set a fixed height on a table, use `[gdoc key="ABCDEFG" style="height: 480px;"]`. (Default: none.)
 * `summary` - A brief description of the information displayed for the `summary` attribute of the resulting HTML `<table>`. (Default: `Google Spreadsheet`.)
