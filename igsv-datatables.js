@@ -1,17 +1,18 @@
 // DataTables
 jQuery(document).ready(function () {
-    var dt_opts = {};
     if (igsv_plugin_vars.datatables_defaults_object) {
-        dt_opts = jQuery.extend(jQuery.fn.dataTable.defaults, igsv_plugin_vars.datatables_defaults_object);
+        jQuery.extend(jQuery.fn.dataTable.defaults, igsv_plugin_vars.datatables_defaults_object);
     }
     jQuery(igsv_plugin_vars.datatables_classes).each(function () {
         var table = jQuery(this);
-        dt_opts = jQuery.extend(true, dt_opts, {
-            'tableTools': {
+        var dt_opts = {};
+        var tt_opts = table.data('table-tools');
+        if (tt_opts) {
+            dt_opts.tableTools = jQuery.extend(true, tt_opts, {
                 // TODO: Why won't this work when supplied in the datatables_defaults_object?
                 'sSwfPath': '//datatables.net/release-datatables/extensions/TableTools/swf/copy_csv_xls_pdf.swf'
-            }
-        });
+            });
+        }
         if (false === table.hasClass('no-responsive')) {
             dt_opts.responsive = true;
         }
