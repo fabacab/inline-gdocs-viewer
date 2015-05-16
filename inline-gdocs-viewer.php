@@ -1006,6 +1006,9 @@ esc_html__('Inline Google Spreadsheet Viewer is provided as free software, but s
             wp_die(__('You do not have sufficient permissions to access this page.', 'inline-gdocs-viewer'));
         }
         $options = get_option($this->prefix . 'settings');
+        $datatables_defaults_json = (defined('JSON_PRETTY_PRINT'))
+            ? json_encode($options['datatables_defaults_object'], JSON_PRETTY_PRINT)
+            : json_encode($options['datatables_defaults_object']);
 ?>
 <h2><?php esc_html_e('Inline Google Spreadsheet Viewer Settings', 'inline-gdocs-viewer');?></h2>
 <form method="post" action="options.php">
@@ -1037,7 +1040,8 @@ esc_html__('Inline Google Spreadsheet Viewer is provided as free software, but s
                     id="<?php esc_attr_e($this->prefix);?>datatables_defaults_object"
                     name="<?php esc_attr_e($this->prefix);?>settings[datatables_defaults_object]"
                     placeholder='{ "searching": false, "ordering": false }'
-                ><?php if (!empty($options['datatables_defaults_object'])) { print stripslashes(json_encode($options['datatables_defaults_object']));}?></textarea>
+                    style="width: 50%; min-height: 200px;"
+                ><?php if (!empty($options['datatables_defaults_object'])) { print stripslashes($datatables_defaults_json); }?></textarea>
                 <p class="description"><?php print sprintf(
                     esc_html__('Define a DataTables defaults initialization object. This is useful if you wish to change the default DataTables enhancements for all affected tables on your site at once. All DataTables-enhanced tables will use the DataTables options configured here unless explicitly overriden in the shortcode, HTML, or JavaScript initialization for the given table, itself. To learn more, read the %1$sDataTables manual section on Setting defaults%2$s and refer to the %3$sdocumentation for shortcode attributes available via this plugin%2$s. Leave blank to use the plugin default.'),
                     '<a href="https://datatables.net/manual/options#Setting-defaults">', '</a>',
