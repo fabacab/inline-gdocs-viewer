@@ -408,7 +408,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
             $ic = 1; // reset column counting
             foreach ($v as $th) {
                 $th = nl2br(esc_html($th));
-                $html .= "<th class=\"col-$ic " . $this->evenOrOdd($ic) . "\"><div>$th</div></td>";
+                $html .= "<th class=\"col-$ic " . $this->evenOrOdd($ic) . "\"><div>$th</div></th>";
                 $ic++;
             }
             $html .= "</tr>";
