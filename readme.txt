@@ -271,6 +271,11 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 
 == Change log ==
 
+= Version 0.9.9 =
+
+* Feature: Improved QuickTags button.
+    * The QuickTags dialog box now provides fields for a `query` and `title` attribute value in addition to your datasource's `key`. It also provides a tabbed interface for other HTML integrations and checkboxes for some plugin features (`use_cache` and `linkify`).
+
 = Version 0.9.8.1 =
 
 * Bugfix: Correct invalid markup when producing HTML tables.

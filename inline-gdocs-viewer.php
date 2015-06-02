@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves data from a public Google Spreadsheet or CSV file and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * Version: 0.9.8.1
+ * Version: 0.9.9
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: inline-gdocs-viewer
@@ -93,6 +93,13 @@ class InlineGoogleSpreadsheetViewerPlugin {
     public function addAdminScripts () {
         wp_enqueue_style('wp-jquery-ui-dialog');
         wp_enqueue_script('jquery-ui-dialog');
+        wp_enqueue_script('jquery-ui-tabs');
+        //wp_enqueue_script('jquery-ui-tooltip');
+
+        wp_enqueue_style(
+            'inline-gdocs-viewer',
+            plugins_url('inline-gdocs-viewer.css', __FILE__)
+        );
     }
 
     public function addFrontEndScripts () {
@@ -919,13 +926,33 @@ class InlineGoogleSpreadsheetViewerPlugin {
 ?>
 <script type="text/javascript">
 jQuery(function () {
-    var d = jQuery('#qt_content_igsv_sheet_dialog');
-    d.dialog({
+    var IGSV_QT = {};
+    IGSV_QT.d = jQuery('#qt_content_igsv_dialog');
+    IGSV_QT.d.find('#qt_content_igsv_dialog_tabs_container').tabs({
+//        'beforeActivate': function (e, ui) {
+//            if ('igsv-datasource-tab' === ui.newTab.context.getAttribute('id')) { return; }
+//            var is_valid = IGSV_QT.d.find('form').get(0).checkValidity();
+//            if (!is_valid) {
+//                IGSV_QT.d.find('[name]:invalid').each(function () {
+//                    jQuery(this).tooltip();
+//                });
+//                IGSV_QT.d.find('form :invalid:first-of-type').focus();
+//            } else {
+//                IGSV_QT.d.find('[name]').each(function () {
+//                    var x = jQuery(this).tooltip('instance');
+//                    if (x) { x.destroy(); }
+//                })
+//
+//            }
+//            return is_valid;
+//        }
+    });
+    IGSV_QT.d.dialog({
         'dialogClass'  : 'wp-dialog',
         'modal'        : true,
         'autoOpen'     : false,
         'closeOnEscape': true,
-        'minWidth'     : 500,
+        'minWidth'     : 700,
         'buttons'      : {
             'add' : {
                 'text'  : '<?php print esc_js(__('Add Spreadsheet', 'inline-gdocs-viewer'));?>',
@@ -933,12 +960,48 @@ jQuery(function () {
                 'click' : function () {
                     var x = jQuery('#content').prop('selectionStart');
                     var cur_txt = jQuery('#content').val();
-                    var new_txt = '[gdoc key="' + jQuery('#js-qt-igsv-sheet-key').val() + '"]';
-
+                    var new_txt = '[gdoc ' + shortcodeAttributes(getValues()) + ']';
                     jQuery('#content').val([cur_txt.slice(0, x), new_txt, cur_txt.slice(x)].join(''));
-
-                    jQuery('#js-qt-igsv-sheet-key').val('');
+                    resetDialogUi();
                     jQuery(this).dialog('close');
+
+                    function getValues () {
+                        var atts = {};
+                        jQuery('#qt_content_igsv_dialog input[type="text"]').each(function () {
+                            if (jQuery(this).val().length) {
+                                atts[jQuery(this).attr('name')] = jQuery(this).val();
+                            }
+                        });
+                        jQuery('#qt_content_igsv_dialog input[type="checkbox"]').each(function () {
+                            if (false === jQuery(this).prop('checked')) {
+                                atts[jQuery(this).attr('name')] = 'no';
+                            }
+                        });
+                        return atts;
+                    }
+                    function shortcodeAttributes (atts) {
+                        var str = '';
+                        for (k in atts) {
+                            var v;
+                            switch (k) {
+                                case 'query':
+                                    v = atts[k]
+                                        .replace('<', encodeURIComponent('<'))
+                                        .replace('>', encodeURIComponent('>'));
+                                    break;
+                                default:
+                                    atts[k] = v;
+                                    break;
+                            }
+                            str += ' ' + k + '="' + v + '"';
+                        }
+                        return str;
+                    }
+                    function resetDialogUi () {
+                        jQuery('#qt_content_igsv_dialog input').each(function () {
+                            jQuery(this).val('');
+                        });
+                    }
                 }
             }
         }
@@ -949,7 +1012,8 @@ jQuery(function () {
         function () {
             jQuery('#qt_content_igsv_sheet').on('click', function (e) {
                 e.preventDefault();
-                d.dialog('open');
+                IGSV_QT.d.dialog('open');
+                IGSV_QT.d.find('input').get(0).focus();
             });
             jQuery('#qt_content_igsv_sheet').click();
         },
@@ -960,16 +1024,135 @@ jQuery(function () {
     );
 });
 </script>
-<div id="qt_content_igsv_sheet_dialog" title="<?php esc_attr_e('Insert inline Google Spreadsheet', 'inline-gdocs-viewer');?>">
-    <p class="howto"><?php esc_html_e('Enter the key (web address) of your Google Spreadsheet', 'inline-gdocs-viewer');?></p>
-    <div>
-        <label>
-            <span><?php esc_html_e('Key', 'inline-gdocs-viewer');?></span>
-            <input style="width: 75%;" id="js-qt-igsv-sheet-key" placeholder="<?php esc_attr_e('paste your Spreadsheet URL here', 'inline-gdocs-viewer');?>" />
-        </label>
-    </div>
+<div id="qt_content_igsv_dialog" title="<?php esc_attr_e('Insert Spreadsheet Data as a Table or Chart', 'inline-gdocs-viewer');?>">
+    <div id="qt_content_igsv_dialog_tabs_container">
+        <ul>
+            <li><a href="#igsv-datasource-tab"><?php esc_html_e('Datasource', 'inline-gdocs-viewer');?></a></li>
+            <li><a href="#igsv-integrations-tab"><?php esc_html_e('Integrations', 'inline-gdocs-viewer');?></a></li>
+            <li><a href="#igsv-extras-tab"><?php esc_html_e('Extras', 'inline-gdocs-viewer');?></a></li>
+        </ul>
+        <form>
+            <fieldset id="igsv-datasource-tab">
+                <legend><?php esc_html_e('Datasource options', 'inline-gdocs-viewer');?></legend>
+                <p><?php esc_html_e('Provide a datasource. A datasource is usually a URL. If your data is in a Google Spreadsheet, paste the Web address of the spreadsheet. The only required attribute is the datasource "key." All other attributes are optional.', 'inline-gdocs-viewer');?> </p>
+                <table class="form-table" summary="">
+                    <tbody>
+                        <tr>
+                            <th>
+                                <label for="js-qt-igsv-key"><?php esc_html_e('Key', 'inline-gdocs-viewer');?></label>
+                            </th>
+                            <td>
+                                <input id="js-qt-igsv-key" name="key" type="text" placeholder="<?php esc_attr_e('paste your Google Spreadsheet or datasource URL here', 'inline-gdocs-viewer');?>" required="required" title="<?php esc_html_e('This attribute is required.', 'inline-gdocs-viewer');?>" />
+                                <p class="description"><?php esc_html_e('Paste the web address of your Google Spreadsheet or CSV-formatted data file.', 'inline-gdocs-viewer');?></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label for="js-qt-igsv-query"><?php esc_html_e('Query', 'inline-gdocs-viewer');?></label>
+                            </th>
+                            <td>
+                                <input id="js-qt-igsv-query" name="query" type="text" placeholder="<?php esc_attr_e('type a query', 'inline-gdocs-viewer');?>" />
+                                <p class="description"><?php esc_html_e('Enter a query to pre-process your data or to select only the parts of the data you want to use in your post.', 'inline-gdocs-viewer');?></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label for="js-qt-igsv-title"><?php esc_html_e('Title', 'inline-gdocs-viewer');?></label>
+                            </th>
+                            <td>
+                                <input id="js-qt-igsv-title" name="title" type="text" placeholder="<?php esc_attr_e('my data', 'inline-gdocs-viewer');?>" />
+                                <p class="description"><?php esc_html_e('A title usually appears as a tooltip when a user hovers their cursor over a table or is shown as the headline of a chart.', 'inline-gdocs-viewer');?></p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </fieldset>
+            <fieldset id="igsv-integrations-tab">
+                <legend><?php esc_html_e('Integrations', 'inline-gdocs-viewer');?></legend>
+                <p><?php esc_html_e('If you use a custom theme or write custom functions, you can integrate your spreadsheet table or chart by specifying your integration values here. You can safely ignore these options if you do not have other code or are not using another plugin that needs them.', 'inline-gdocs-viewer');?> </p>
+                <table class="form-table" summary="">
+                    <tbody>
+                        <tr>
+                            <th>
+                                <label for="js-qt-igsv-class"><?php esc_html_e('Class', 'inline-gdocs-viewer');?></label>
+                            </th>
+                            <td>
+                                <input id="js-qt-igsv-class" name="class" type="text" placeholder="<?php esc_attr_e('custom-class other-custom-class', 'inline-gdocs-viewer');?>" />
+                                <p class="description"><?php esc_html_e('Add a custom HTML class value to the containing element.', 'inline-gdocs-viewer');?></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label for="js-qt-igsv-style"><?php esc_html_e('Style', 'inline-gdocs-viewer');?></label>
+                            </th>
+                            <td>
+                                <input id="js-qt-igsv-style" name="style" type="text" placeholder="<?php esc_attr_e('style', 'inline-gdocs-viewer');?>" />
+                                <p class="description"><?php esc_html_e('Add inline CSS rules to your table or chart if you need to tweak its appearance.', 'inline-gdocs-viewer');?></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label for="js-qt-igsv-width"><?php esc_html_e('Width', 'inline-gdocs-viewer');?></label>
+                            </th>
+                            <td>
+                                <input id="js-qt-igsv-width" name="width" type="text" placeholder="<?php esc_attr_e('width', 'inline-gdocs-viewer');?>" />
+                                <p class="description"><?php esc_html_e('Add an explicit width to your chart if you need to tweak its appearance. (Tables ignore this. Use the "style" option instead.)', 'inline-gdocs-viewer');?></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label for="js-qt-igsv-height"><?php esc_html_e('Height', 'inline-gdocs-viewer');?></label>
+                            </th>
+                            <td>
+                                <input id="js-qt-igsv-height" name="height" type="text" placeholder="<?php esc_attr_e('height', 'inline-gdocs-viewer');?>" />
+                                <p class="description"><?php esc_html_e('Add an explicit height to your chart if you need to tweak its appearance. (Tables ignore this. Use the "style" option instead.)', 'inline-gdocs-viewer');?></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label for="js-qt-igsv-lang"><?php esc_html_e('Language', 'inline-gdocs-viewer');?></label>
+                            </th>
+                            <td>
+                                <input id="js-qt-igsv-lang" name="lang" type="text" placeholder="<?php esc_attr_e('lang', 'inline-gdocs-viewer');?>" />
+                                <p class="description"><?php print sprintf(
+                                    esc_html__('If your datasource content is in a language other than %1$s, enter the %2$sISO-639%3$s language code for that language here.', 'inline-gdocs-viewer'),
+                                    '<code>' . get_locale() . '</code>',
+                                    '<a href="http://www.iso.org/iso/home/standards/language_codes.htm">', '</a>'
+                                );?></p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </fieldset>
+            <fieldset id="igsv-extras-tab">
+                <legend><?php esc_html_e('Extras', 'inline-gdocs-viewer');?></legend>
+                <table class="form-table" summary="">
+                    <tbody>
+                        <tr>
+                            <th>
+                                <label for="js-qt-igsv-use-cache"><?php esc_html_e('Cache', 'inline-gdocs-viewer');?></label>
+                            </th>
+                            <td>
+                                <input id="js-qt-igsv-use-cache" name="use_cache" type="checkbox" checked="checked" />
+                                <span class="description"><?php esc_html_e('To improve performance, your datasource is cached for ten minutes. If you are making many changes quickly, or if your spreadsheet data is small but frequently updated, you may want to disable caching. Disabling the cache is not recommended for medium or large datasets.', 'inline-gdocs-viewer');?></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label for="js-qt-igsv-linkify"><?php esc_html_e('Linkify', 'inline-gdocs-viewer');?></label>
+                            </th>
+                            <td>
+                                <input id="js-qt-igsv-linkify" name="linkify" type="checkbox" checked="checked" />
+                                <span class="description"><?php esc_html_e('Email addresses and URLs in your data are automatically turned into clickable links. If this causes problems, you can disable the automatic linking feature by unchecking this box.', 'inline-gdocs-viewer');?></span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </fieldset>
+        </form>
+    </div><!-- #qt_content_igsv_dialog_tabs_container -->
     <?php print $this->showDonationAppeal();?>
-</div><!-- #qt_content_igsv_sheet_dialog -->
+</div><!-- #qt_content_igsv_dialog -->
 <?php
         }
     }

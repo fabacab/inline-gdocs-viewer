@@ -1,0 +1,39 @@
+/**
+ * Admin styles.
+ */
+#qt_content_igsv_sheet_dialog,
+#qt_content_igsv_dialog legend {
+    display: none;
+}
+#qt_content_igsv_dialog th { width: auto; }
+#qt_content_igsv_dialog input[type="text"] { width: 100%; }
+#qt_content_igsv_dialog input:invalid { background: #FFDDDD; }
+#qt_content_igsv_dialog .ui-tabs-nav {
+    border-bottom: 1px solid #DDD
+}
+#qt_content_igsv_dialog .ui-tabs { border-bottom: 1px dotted #CCC; }
+#qt_content_igsv_dialog .ui-tabs-nav li { display: inline; }
+#qt_content_igsv_dialog .ui-tabs-nav a {
+    display: block;
+    float: left;
+    margin-right: .5em;
+    padding: 1em;
+    background: #EEE;
+    border-radius: 1em 1em 0 0;
+}
+#qt_content_igsv_dialog .ui-tabs-active a {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+/*
+.ui-tooltip {
+    background: #CCC;
+    opacity: .8;
+    border-radius: 5px;
+    border-width: 2px;
+    width: 300px;
+    padding: .25em;
+    z-index: 9999999;
+}
+*/
