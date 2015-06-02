@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 3.5
 Tested up to: 4.2.2
-Stable tag: 0.9.8.1
+Stable tag: 0.9.9
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -275,6 +275,7 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 
 * Feature: Improved QuickTags button.
     * The QuickTags dialog box now provides fields for a `query` and `title` attribute value in addition to your datasource's `key`. It also provides a tabbed interface for other HTML integrations and checkboxes for some plugin features (`use_cache` and `linkify`).
+* [Bugfix](https://wordpress.org/support/topic/charts-not-displaying?replies=4#post-7022752): Fix an issue where charts failed to display if their datasource was a Google Spreadsheet and no `query` was used to select columns.
 
 = Version 0.9.8.1 =
 
