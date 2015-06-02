@@ -235,29 +235,29 @@ class InlineGoogleSpreadsheetViewerPlugin {
         return $type;
     }
 
-    private function getSpreadsheetUrl ($key, $gid, $query) {
+    private function getSpreadsheetUrl ($atts) {
         $url = '';
         // Assume a full link.
         $m = array();
-        if (preg_match('/\/(edit|view|pubhtml|htmlview).*$/', $key, $m) && 'http' === substr($key, 0, 4)) {
-            $parts = parse_url($key);
+        if (preg_match('/\/(edit|view|pubhtml|htmlview).*$/', $atts['key'], $m) && 'http' === substr($atts['key'], 0, 4)) {
+            $parts = parse_url($atts['key']);
             if (!empty($parts['fragment'])) {
                 $frag = array();
                 parse_str($parts['fragment'], $frag);
-                if ($frag['gid']) { $gid = $frag['gid']; }
+                if ($frag['gid']) { $atts['gid'] = $frag['gid']; }
             }
             $key = $parts['scheme'] . '://' . $parts['host'] . $parts['path'];
-            $action = ($query)
-                ? 'gviz/tq?tqx=out:csv&tq=' . rawurlencode($query)
+            $action = ($atts['query'] || $atts['chart'])
+                ? 'gviz/tq?tqx=out:csv&tq=' . rawurlencode($atts['query'])
                 : 'export?format=csv';
-            $url = str_replace($m[1], $action, $key);
-            if ($gid) {
-                $url .= '&gid=' . $gid;
+            $url = str_replace($m[1], $action, $atts['key']);
+            if ($atts['gid']) {
+                $url .= '&gid=' . $atts['gid'];
             }
         } else {
-            $url .= "https://spreadsheets.google.com/pub?key=$key&output=csv";
+            $url .= "https://spreadsheets.google.com/pub?key={$atts['key']}&output=csv";
             if ($gid) {
-                $url .= "&single=true&gid=$gid";
+                $url .= "&single=true&gid={$atts['gid']}";
             }
         }
         return $url;
@@ -727,7 +727,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         $key_type = $this->getDocTypeByKey($x['key']);
         if ('spreadsheet' === $key_type) {
             // if a Google Spreadsheet, the URL to fetch needs to be modified.
-            $url = $this->getSpreadsheetUrl($x['key'], $x['gid'], $x['query']);
+            $url = $this->getSpreadsheetUrl($x);
         } else {
             if (!empty($x['chart'])) { $fmt = 'json'; }
             else { $fmt = 'csv'; }
