@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 3.5
 Tested up to: 4.2.2
-Stable tag: 0.9.9.1
+Stable tag: 0.9.9.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -271,6 +271,10 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 
 == Change log ==
 
+= Version 0.9.9.2 =
+
+* Feature: Extend support for the DataTables defaults object to include the `colVis` extension. This lets you supply default initialization options that customize the behavior or display of the "Show/Hide Columns" button for all your DataTables-enhanced tables.
+
 = Version 0.9.9.1 =
 
 * Bugfix: Fix bug introduced in last update where spreadsheet URL was improperly built in some cases.
@@ -410,134 +414,7 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
     * To turn off caching for a specific spreadsheet, set the `use_cache` attribute to `no`, like `[gdoc key="ABCDEFG" use_cache="no"]`. Disabling the cache for a spreadsheet is only recommended for relatively small datasets (under 100 rows or so) that change often, or for debugging purposes.
     * Changing the `query` in a shortcode will also create a new cache, since a different query may return different data.
 
-= Version 0.7.1 =
-
-* Bugfix: Restore correct `<caption>` (shortcode content) handling.
-
-= Version 0.7 =
-
-* Feature: Previews for direct links to PDF, XLS, DOC, and other file formats supported by the [Google Docs Viewer](https://docs.google.com/viewer) now work, too. Simply use the direct URL to one such file hosted on the public Internet as your `key` to embed an HTML preview of that file.
-* Feature: New shortcode attributes `style`, `width`, and `height` enable you to supply inline display dimensions. Note that when used on HTML tables, you must use the CSS equivalents for `width` and `height` by using the `style` attribute rather than the other two directly. For instance: `[gdoc key="ABDCEFG" class="no-datatables" style="width:50%;height:480px;"]`
-* Bugfix: Correct `chart_pie_slice_text_style` attribute handling.
-
-= Version 0.6.3 =
-
-* Feature: Massively customizeable charts.
-    * You can now use a huge number of shortcode options to customize the look and feel of your charts. Most configurable options defined in the [Google Chart API](https://developers.google.com/chart/interactive/docs/gallery) are supported through shortcode attributes. For instance,
-        * to choose **custom chart colors**, use the `chart_colors` attribute with a space-separated list of color strings (like `chart_colors="red #CCC"`).
-        * Use [JSON](http://json.org/) syntax in an attribute whose value calls for an `Object`. For instance, `chart_background_color='{"fill":"yellow","stroke":"red","strokeWidth":5}'`, and notice the single quotes around the attribute value and double quotes for correct JSON parsing.
-
-= Version 0.6.2.2 =
-
-* [Bugfix](https://wordpress.org/support/topic/using-greaterless-than-signs-in-where-clause): Workaround WordPress parser garbling `<` and `>` comparison operators in `query` shortcode attribute. Instead, use the URL-encoded equivalents, `%3C` and `%3E`, respectively.
-
-= Version 0.6.2.1 =
-
-* Bugfix: Show the QuickTag button only on post edit screens.
-
-= Version 0.6.2 =
-
-* [Bugfix](https://wordpress.org/support/topic/with-06-ver-i-have-an-error-uncaught-referenceerror-google-is-not-defined?replies=8#post-6010795): Fix bug that failed to load Chart visualizations in combination with `gid` parameter.
-
-= Version 0.6.1 =
-
-* [Bugfix](https://wordpress.org/support/topic/with-06-ver-i-have-an-error-uncaught-referenceerror-google-is-not-defined): Fix bug that caused JavaScript loading to fail when certain `gdoc` shortcodes were used.
-
-= Version 0.6 =
-
-* Feature: Use the `chart` attribute to display your Google Spreadsheet's data as an interactive chart or graph. Supported chart types include:
-    * Area charts
-    * Bar charts
-    * Bubble charts
-    * Candlestick charts
-    * Column charts
-    * Combo charts
-    * Histograms
-    * Line charts
-    * Pie charts
-    * Scatter charts
-    * Stepped area charts
-* Feature: Customize the tooltip by supplying a `title` attribute in the shortcode for your table or chart.
-* Performance: Load large JavaScript libraries only when needed for the kind of chart or table that's being displayed.
-
-= Version 0.5.1 =
-
-* Feature: New `gdoc` quicktag allows point-and-click insertion of `[gdoc key="ABCDEFG"]` shortcode when using the HTML editor.
-* Feature: On-line help using WordPress's built-in help viewer.
-* Usability: More error detection and suggestions for possible fixes.
-* Localization: Translation infrastructure added. [Help translate Inline Google Spreadsheet Viewer into your langauge](https://www.transifex.com/projects/p/inline-gdocs-viewer/)!
-
-= Version 0.5 =
-
-* [Feature](https://wordpress.org/support/topic/work-great-12): Query your spreadsheet like a database using the new `query` shortcode attribute. The value of the `query` attribute is any [Google Charts API Query Language query](https://developers.google.com/chart/interactive/docs/querylanguage). For example, to retrieve only the first two columns in rows whose first column begins with "Mario Bros." in a Google Spreadsheet, use a shortcode like `[gdoc key="ABCDEFG" query="select A, B where A starts with 'Mario Bros.'"]`.
-
-= Version 0.4.7.1 =
-
-* Usability: Show a user-friendly error with suggestions to fix the detected problem.
-
-= Version 0.4.7 =
-
-* Feature: Support for the [FixedColumns extension](https://datatables.net/extensions/fixedcolumns/) for DataTables-enhanced tables.
-* Large DataTables-enhanced tables now scroll horinzontally by default to avoid common layout issues.
-
-= Version 0.4.6 =
-
-* Update to support Google's new `gid` attribute requirements. (Dear Google, please stop changing things, sincerely, [a homeless hacker who survives thanks to donations for free software](http://maymay.net/).)
-
-= Version 0.4.5 =
-
-* Bugfix: Correctly output the table's `id` attribute for "new" Google Spreadsheets.
-* Security: Added additional output escaping.
-
-= Version 0.4.4 =
-
-* Enhancement: Update DataTables library to version 1.10. Notably, this brings [client-side DataTable ordering (sorting) capability](https://datatables.net/reference/api/order%28%29) to your theme's JavaScripts.
-* Feature: Include DataTables [ColVis](https://datatables.net/extensions/colvis/) and [TableTools](https://datatables.net/extensions/tabletools) extensions by default.
-
-= Version 0.4.3 =
-
-* Feature: "New" Google Spreadsheets are now officially supported.
-
-= Version 0.4.2 =
-
-* Feature: Detect Web addresses and email addresses and turn them into clickable links. Optionally disable this behavior by adding `linkify="no"` to your shortcode.
-
-= Version 0.4.1 =
-
-* Bugfix: Correctly pass `gid` attribute.
-
-= Version 0.4 =
-
-* Feature: Support the "new" Google Spreadsheets through HTML parsing.
-    * *This feature is experimental and is not recommended for production websites because [Google's "new" Google Spreadsheets are still under active development](https://support.google.com/drive/answer/3543688).* I strongly suggest you continue to use the "old" Google Spreadsheets for any documents with which you use this plugin. More information about [reverting back to the old Google Spreadsheets](https://support.google.com/drive/answer/3544847#workarounds) is available on Google's help page.
-
-= Version 0.3.3 =
-
-* Bugfix: Correctly load search/sort/filter JavaScript on some systems where it failed.
-
-= Version 0.3.2 =
-
-* Adds jQuery [DataTables](//datatables.net/) plugin to provide column sorting, searching, and pagination. All tables will have DataTables's features applied. If you'd prefer to stick with the old, static table, use the `no-datatables` `class` when calling it. For instance, `[gdoc key="ABDEFG" class="no-datatables"]`. This also means the plugin now requires WordPress version 3.3 or later.
-
-= Version 0.3.1 =
-
-* Bugfix for "Invalid argument supplied for foreach()" when using built-in PHP `str_getcsv()`.
-* Bugfix for some situations in which debugging code caused a fatal error.
-
-= Version 0.3 =
-
-* Implements `header_rows` attribute in shortcode to allow rendering more than 1 header row.
-* Fetches data using `wp_remote_get()` instead of `fopen()` for portability; now requires WordPress 2.7 or higher.
-* Updates plugin internals; uses PHP 5.3's `str_getcsv()` function if available.
-
-= Version 0.2 =
-
-* Implements `gid` attribute in shortcode to allow embedding of non-default worksheet.
-* Updates plugin internals; now requires WordPress 2.6 or higher.
-
-= Version 0.1 =
-
-* Initial release.
+Version history has been truncated due to [WordPress.org plugin repository `readme.txt` file length limitations](https://wordpress.org/support/topic/wordpress-plugin-repository-readmetxt-length-limit?replies=1). For [historical change log information](https://plugins.trac.wordpress.org/browser/inline-google-spreadsheet-viewer/tags/0.9.9.1/readme.txt#L272), please refer to the plugin source code repository.
 
 == Other notes ==
 

@@ -13,6 +13,9 @@ jQuery(document).ready(function () {
     jQuery(igsv_plugin_vars.datatables_classes).each(function () {
         var table = jQuery(this);
         var dt_opts = {};
+        if (igsv_plugin_vars.datatables_defaults_object.colVis) {
+            jQuery.extend(true, dt_opts, {'colVis': igsv_plugin_vars.datatables_defaults_object.colVis});
+        }
         var tt_opts = table.data('table-tools') || {};
         dt_opts.tableTools = jQuery.extend(true, tt_opts, {
             'sSwfPath': '//datatables.net/release-datatables/extensions/TableTools/swf/copy_csv_xls_pdf.swf'
