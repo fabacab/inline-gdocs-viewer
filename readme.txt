@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 3.5
 Tested up to: 4.2.2
-Stable tag: 0.9.9.2
+Stable tag: 0.9.10
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -270,6 +270,12 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 7. This screenshot shows an example of what the previous screenshot might output with a given spreadsheet that contains data for the Aliens, Ninjas, Pirates, and Robots teams, and their player's respective points.
 
 == Change log ==
+
+= Version 0.9.10 =
+
+* Feature: The "Extras" tab in the `gdoc` QuickTag dialog now allows customizing HTTP transport options including an HTTP `timeout`, the `User-Agent` header, and SSL/TLS verification.
+* Usability: The QuickTags dialog now includes more detailed descriptions of the customization options it exposes.
+* Bugfix: The `gdoc` QuickTag button no longer incorrectly outputs shortcode attributes when multiple attributes are changed from their defaults.
 
 = Version 0.9.9.2 =
 

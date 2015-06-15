@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves data from a public Google Spreadsheet or CSV file and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * Version: 0.9.9.2
+ * Version: 0.9.10
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: inline-gdocs-viewer
@@ -967,9 +967,15 @@ jQuery(function () {
 
                     function getValues () {
                         var atts = {};
+                        var http_opts = {};
                         jQuery('#qt_content_igsv_dialog input[type="text"]').each(function () {
                             if (jQuery(this).val().length) {
                                 atts[jQuery(this).attr('name')] = jQuery(this).val();
+                            }
+                        });
+                        jQuery('#qt_content_igsv_dialog input[type="number"]').each(function () {
+                            if (jQuery(this).val().length) {
+                                atts[jQuery(this).attr('name')] = parseInt(jQuery(this).val());
                             }
                         });
                         jQuery('#qt_content_igsv_dialog input[type="checkbox"]').each(function () {
@@ -977,6 +983,16 @@ jQuery(function () {
                                 atts[jQuery(this).attr('name')] = 'no';
                             }
                         });
+                        for (k in atts) {
+                            if (0 === k.indexOf('http_opts')) {
+                                if ('no' === atts[k]) {
+                                    atts[k] = false;
+                                }
+                                http_opts[k.match(/\[(.*)\]/)[1]] = atts[k];
+                                delete atts[k];
+                            }
+                        }
+                        atts.http_opts = http_opts;
                         return atts;
                     }
                     function shortcodeAttributes (atts) {
@@ -984,16 +1000,19 @@ jQuery(function () {
                         for (k in atts) {
                             var v;
                             switch (k) {
+                                case 'http_opts':
+                                    v = "'" + JSON.stringify(atts[k]) + "'";
+                                    break;
                                 case 'query':
-                                    v = atts[k]
+                                    v = '"' + atts[k]
                                         .replace('<', encodeURIComponent('<'))
-                                        .replace('>', encodeURIComponent('>'));
+                                        .replace('>', encodeURIComponent('>')) + '"';
                                     break;
                                 default:
-                                    atts[k] = v;
+                                    v = '"' + atts[k] + '"';
                                     break;
                             }
-                            str += ' ' + k + '="' + v + '"';
+                            str += ' ' + k + '=' + v;
                         }
                         return str;
                     }
@@ -1134,7 +1153,43 @@ jQuery(function () {
                             </th>
                             <td>
                                 <input id="js-qt-igsv-use-cache" name="use_cache" type="checkbox" checked="checked" />
-                                <span class="description"><?php esc_html_e('To improve performance, your datasource is cached for ten minutes. If you are making many changes quickly, or if your spreadsheet data is small but frequently updated, you may want to disable caching. Disabling the cache is not recommended for medium or large datasets.', 'inline-gdocs-viewer');?></span>
+                                <span class="description"><?php esc_html_e('To improve performance, data from your datasource is cached for ten minutes. If you are making many changes quickly, or if your spreadsheet data is small but frequently updated, you may want to disable caching. Disabling the cache is not recommended for medium or large datasets.', 'inline-gdocs-viewer');?></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label for="js-qt-igsv-expire-in"><?php esc_html_e('Cache lifetime', 'inline-gdocs-viewer');?></label>
+                            </th>
+                            <td>
+                                <input id="js-qt-igsv-expire-in" name="expire_in" type="number" min="0" placeholder="600" />
+                                <p class="description"><?php esc_html_e('You can choose how frequently your site refreshes the data in your datasource by entering a cache lifetime, in seconds. Leaving this blank sets it to the default, which is 600 (ten minutes). The special value 0 turns off cache expiration, effectively caching the data from your datasource forever.');?></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label for="js-qt-http-timeout"><?php esc_html_e('HTTP timeout', 'inline-gdocs-viewer');?></label>
+                            </th>
+                            <td>
+                                <input id="js-qt-igsv-http-timeout" name="http_opts[timeout]" type="number" min="5" max="120" placeholder="5" />
+                                <p class="description"><?php esc_html_e('You can choose how long to wait for your datasource to supply you with the data for your table before giving up. If you have a lot of data, or if your site has a very slow Internet connection, it may take longer than the default 5 second timeout to retrieve all of it. In those situations, raising this value may help prevent issues. Leave this blank to use the default.', 'inline-gdocs-viewer');?></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label for="js-qt-http-useragent"><?php esc_html_e('HTTP User-Agent', 'inline-gdocs-viewer');?></label>
+                            </th>
+                            <td>
+                                <input id="js-qt-igsv-http-useragent" name="http_opts[user-agent]" type="text" placeholder="WordPress/<?php esc_attr_e(get_bloginfo('version'));?>; <?php esc_attr_e(get_bloginfo('url'));?>" />
+                                <p class="description"><?php esc_html_e('You can choose what HTTP User-Agent header to use when retrieving data from a datasource. This might be helpful if your datasource blocks or restricts certain user agents from accessing the data. Leave this blank to use the default.', 'inline-gdocs-viewer');?></p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>
+                                <label for="js-qt-http-sslverify"><?php esc_html_e('Verify SSL/TLS', 'inline-gdocs-viewer');?></label>
+                            </th>
+                            <td>
+                                <input id="js-qt-igsv-http-sslverify" name="http_opts[sslverify]" type="checkbox" checked="checked" />
+                                <span class="description"><?php esc_html_e('Certificate verification for HTTPS (SSL/TLS) connections is enabled by default. Turn this off only if you are certain secure connections are not desired.', 'inline-gdocs-viewer');?></span>
                             </td>
                         </tr>
                         <tr>
