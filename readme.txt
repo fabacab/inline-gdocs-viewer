@@ -273,7 +273,7 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 
 = Version 0.9.10.1 =
 
-Bugfix: Fix an issue where missing DataTables settings caused DataTables enhancements not to load.
+* Bugfix: Fix an issue where missing DataTables settings caused DataTables enhancements not to load.
 
 = Version 0.9.10 =
 
