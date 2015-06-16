@@ -271,6 +271,10 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 
 == Change log ==
 
+= Version 0.9.10.1 =
+
+Bugfix: Fix an issue where missing DataTables settings caused DataTables enhancements not to load.
+
 = Version 0.9.10 =
 
 * Feature: The "Extras" tab in the `gdoc` QuickTag dialog now allows customizing HTTP transport options including an HTTP `timeout`, the `User-Agent` header, and SSL/TLS verification.
