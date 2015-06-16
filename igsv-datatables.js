@@ -1,5 +1,6 @@
 // DataTables
 jQuery(document).ready(function () {
+    // Set/load defaults.
     if (igsv_plugin_vars.datatables_defaults_object) {
         if (igsv_plugin_vars.datatables_defaults_object.tableTools) {
             jQuery.extend(
@@ -9,7 +10,10 @@ jQuery(document).ready(function () {
             delete igsv_plugin_vars.datatables_defaults_object.tableTools;
         }
         jQuery.extend(jQuery.fn.dataTable.defaults, igsv_plugin_vars.datatables_defaults_object);
+    } else {
+        igsv_plugin_vars.datatables_defaults_object = {};
     }
+    // Initialize tables.
     jQuery(igsv_plugin_vars.datatables_classes).each(function () {
         var table = jQuery(this);
         var dt_opts = {};

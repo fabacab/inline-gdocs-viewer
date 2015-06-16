@@ -895,18 +895,21 @@ class InlineGoogleSpreadsheetViewerPlugin {
      * @see https://codex.wordpress.org/Function_Reference/wp_localize_script
      */
     private function getLocalizedPluginVars () {
-        $options = get_option($this->prefix . 'settings');
-        $tmp = array();
-        foreach (explode(' ', $options['datatables_classes']) as $cls) {
-            $cls = (empty($cls)) ? $this->dt_class : $cls;
-            $tmp[] = ".$cls:not(.no-datatables)";
-        }
-        $dt_classes = implode(', ', $tmp);
+        $options = get_option($this->prefix . 'settings', array());
         $data = array(
-            'lang_dir' => plugins_url('languages', __FILE__),
-            'datatables_classes' => $dt_classes,
-            'datatables_defaults_object' => $options['datatables_defaults_object']
+            'lang_dir' => plugins_url('languages', __FILE__)
         );
+        if (empty($options)) {
+            $data['datatables_classes'] = ".{$this->dt_class}:not(.no-datatables)";
+        } else {
+            $dt_classes = array();
+            foreach (explode(' ', $options['datatables_classes']) as $cls) {
+                $cls = (empty($cls)) ? $this->dt_class : $cls;
+                $dt_classes[] = ".$cls:not(.no-datatables)";
+            }
+            $data['datatables_classes'] = implode(', ', $dt_classes);
+            $data['datatables_defaults_object'] = $options['datatables_defaults_object'];
+        }
         return $data;
     }
 
