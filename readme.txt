@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 3.5
 Tested up to: 4.3
-Stable tag: 0.9.10.2
+Stable tag: 0.9.11
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -85,6 +85,7 @@ Data from Google Spreadsheets or CSV files can be graphed in interactive charts.
 * `Candlestick` charts
 * `Column` charts
 * `Combo` charts
+* `Gauge` charts
 * `Histogram` charts
 * `Line` charts
 * `Pie` charts
@@ -271,9 +272,13 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 
 == Change log ==
 
+= Version 0.9.11 =
+
+* Feature: `Gauge` charts are now fully supported.
+
 = Version 0.9.10.2 =
 
-* Bugfix: The `FixedHeader` and `FixedColumn` DataTables extensions no longer emit HTTP 404 errors.
+* Bugfix: The `FixedHeader` and `FixedColumn` DataTables extensions no longer emit HTTP `404` errors.
 * Developer:
     * Update DataTables library to version 1.10.8.
     * DataTables extensions have been updated to their current versions.
@@ -459,6 +464,7 @@ This plugin provides one shortcode (`gdoc`) that can do many things through a co
     * `Candlestick`
     * `Column`
     * `Combo`
+    * `Gauge`
     * `Histogram`
     * `Line`
     * `Pie`
@@ -492,6 +498,7 @@ To use chart customization options, you must also choose a chart type by includi
 
 The **complete list of attributes for configurable chart options** is below. Refer to [Google's Chart Gallery documentation](https://google-developers.appspot.com/chart/interactive/docs/gallery) for the type of chart you are using to learn more about which chart types support which chart options.
 
+* `chart_animation`
 * `chart_annotations`
 * `chart_aggregation_target`
 * `chart_area_opacity`
@@ -513,6 +520,9 @@ The **complete list of attributes for configurable chart options** is below. Ref
 * `chart_font_name`
 * `chart_font_size`
 * `chart_force_i_frame`
+* `chart_green_color`
+* `chart_green_from`
+* `chart_green_to`
 * `chart_h_axes`
 * `chart_h_axis`
 * `chart_height`
@@ -520,6 +530,10 @@ The **complete list of attributes for configurable chart options** is below. Ref
 * `chart_is_stacked`
 * `chart_legend`
 * `chart_line_width`
+* `chart_major_ticks`
+* `chart_max`
+* `chart_min`
+* `chart_minor_ticks`
 * `chart_orientation`
 * `chart_pie_hole`
 * `chart_pie_residue_slice_color`
@@ -530,6 +544,9 @@ The **complete list of attributes for configurable chart options** is below. Ref
 * `chart_pie_start_angle`
 * `chart_point_shape`
 * `chart_point_size`
+* `chart_red_color`
+* `chart_red_from`
+* `chart_red_to`
 * `chart_reverse_categories`
 * `chart_selection_mode`
 * `chart_series`
@@ -543,6 +560,9 @@ The **complete list of attributes for configurable chart options** is below. Ref
 * `chart_trendlines`
 * `chart_v_axis`
 * `chart_width`
+* `chart_yellow_color`
+* `chart_yellow_from`
+* `chart_yellow_to`
 
 = DataTables customization options =
 

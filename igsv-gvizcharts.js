@@ -1,7 +1,8 @@
 // Google Visualizations
 google.load('visualization', '1.0', {
     'packages' : [
-        'corechart'
+        'corechart',
+        'gauge'
     ]
 });
 jQuery(document).ready(function () {
@@ -50,6 +51,9 @@ jQuery(document).ready(function () {
                     break;
                 case 'Combo':
                     chart = new google.visualization.ComboChart(document.getElementById(chart_id));
+                    break;
+                case 'Gauge':
+                    chart = new google.visualization.Gauge(document.getElementById(chart_id));
                     break;
                 case 'Histogram':
                     chart = new google.visualization.Histogram(document.getElementById(chart_id));
