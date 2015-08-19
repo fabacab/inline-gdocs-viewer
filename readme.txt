@@ -3,8 +3,8 @@ Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 3.5
-Tested up to: 4.2.2
-Stable tag: 0.9.10.1
+Tested up to: 4.3
+Stable tag: 0.9.10.2
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -270,6 +270,14 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 7. This screenshot shows an example of what the previous screenshot might output with a given spreadsheet that contains data for the Aliens, Ninjas, Pirates, and Robots teams, and their player's respective points.
 
 == Change log ==
+
+= Version 0.9.10.2 =
+
+* Bugfix: The `FixedHeader` and `FixedColumn` DataTables extensions no longer emit HTTP 404 errors.
+* Developer:
+    * Update DataTables library to version 1.10.8.
+    * DataTables extensions have been updated to their current versions.
+    * The `TableTools` and `ColVis` extensions have been *deprecated* in this release. The functionality they provided will be replaced by [the `Buttons`](https://datatables.net/extensions/buttons/) and [the `Select`](https://datatables.net/extensions/select/) extensions in an upcoming release.
 
 = Version 0.9.10.1 =
 

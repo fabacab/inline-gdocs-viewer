@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves data from a public Google Spreadsheet or CSV file and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * Version: 0.9.10.1
+ * Version: 0.9.10.2
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: inline-gdocs-viewer
@@ -106,57 +106,88 @@ class InlineGoogleSpreadsheetViewerPlugin {
         // Core DataTables.
         wp_enqueue_style(
             'jquery-datatables',
-            '//cdn.datatables.net/1.10.6/css/jquery.dataTables.min.css'
+            '//cdn.datatables.net/1.10.8/css/jquery.dataTables.min.css'
         );
         wp_enqueue_script(
             'jquery-datatables',
-            '//cdn.datatables.net/1.10.6/js/jquery.dataTables.min.js',
+            '//cdn.datatables.net/1.10.8/js/jquery.dataTables.min.js',
             array('jquery')
         );
+
         // DataTables extensions.
+        // TODO: colVis and TableTools have been DEPRECATED.
+        //       These extensions are to be removed in an upcoming release.
         wp_enqueue_style(
             'datatables-colvis',
-            '//cdn.datatables.net/colvis/1.1.0/css/dataTables.colVis.css'
+            '//cdn.datatables.net/colvis/1.1.2/css/dataTables.colVis.css'
         );
         wp_enqueue_script(
             'datatables-colvis',
-            '//cdn.datatables.net/colvis/1.1.0/js/dataTables.colVis.min.js',
+            '//cdn.datatables.net/colvis/1.1.2/js/dataTables.colVis.min.js',
             array('jquery-datatables')
         );
         wp_enqueue_style(
             'datatables-tabletools',
-            '//cdn.datatables.net/tabletools/2.2.1/css/dataTables.tableTools.css'
+            '//cdn.datatables.net/tabletools/2.2.4/css/dataTables.tableTools.css'
         );
         wp_enqueue_script(
             'datatables-tabletools',
-            '//cdn.datatables.net/tabletools/2.2.1/js/dataTables.tableTools.min.js',
+            '//cdn.datatables.net/tabletools/2.2.4/js/dataTables.tableTools.min.js',
+            array('jquery-datatables')
+        );
+        wp_enqueue_style(
+            'datatables-buttons',
+            '//cdn.datatables.net/buttons/1.0.0/css/buttons.dataTables.min.css'
+        );
+        wp_enqueue_script(
+            'datatables-buttons',
+            '//cdn.datatables.net/buttons/1.0.0/js/dataTables.buttons.min.js',
+            array('jquery-datatables')
+        );
+        wp_enqueue_script(
+            'datatables-buttons-colvis',
+            '//cdn.datatables.net/buttons/1.0.0/js/buttons.colVis.min.js',
+            array('datatables-buttons')
+        );
+        wp_enqueue_script(
+            'datatables-buttons-print',
+            '//cdn.datatables.net/buttons/1.0.0/js/buttons.print.min.js',
+            array('datatables-buttons')
+        );
+        wp_enqueue_style(
+            'datatables-select',
+            '//cdn.datatables.net/select/1.0.0/css/select.dataTables.min.css'
+        );
+        wp_enqueue_script(
+            'datatables-select',
+            '//cdn.datatables.net/select/1.0.0/js/dataTables.select.min.js',
             array('jquery-datatables')
         );
         wp_enqueue_style(
             'datatables-fixedheader',
-            '//datatables.net/release-datatables/extensions/FixedHeader/css/dataTables.fixedHeader.css'
+            '//cdn.datatables.net/fixedheader/3.0.0/css/fixedHeader.dataTables.min.css'
         );
         wp_enqueue_script(
             'datatables-fixedheader',
-            '//datatables.net/release-datatables/extensions/FixedHeader/js/dataTables.fixedHeader.js',
+            '//cdn.datatables.net/fixedheader/3.0.0/js/dataTables.fixedHeader.min.js',
             array('jquery-datatables')
         );
         wp_enqueue_style(
             'datatables-fixedcolumns',
-            '//datatables.net/release-datatables/extensions/FixedColumns/css/dataTables.fixedColumns.css'
+            '//cdn.datatables.net/fixedcolumns/3.1.0/css/fixedColumns.dataTables.min.css'
         );
         wp_enqueue_script(
             'datatables-fixedcolumns',
-            '//datatables.net/release-datatables/extensions/FixedColumns/js/dataTables.fixedColumns.js',
+            '//cdn.datatables.net/fixedcolumns/3.1.0/js/dataTables.fixedColumns.min.js',
             array('jquery-datatables')
         );
         wp_enqueue_style(
             'datatables-responsive',
-            '//cdn.datatables.net/responsive/1.0.4/css/dataTables.responsive.css'
+            '//cdn.datatables.net/responsive/1.0.7/css/responsive.dataTables.min.css'
         );
         wp_enqueue_script(
             'datatables-responsive',
-            '//cdn.datatables.net/responsive/1.0.4/js/dataTables.responsive.js',
+            '//cdn.datatables.net/responsive/1.0.7/js/dataTables.responsive.min.js',
             array('jquery-datatables')
         );
         wp_enqueue_script(
