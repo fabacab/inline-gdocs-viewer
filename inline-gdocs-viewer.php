@@ -29,7 +29,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         $this->dt_defaults = json_encode(array(
             'dom' => "B<'clear'>lfrtip",
             'buttons' => array(
-                'colvis', 'copy', 'excel', 'pdf', 'print'
+                'colvis', 'copy', 'csv', 'excel', 'pdf', 'print'
             )
         ));
         $this->capabilities = array(
