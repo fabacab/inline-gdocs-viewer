@@ -1417,7 +1417,7 @@ esc_html__('Inline Google Spreadsheet Viewer is provided as free software, but s
             ?></span><p class="description"><?php esc_html_e('User role(s) capable of using SQL queries:', 'inline-gdocs-viewer');?></p>
             <ul class="description">
             <?php foreach ($this->getSqlCapableRoles() as $k => $v) {
-                print "<li>{$v['name']}</li>";
+                print '<li>' . esc_html($v['name']) . '</li>';
             }?>
             </ul></label>
             </td>
