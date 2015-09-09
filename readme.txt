@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 3.5
 Tested up to: 4.3
-Stable tag: 0.9.11
+Stable tag: 0.9.12
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -271,6 +271,16 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 7. This screenshot shows an example of what the previous screenshot might output with a given spreadsheet that contains data for the Aliens, Ninjas, Pirates, and Robots teams, and their player's respective points.
 
 == Change log ==
+
+= Version 0.9.12 =
+
+* Usability: The plugin's settings screen now reports which user roles are SQL-capable.
+* Developer:
+    * Update DataTables library to version 1.10.9.
+    * DataTables extensions have been updated to their current versions.
+    * The `Buttons` extension supercedes the `TableTools` and `ColVis` extensions; the latter two have been removed.
+        * **You may need to visit the plugin's settings screen and rewrite your DataTables defaults object value for the new extension to work.** If you are not sure what defaults you want, simply leave that field blank and press `Save Changes`.
+        * Only modern (HTML5 capable) Web browsers are able to use the buttons, as they no longer use Flash. While a [Flash-based fallback is available](https://datatables.net/extensions/buttons/examples/flash/index.html) to support legacy (IE9 and earlier) browsers, it no longer ships with this plugin.
 
 = Version 0.9.11 =
 
@@ -605,13 +615,14 @@ The **complete list of core DataTables customization attributes** is below. Plea
 * `datatables_search`
 * `datatables_state_duration`
 * `datatables_stripe_classes`
+* `datatables_select`
 * `datatables_tab_index`
 * `datatables_column_defs`
 * `datatables_columns`
 
 In addition to the above, the following included DataTables extensions can be customized through these additional shortcode attributes:
 
-* `datatables_table_tools` for customizing the [DataTables TableTools extension](https://www.datatables.net/extensions/tabletools/)
+* `datatables_buttons` for customizing the [DataTables Buttons extension](https://datatables.net/extensions/buttons/)
 
 = Plugin hooks =
 

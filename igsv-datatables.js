@@ -2,13 +2,6 @@
 jQuery(document).ready(function () {
     // Set/load defaults.
     if (igsv_plugin_vars.datatables_defaults_object) {
-        if (igsv_plugin_vars.datatables_defaults_object.tableTools) {
-            jQuery.extend(
-                jQuery.fn.dataTable.TableTools.defaults,
-                igsv_plugin_vars.datatables_defaults_object.tableTools
-            );
-            delete igsv_plugin_vars.datatables_defaults_object.tableTools;
-        }
         jQuery.extend(jQuery.fn.dataTable.defaults, igsv_plugin_vars.datatables_defaults_object);
     } else {
         igsv_plugin_vars.datatables_defaults_object = {};
@@ -17,13 +10,9 @@ jQuery(document).ready(function () {
     jQuery(igsv_plugin_vars.datatables_classes).each(function () {
         var table = jQuery(this);
         var dt_opts = {};
-        if (igsv_plugin_vars.datatables_defaults_object.colVis) {
-            jQuery.extend(true, dt_opts, {'colVis': igsv_plugin_vars.datatables_defaults_object.colVis});
+        if (jQuery.fn.dataTable.defaults.buttons.length) { // apply defaults for Buttons
+            dt_opts.buttons = jQuery.fn.dataTable.defaults.buttons
         }
-        var tt_opts = table.data('table-tools') || {};
-        dt_opts.tableTools = jQuery.extend(true, tt_opts, {
-            'sSwfPath': '//datatables.net/release-datatables/extensions/TableTools/swf/copy_csv_xls_pdf.swf'
-        });
         if (false === table.hasClass('no-responsive')) {
             dt_opts.responsive = true;
         }

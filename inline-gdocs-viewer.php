@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves data from a public Google Spreadsheet or CSV file and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * Version: 0.9.11
+ * Version: 0.9.12
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: inline-gdocs-viewer
@@ -27,7 +27,10 @@ class InlineGoogleSpreadsheetViewerPlugin {
         // Initialize private defaults.
         $this->prefix = $this->shortcode . '_';
         $this->dt_defaults = json_encode(array(
-            'dom' => "TC<'clear'>lfrtip"
+            'dom' => "B<'clear'>lfrtip",
+            'buttons' => array(
+                'colvis', 'copy', 'excel', 'pdf', 'print'
+            )
         ));
         $this->capabilities = array(
             $this->prefix . 'query_sql_databases'
@@ -106,42 +109,22 @@ class InlineGoogleSpreadsheetViewerPlugin {
         // Core DataTables.
         wp_enqueue_style(
             'jquery-datatables',
-            '//cdn.datatables.net/1.10.8/css/jquery.dataTables.min.css'
+            '//cdn.datatables.net/1.10.9/css/jquery.dataTables.min.css'
         );
         wp_enqueue_script(
             'jquery-datatables',
-            '//cdn.datatables.net/1.10.8/js/jquery.dataTables.min.js',
+            '//cdn.datatables.net/1.10.9/js/jquery.dataTables.min.js',
             array('jquery')
         );
 
         // DataTables extensions.
-        // TODO: colVis and TableTools have been DEPRECATED.
-        //       These extensions are to be removed in an upcoming release.
-        wp_enqueue_style(
-            'datatables-colvis',
-            '//cdn.datatables.net/colvis/1.1.2/css/dataTables.colVis.css'
-        );
-        wp_enqueue_script(
-            'datatables-colvis',
-            '//cdn.datatables.net/colvis/1.1.2/js/dataTables.colVis.min.js',
-            array('jquery-datatables')
-        );
-        wp_enqueue_style(
-            'datatables-tabletools',
-            '//cdn.datatables.net/tabletools/2.2.4/css/dataTables.tableTools.css'
-        );
-        wp_enqueue_script(
-            'datatables-tabletools',
-            '//cdn.datatables.net/tabletools/2.2.4/js/dataTables.tableTools.min.js',
-            array('jquery-datatables')
-        );
         wp_enqueue_style(
             'datatables-buttons',
-            '//cdn.datatables.net/buttons/1.0.0/css/buttons.dataTables.min.css'
+            '//cdn.datatables.net/buttons/1.0.3/css/buttons.dataTables.min.css'
         );
         wp_enqueue_script(
             'datatables-buttons',
-            '//cdn.datatables.net/buttons/1.0.0/js/dataTables.buttons.min.js',
+            '//cdn.datatables.net/buttons/1.0.3/js/dataTables.buttons.min.js',
             array('jquery-datatables')
         );
         wp_enqueue_script(
@@ -154,13 +137,35 @@ class InlineGoogleSpreadsheetViewerPlugin {
             '//cdn.datatables.net/buttons/1.0.0/js/buttons.print.min.js',
             array('datatables-buttons')
         );
+        // PDFMake (required for DataTables' PDF buttons)
+        wp_enqueue_script(
+            'pdfmake',
+            '//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js',
+            array('datatables-buttons')
+        );
+        wp_enqueue_script(
+            'pdfmake-fonts',
+            '//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js',
+            array('pdfmake')
+        );
+        // JSZip (required for DataTables' Excel button)
+        wp_enqueue_script(
+            'jszip',
+            '//cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js',
+            array('datatables-buttons')
+        );
+        wp_enqueue_script(
+            'datatables-buttons-html5',
+            '//cdn.datatables.net/buttons/1.0.3/js/buttons.html5.min.js',
+            array('datatables-buttons')
+        );
         wp_enqueue_style(
             'datatables-select',
-            '//cdn.datatables.net/select/1.0.0/css/select.dataTables.min.css'
+            '//cdn.datatables.net/select/1.0.1/css/select.dataTables.min.css'
         );
         wp_enqueue_script(
             'datatables-select',
-            '//cdn.datatables.net/select/1.0.0/js/dataTables.select.min.js',
+            '//cdn.datatables.net/select/1.0.1/js/dataTables.select.min.js',
             array('jquery-datatables')
         );
         wp_enqueue_style(
@@ -324,6 +329,20 @@ class InlineGoogleSpreadsheetViewerPlugin {
             $id = hash('md5', $key);
         }
         return $id;
+    }
+
+    /**
+     * @return array The roles capable of executing SQL directly from a shortcode.
+     */
+    function getSqlCapableRoles () {
+        global $wp_roles;
+        $sql_capable_roles = array();
+        foreach ($wp_roles->roles as $k => $v) {
+            if (array_key_exists($this->prefix . 'query_sql_databases', $v['capabilities'])) {
+                $sql_capable_roles[$k] = $v;
+            }
+        }
+        return $sql_capable_roles;
     }
 
     /**
@@ -686,6 +705,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
             // DataTables Features
             // @see https://www.datatables.net/reference/option/#Features
             'datatables_auto_width'    => false,
+            'datatables_buttons'       => false,
             'datatables_defer_render'  => false,
             'datatables_info'          => false,
             'datatables_j_query_UI'    => false,
@@ -696,6 +716,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
             'datatables_scroll_x'      => false,
             'datatables_scroll_y'      => false,
             'datatables_searching'     => false,
+            'datatables_select'        => false,
             'datatables_server_side'   => false,
             'datatables_state_save'    => false,
 
@@ -732,11 +753,6 @@ class InlineGoogleSpreadsheetViewerPlugin {
             // @see https://www.datatables.net/reference/option/#Columnes
             'datatables_column_defs' => false,
             'datatables_columns'     => false,
-
-            // DataTables extensions
-            // TableTools
-            // @see https://www.datatables.net/extensions/tabletools/initialisation
-            'datatables_table_tools' => false
         ), $atts, $this->shortcode);
 
         $atts['key'] = $this->sanitizeKey($atts['key']);
@@ -1398,7 +1414,12 @@ esc_html__('Inline Google Spreadsheet Viewer is provided as free software, but s
             $this->shortcode,
             "<code>{$this->prefix}query_sql_databases</code>"
         );
-                ?></span></label>
+            ?></span><p class="description"><?php esc_html_e('User role(s) capable of using SQL queries:', 'inline-gdocs-viewer');?></p>
+            <ul class="description">
+            <?php foreach ($this->getSqlCapableRoles() as $k => $v) {
+                print "<li>{$v['name']}</li>";
+            }?>
+            </ul></label>
             </td>
             </td>
         </tr>
