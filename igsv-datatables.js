@@ -10,7 +10,7 @@ jQuery(document).ready(function () {
     jQuery(igsv_plugin_vars.datatables_classes).each(function () {
         var table = jQuery(this);
         var dt_opts = {};
-        if (jQuery.fn.dataTable.defaults.buttons.length) { // apply defaults for Buttons
+        if (jQuery.fn.dataTable.defaults.buttons) { // apply defaults for Buttons
             dt_opts.buttons = jQuery.fn.dataTable.defaults.buttons
         }
         if (false === table.hasClass('no-responsive')) {
