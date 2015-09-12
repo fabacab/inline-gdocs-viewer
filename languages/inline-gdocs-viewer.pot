@@ -2,9 +2,9 @@
 # This file is distributed under the same license as the Inline Google Spreadsheet Viewer package.
 msgid ""
 msgstr ""
-"Project-Id-Version: Inline Google Spreadsheet Viewer 0.9.12\n"
+"Project-Id-Version: Inline Google Spreadsheet Viewer 0.9.14\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/inline-gdocs-viewer\n"
-"POT-Creation-Date: 2015-09-09 23:06:59+00:00\n"
+"POT-Creation-Date: 2015-09-12 09:27:18+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -16,7 +16,7 @@ msgstr ""
 msgid "Inline Google Spreadsheet Viewer Settings"
 msgstr ""
 
-#. #-#-#-#-#  inline-gdocs-viewer.pot (Inline Google Spreadsheet Viewer 0.9.12)  #-#-#-#-#
+#. #-#-#-#-#  inline-gdocs-viewer.pot (Inline Google Spreadsheet Viewer 0.9.14)  #-#-#-#-#
 #. Plugin Name of the plugin/theme
 #: inline-gdocs-viewer.php:85
 msgid "Inline Google Spreadsheet Viewer"
@@ -288,40 +288,40 @@ msgid ""
 "linking feature by unchecking this box."
 msgstr ""
 
-#: inline-gdocs-viewer.php:1285
+#: inline-gdocs-viewer.php:1284
 msgid ""
-"You can insert a Google Spreadsheet in this post. To do so, type %s[gdoc key="
-"\"YOUR_SPREADSHEET_URL\"]%s wherever you would like the spreadsheet to "
-"appear. Remember to replace YOUR_SPREADSHEET_URL with the web address of "
-"your Google Spreadsheet."
+"You can insert a Google Spreadsheet in this %1$s. To do so, type %2$s[gdoc "
+"key=\"%4$sYOUR_SPREADSHEET_URL%5$s\"]%3$s wherever you would like the "
+"spreadsheet to appear. Remember to replace %4$sYOUR_SPREADSHEET_URL%5$s with "
+"the web address of your Google Spreadsheet."
 msgstr ""
 
-#: inline-gdocs-viewer.php:1290
+#: inline-gdocs-viewer.php:1291
 msgid ""
 "Only Google Spreadsheets that have been shared using either the \"Public on "
 "the web\" or \"anyone with the link\" options will be visible on this page."
 msgstr ""
 
-#: inline-gdocs-viewer.php:1293
+#: inline-gdocs-viewer.php:1294
 msgid ""
 "You can also transform your data into an interactive chart by using the "
 "%1$schart%2$s attribute. Supported chart types are Area, Bar, Bubble, "
 "Candlestick, Column, Combo, Histogram, Line, Pie, Scatter, and Stepped. For "
-"instance, to make a Pie chart, type %1$s[gdoc key=\"YOUR_SPREADSHEET_URL\" "
-"chart=\"Pie\"]%2$s. Customize your chart with your own choice of colors by "
-"supplying a space-separated list of color values with the %1$schart_colors"
-"%2$s attribute, like %1$schart_colors=\"red green\"%2$s. Additional options "
-"depend on the chart you use."
+"instance, to make a Pie chart, type %1$s[gdoc key=\"%3$sYOUR_SPREADSHEET_URL"
+"%4$s\" chart=\"Pie\"]%2$s. Customize your chart with your own choice of "
+"colors by supplying a space-separated list of color values with the "
+"%1$schart_colors%2$s attribute, like %1$schart_colors=\"red green\"%2$s. "
+"Additional options depend on the chart you use."
 msgstr ""
 
-#: inline-gdocs-viewer.php:1297
+#: inline-gdocs-viewer.php:1299
 msgid ""
 "Refer to the %1$sshortcode attribute documentation%3$s for a complete list "
 "of shortcode attributes, and the %2$sGoogle Chart API documentation%3$s for "
 "more information about each option."
 msgstr ""
 
-#: inline-gdocs-viewer.php:1303
+#: inline-gdocs-viewer.php:1305
 msgid ""
 "If you are having trouble getting your Spreadsheet to show up on your "
 "website, you can %sget help from the plugin support forum%s. Consider "

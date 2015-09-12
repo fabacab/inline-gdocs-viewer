@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves data from a public Google Spreadsheet or CSV file and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * Version: 0.9.13
+ * Version: 0.9.14
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: inline-gdocs-viewer
@@ -1278,20 +1278,22 @@ jQuery(function () {
 
     private function registerContextualHelp () {
         $screen = get_current_screen();
-        if ($screen->id !== 'post' ) { return; }
-
+        if (empty($screen->post_type)) { return; }
         $html = '<p>';
         $html .= sprintf(
-            esc_html__('You can insert a Google Spreadsheet in this post. To do so, type %s[gdoc key="YOUR_SPREADSHEET_URL"]%s wherever you would like the spreadsheet to appear. Remember to replace YOUR_SPREADSHEET_URL with the web address of your Google Spreadsheet.', 'inline-gdocs-viewer'),
-            '<kbd>', '</kbd>'
+            esc_html__('You can insert a Google Spreadsheet in this %1$s. To do so, type %2$s[gdoc key="%4$sYOUR_SPREADSHEET_URL%5$s"]%3$s wherever you would like the spreadsheet to appear. Remember to replace %4$sYOUR_SPREADSHEET_URL%5$s with the web address of your Google Spreadsheet.', 'inline-gdocs-viewer'),
+            esc_html($screen->post_type),
+            '<kbd>', '</kbd>',
+            '<var>', '</var>'
         );
         $html .= '</p>';
         $html .= '<p>';
         $html .= esc_html__('Only Google Spreadsheets that have been shared using either the "Public on the web" or "anyone with the link" options will be visible on this page.', 'inline-gdocs-viewer');
         $html .= '</p>';
         $html .= '<p>' . sprintf(
-            esc_html__('You can also transform your data into an interactive chart by using the %1$schart%2$s attribute. Supported chart types are Area, Bar, Bubble, Candlestick, Column, Combo, Histogram, Line, Pie, Scatter, and Stepped. For instance, to make a Pie chart, type %1$s[gdoc key="YOUR_SPREADSHEET_URL" chart="Pie"]%2$s. Customize your chart with your own choice of colors by supplying a space-separated list of color values with the %1$schart_colors%2$s attribute, like %1$schart_colors="red green"%2$s. Additional options depend on the chart you use.' ,'inline-gdocs-viewer'),
-            '<kbd>', '</kbd>'
+            esc_html__('You can also transform your data into an interactive chart by using the %1$schart%2$s attribute. Supported chart types are Area, Bar, Bubble, Candlestick, Column, Combo, Histogram, Line, Pie, Scatter, and Stepped. For instance, to make a Pie chart, type %1$s[gdoc key="%3$sYOUR_SPREADSHEET_URL%4$s" chart="Pie"]%2$s. Customize your chart with your own choice of colors by supplying a space-separated list of color values with the %1$schart_colors%2$s attribute, like %1$schart_colors="red green"%2$s. Additional options depend on the chart you use.' ,'inline-gdocs-viewer'),
+            '<kbd>', '</kbd>',
+            '<var>', '</var>'
         ) . '</p>';
         $html .= '<p>' . sprintf(
             esc_html__('Refer to the %1$sshortcode attribute documentation%3$s for a complete list of shortcode attributes, and the %2$sGoogle Chart API documentation%3$s for more information about each option.' ,'inline-gdocs-viewer'),
@@ -1301,14 +1303,12 @@ jQuery(function () {
         $html .= '<p>';
         $html .= sprintf(
             esc_html__('If you are having trouble getting your Spreadsheet to show up on your website, you can %sget help from the plugin support forum%s. Consider searching the support forum to see if your question has already been answered before posting a new thread.', 'inline-gdocs-viewer'),
-            '<a href="https://wordpress.org/support/plugin/inline-google-spreadsheet-viewer/">', '</a>'
+            '<a href="https://wordpress.org/support/plugin/inline-google-spreadsheet-viewer/" target="_blank">', '</a>'
         );
         $html .= '</p>';
         ob_start();
         $this->showDonationAppeal();
-        $x = ob_get_contents();
-        ob_end_clean();
-        $html .= $x;
+        $html .= ob_get_clean();
         $screen->add_help_tab(array(
             'id' => $this->shortcode . '-' . $screen->base . '-help',
             'title' => __('Inserting a Google Spreadsheet', 'inline-gdocs-viewer'),
