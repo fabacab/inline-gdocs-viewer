@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 3.5
 Tested up to: 4.3
-Stable tag: 0.9.14
+Stable tag: 0.9.15
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -271,6 +271,10 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 7. This screenshot shows an example of what the previous screenshot might output with a given spreadsheet that contains data for the Aliens, Ninjas, Pirates, and Robots teams, and their player's respective points.
 
 == Change log ==
+
+= Version 0.9.15 =
+
+* Add support for Google Charts' `vAxes` configuration option (use the `chart_v_axes` attribute in your shortcode).
 
 = Version 0.9.14 =
 
@@ -576,6 +580,7 @@ The **complete list of attributes for configurable chart options** is below. Ref
 * `chart_title_text_style`
 * `chart_tooltip`
 * `chart_trendlines`
+* `chart_v_axes`
 * `chart_v_axis`
 * `chart_width`
 * `chart_yellow_color`
