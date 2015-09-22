@@ -3,7 +3,7 @@
  * Plugin Name: Inline Google Spreadsheet Viewer
  * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * Description: Retrieves data from a public Google Spreadsheet or CSV file and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * Version: 0.9.15
+ * Version: 0.9.16
  * Author: Meitar Moscovitz <meitar@maymay.net>
  * Author URI: http://maymay.net/
  * Text Domain: inline-gdocs-viewer
@@ -480,7 +480,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
             $ic = 1; // reset column counting
             foreach ($v as $td) {
                 $td = nl2br(esc_html($td));
-                $html .= "<td class=\"col-$ic " . $this->evenOrOdd($ic) . "\">$td</td>";
+                $el = ($ic <= $options['header_cols']) ? 'th' : 'td';
+                $html .= "<$el class=\"col-$ic " . $this->evenOrOdd($ic) . "\">$td</$el>";
                 $ic++;
             }
             $html .= "</tr>";
@@ -622,6 +623,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
             'height'   => false,
             'style'    => false,
             'strip'    => 0,                    // If spreadsheet, how many rows to omit from top
+            'header_cols' => 0,                 // Number of columns to write as <th> elements
             'header_rows' => 1,                 // Number of rows in <thead>
             'use_cache' => true,                // Whether to use Transients API for fetched data.
             'http_opts' => false,               // Arguments to pass to the WordPress HTTP API.

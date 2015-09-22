@@ -3,8 +3,8 @@ Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 3.5
-Tested up to: 4.3
-Stable tag: 0.9.15
+Tested up to: 4.3.1
+Stable tag: 0.9.16
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -272,9 +272,13 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 
 == Change log ==
 
+= Version 0.9.16 =
+
+* [Feature](https://wordpress.org/support/topic/no-datatables-setting-first-column-and-first-row-as-headings): Add support for customizable column headers using new `header_cols` attribute.
+
 = Version 0.9.15 =
 
-* Add support for Google Charts' `vAxes` configuration option (use the `chart_v_axes` attribute in your shortcode).
+* [Feature](https://wordpress.org/support/topic/vaxes): Add support for Google Charts' `vAxes` configuration option (use the `chart_v_axes` attribute in your shortcode).
 
 = Version 0.9.14 =
 
@@ -501,6 +505,7 @@ This plugin provides one shortcode (`gdoc`) that can do many things through a co
     * `FixedColumns-left-N` or `FixedColumns-right-N` freezes the left- or right-most `N` columns in the table, respectively.
 * `expire_in` - How long to cache responses from Google for, in seconds. Set to `0` to cache forever. (Default: `600`, which is ten minutes.)
 * `gid` - For old-style Google Spreadsheets, the ID of a worksheet in a Google Spreadsheet to load, other than the first one, like `[gdoc key="ABCDEFG" gid="123"]`. (This attribute is deprecated for new Google Sheets.)
+* `header_cols` - A number specifying how many column cells should be written with `<th>` elements. (Default: `0`.)
 * `header_rows` - A number specifying how many rows to place in the output's `<thead>` element. (Default: `1`.)
 * `height` - Height of the containing HTML element. Tables ignore this, use `style` instead. (Default: automatically calculated.)
 * `http_opts` - A JSON string representing options to pass to the [WordPress HTTP API](https://codex.wordpress.org/HTTP_API), like `[gdoc key="ABCDEFG" http_opts='{"method": "POST", "blocking": false, "user-agent": "My Custom User Agent String"}']`.
