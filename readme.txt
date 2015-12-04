@@ -3,8 +3,8 @@ Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 3.5
-Tested up to: 4.3.1
-Stable tag: 0.9.16
+Tested up to: 4.4
+Stable tag: 0.9.17
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -254,6 +254,18 @@ See [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-viewer
 
 If your `query` includes an angle bracket, such as a less than (`<`) or a greater than (`>`) sign, [WordPress will assume you are trying to write HTML](https://core.trac.wordpress.org/ticket/28564) and strip everything except the first word of your query, resulting in a syntax error. Instead, use the URL-encoded equivalents of these characters (`%3C` and `%3E`, for `<` and `>`, respectively), which WordPress will pass to the plugin unmolested and which the plugin is specifically aware of how to handle correctly.
 
+= How do I remove unneeded stylesheets or JavaScripts that this plugin adds? =
+
+Use the `gdoc_enqueued_front_end_styles` or `gdoc_enqueued_front_end_scripts` filter hooks. For instance, to prevent the plugin from enqueueing the JavaScript file for the Google Charts, use code like the following in your theme's `functions.php` file:
+
+    function igsv_dequeue_google_charts_script ($scripts) {
+        unset($scripts['igsv-gvizcharts']);
+        return $scripts;
+    }
+    add_filter('gdoc_enqueued_front_end_scripts', 'igsv_dequeue_google_charts_script')
+
+See the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-viewer/other_notes/) page for a full list of registered script and stylesheet handles this plugin uses.
+
 == Screenshots ==
 
 1. Use a Google Spreadsheet or create a new one for your WordPress post or page. Make sure the Spreadsheet is "Public on the web." Learn more about [Google Docs sharing settings](https://support.google.com/docs/answer/2494886). If your spreadsheet was created a while ago and still uses an "old" style Google Spreadsheet, [use the "Publish as a webpage" option](https://support.google.com/docs/answer/183965). Make a note of the URL of your Google Spreadsheet's editing page.
@@ -271,6 +283,12 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 7. This screenshot shows an example of what the previous screenshot might output with a given spreadsheet that contains data for the Aliens, Ninjas, Pirates, and Robots teams, and their player's respective points.
 
 == Change log ==
+
+= Version 0.9.17 =
+
+* Developer:
+    * Add `gdoc_enqueued_front_end_scripts` and `gdoc_enqueued_front_end_styles` filters to allow performance tuning by removing unused scripts and stylesheets.
+    * Update DataTables libraries.
 
 = Version 0.9.16 =
 
@@ -301,167 +319,6 @@ If your `query` includes an angle bracket, such as a less than (`<`) or a greate
 = Version 0.9.11 =
 
 * Feature: `Gauge` charts are now fully supported.
-
-= Version 0.9.10.2 =
-
-* Bugfix: The `FixedHeader` and `FixedColumn` DataTables extensions no longer emit HTTP `404` errors.
-* Developer:
-    * Update DataTables library to version 1.10.8.
-    * DataTables extensions have been updated to their current versions.
-    * The `TableTools` and `ColVis` extensions have been *deprecated* in this release. The functionality they provided will be replaced by [the `Buttons`](https://datatables.net/extensions/buttons/) and [the `Select`](https://datatables.net/extensions/select/) extensions in an upcoming release.
-
-= Version 0.9.10.1 =
-
-* Bugfix: Fix an issue where missing DataTables settings caused DataTables enhancements not to load.
-
-= Version 0.9.10 =
-
-* Feature: The "Extras" tab in the `gdoc` QuickTag dialog now allows customizing HTTP transport options including an HTTP `timeout`, the `User-Agent` header, and SSL/TLS verification.
-* Usability: The QuickTags dialog now includes more detailed descriptions of the customization options it exposes.
-* Bugfix: The `gdoc` QuickTag button no longer incorrectly outputs shortcode attributes when multiple attributes are changed from their defaults.
-
-= Version 0.9.9.2 =
-
-* Feature: Extend support for the DataTables defaults object to include the `colVis` extension. This lets you supply default initialization options that customize the behavior or display of the "Show/Hide Columns" button for all your DataTables-enhanced tables.
-
-= Version 0.9.9.1 =
-
-* Bugfix: Fix bug introduced in last update where spreadsheet URL was improperly built in some cases.
-
-= Version 0.9.9 =
-
-* Feature: Improved QuickTags button.
-    * The QuickTags dialog box now provides fields for a `query` and `title` attribute value in addition to your datasource's `key`. It also provides a tabbed interface for other HTML integrations and checkboxes for some plugin features (`use_cache` and `linkify`).
-* [Bugfix](https://wordpress.org/support/topic/charts-not-displaying?replies=4#post-7022752): Fix an issue where charts failed to display if their datasource was a Google Spreadsheet and no `query` was used to select columns.
-
-= Version 0.9.8.1 =
-
-* Bugfix: Correct invalid markup when producing HTML tables.
-* Security: Harden plugin against file path disclosure and directory listing attacks. (Don't worry, there is no known active exploit; this is simply a preventative measure.)
-
-= Version 0.9.8 =
-
-* Feature: The `chart` attribute can now be used with CSV `key`s. This means you can make a Google Chart out of the data in any CSV file.
-
-= Version 0.9.7.1 =
-
-* [Bugfix](https://wordpress.org/support/topic/update-wiped-out-datatables-defaults-object?replies=6#post-6956998): Fix an issue wherein DataTables defaults, when applied via HTML5 `data-` attributes, were inherited across some DataTables invocations.
-
-= Version 0.9.7 =
-
-* Feature: MySQL databases can now be used as a data source. Use the keyword `wordpress` as the value of the `key` attribute and a valid [MySQL `SELECT` statement](https://dev.mysql.com/doc/refman/5.5/en/select.html) as the value for the `query` attribute to retrieve data from your WordPress database. A MySQL connection URL (like `mysql://user:password@example.com/database`) can be used to connect to remote MySQL servers.
-    * This feature must be enabled by an administrator in the plugin's settings screen before it is available. Even after it's enabled, only users granted the special `gdoc_query_sql_databases` capability can author shortcodes that take advantage of this feature.
-
-= Version 0.9.6.3 =
-
-* Bugfix: Using a custom DataTables defaults object with slashes no longer fails, and the `tableTools` property can now be successfully overridden, too.
-
-= Version 0.9.6.2 =
-
-* [Bugfix](https://wordpress.org/support/topic/datatables-doesnt-load-on-secondary-tabs): Fix an issue where using multiple `gdoc` shortcodes all with the same `key` failed to apply some DataTables-enhanced features to invocations of the shortcode after the first one.
-
-= Version 0.9.6.1 =
-
-* Security: A [Cross-Site Request Forgery (CSRF)](https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29) vulnerability existed in version 0.9.6 of Inline Google Spreadsheet Viewer that could result in denial of service if an attacker sent specially-crafted HTTP `GET` requests to the site. This patch addresses the issue by adding a [synchronizer token](https://www.owasp.org/index.php/CSRF_Prevention_Cheat_Sheet#General_Recommendation:_Synchronizer_Token_Pattern) to verify that requests originated from the plugin itself. Only version 0.9.6 is known vulnerable, but all users are encouraged to update.
-
-= Version 0.9.6 =
-
-* Feature: The `query` attribute now works with arbitrary CSV inputs. This means you can perform [Google Query Language](https://developers.google.com/chart/interactive/docs/querylanguage) operations on the data in any CSV file.
-* Usability: The `gid` attribute is no longer required when loading non-default worksheets from new Google Sheets. Simply include the full URL (including the `#gid=123456` fragment) as your `key` and the `gid` part will be automatically detected. Old-style Google Spreadsheets still need to explicitly set the `gid` attribute to load a non-default worksheet.
-
-= Version 0.9.5 =
-
-* Feature: Convert any CSV data into a feature-rich HTML table, even if that data is *not* sourced from a Google Spreadsheet or Apps Script output.
-    * This feature works exactly like the standard Google Spreadsheet viewer functions, supporting all the same shortcode attributes and the various DataTables enhancements (but not `query` or `chart`), except it can take any properly formatted CSV file as input. The plugin also detects files served with the `text/csv` HTTP Content-Type header and parses those similarly, so you can supply a web service endpoint that produces CSV output as well as a `.csv` file.
-* Bugfix: Fix an issue where DataTables enhancements were not applied to tables with custom classes unless they were rendered on the same page as a shortcode-invoked table.
-
-= Version 0.9.4 =
-
-* Feature: Per-shortcode configurable [HTTP transport options](https://codex.wordpress.org/HTTP_API). Use the new `http_opts` shortcode attribute to configure an individual shortcode's HTTP behavior. The attribute value is expected to be a JSON object. This is particularly useful in conjunction with the new Google Apps Script Web App integration, allowing you to send `POST` as well as `GET` queries, control script execution blocking, network timeouts, and more. All of WordPress's HTTP API arguments are supported.
-    * For example, if your spreadsheet or Web App response is very large and you have a very slow connection, you can increase the HTTP timeout from the default 5 seconds to 20 seconds with a shortcode like this: `[gdoc key="ABCDEFG" http_opts='{"timeout": 20}']`
-* Developer: The `gdoc_webapp_html` filter now passes a second argument, which is an array of the shortcode's attributes and their values.
-* Bugfix: Fix an issue where GAS Web App requests with more than one URL querystring parameter failed to send the remaining parameters properly encoded.
-
-= Version 0.9.3 =
-
-* Feature: [Google Apps Script Web Apps](https://developers.google.com/apps-script/guides/web) integration. This feature lets you display the output of any public GAS Web App on your WordPress post or page the same way you display a spreadsheet. Instead of a table or chart, however, the output is defined by the Web App itself. This lets you display any arbitrary data you want in any way you want via [Google Apps Script](https://developers.google.com/apps-script/overview) (a kind of web service macro), without necessarily storing that data in a spreadsheet.
-    * To retrieve the output of the Web App, supply its public URL as the `key` of the shortcode, like `[gdoc key="https://script.google.com/macros/s/ABCDEFG/exec"]`
-    * The new `gdoc_webapp_html` filter lets you hook the HTTP response body of the Web App in the same fashion as you might filter `the_content` of a WordPress post.
-
-= Version 0.9.2 =
-
-* Feature: [FixedHeader extension](https://www.datatables.net/extensions/fixedheader/) integration lets you freeze the table header (its `<thead>` element contents), the table footer (`<tfoot>`), left- or right-most column while scrolling vertically or horizontally by supplying a special `class` value.
-    * Use the special `class` value `FixedHeader-top` to freeze the table header, `FixedHeader-bottom` to freeze the table footer, and `FixedHeader-left` or `FixedHeader-right` to freeze the left- or right-most column, respectively.
-    * You can use more than one of the above `class` values for the same table. For instance, to freeze the table header, left, and right column all at once, use a shortcode like `[gdoc key="ABCDEFG" class="FixedHeader-top FixedHeader-left FixedHeader-right"]`.
-
-= Version 0.9.1.3 =
-
-* Bugfix: Fixes an issue where DataTables failed to initialize after first installation unless the Settings page was visited.
-* Tested with WordPress 4.2.
-
-= Version 0.9.1.2 =
-
-* Bugfix: Fix "catchable fatal error" when certain site-wide DataTables defaults are used.
-
-= Version 0.9.1.1 =
-
-* [Bugfix](https://wordpress.org/support/topic/setting-default?replies=2#post-6842799): Treat user-supplied DataTables defaults as JSON. This fixes an issue where user-supplied DataTables defaults were ignored.
-
-= Version 0.9.1 =
-
-* Feature: Apply DataTables enhancements to `<table>`s with arbitrary `class` values anywhere on your blog, not just those created with the `gdoc` shortcode.
-    * Go to the plugin's new settings screen to enter a space-separated list of `class` names that should have DataTables enhancements applied to them. This is useful if you use other plugins that generate HTML tables, or want to write your own HTML tables, and would like to have DataTables's searching, paging, sorting, and other enhancements applied to those tables, too.
-* Feature: Define site-wide DataTables defaults.
-    * The new plugin settings screen includes an advanced configuration option that lets you [supply site-wide DataTables defaults](https://datatables.net/manual/options#Setting-defaults). All DataTables-enhanced tables will use the specified defaults unless a given table overrides the defaults in its shortcode, HTML, or JavaScript initialization. This is useful if you use many tables with non-default settings and want to have one place to make changes to all of them, instead of repeating the non-default settings in each shortcode.
-    * If your tables have changed after updating to this version, **restore the plugin's defaults by visiting the plugin's settings screen and re-saving its options.** (This is sometimes necessary because default settings storage location have been moved around in this release. Sorry about any inconvenience.)
-
-= Version 0.9 =
-
-* Feature: Fully customizable DataTables.
-    * You can now use a huge number of shortcode attributes to customize the features of your DataTables-enhanced tables. All [DataTables Feature, Data, Options, and Columns options groups](https://datatables.net/reference/option/) are supported through an underscore-separated shortcode attribute of a similar name. See [this plugin's FAQ](https://wordpress.org/plugins/inline-google-spreadsheet-viewer/faq/) for details. See this plugin's [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-viewer/other_notes/) page for a complete list of shortcode attributes.
-* Developer: Update DataTables library to version 1.10.6.
-
-= Version 0.8.7 =
-
-* Developer: New `gdoc_query` filter lets you hook into the Google visualization API queries supplied in the `query` attribute of the shortcode. Useful for dynamically generating queries for pre-processing, such as `SELECT`ing only rows referencing the current WordPress user by username or other identification.
-
-= Version 0.8.6 =
-
-* Feature: Automatically detect default site language and display some DataTables labels and buttons in that language.
-    * Use the new `lang` attribute to declare that a particular spreadsheet's contents is in a language other than the default. For instance, use `lang="nl-NL"` to declare that a given spreadsheet is in Dutch.
-    * Translations are available for all [DataTables internationalization plugins](https://www.datatables.net/plug-ins/i18n/).
-
-= Version 0.8.5 =
-
-* Feature: DataTables-enhanced tables now include the [Responsive](https://datatables.net/extensions/responsive/) plugin enabled by default. This plugin further improves narrow and liquid layouts by displaying columns that won't fit without scrolling horizontally in a child row instead. If you want to keep the old behavior (horizontal scrolling), add the `no-responsive` `class` to your shortcode, like this: `[gdoc key="ABCDEFG" class="no-responsive"]`
-* Developer: Update [DataTables](https://datatables.net/) libraries to version 1.10.5.
-
-= Version 0.8.4 =
-
-* Developer: Two new plugin [filters](https://codex.wordpress.org/Plugin_API#Filters), `gdoc_table_html` and `gdoc_viewer_html`, allow other plugin or theme authors to customize the output produced by the `gdoc` shortcode. See the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-viewer/other_notes/) page for documentation and implementation notes.
-* [Bugfix](https://wordpress.org/support/topic/bug-and-fix-script-dependencies): Correctly declare JavaScript dependencies.
-
-= Version 0.8.3 =
-
-* [Bugfix](https://wordpress.org/support/topic/how-to-show-cell-line-break): Stricter whitespace checking fixes an issue where space/newline character sequences were unintuitively interpreted.
-
-= Version 0.8.2 =
-
-* Feature: [WordPress Embeds](https://codex.wordpress.org/Embeds) support provides [OEmbed](http://oembed.com/) emulation, so now you don't even need to use a shortcode. In other words, pasting your Spreadsheet's `key` onto its own line is now the equivalent of invoking a shortcode like this: `[gdoc key="https://docs.google.com/spreadsheets/d/ABCDEFG/edit"]` 
-    * This feature is only available for "new" Google Spreadsheets.
-
-= Version 0.8.1 =
-
-* [Bugfix](https://wordpress.org/support/topic/fatal-error-on-loading-table?replies=3): Properly serialize and store responses from Google with mismatched encoding.
-* Bugfix: Properly save and load caches with shortcodes that use the `gid` attribute.
-* Bugfix: Uninstaller correctly clears plugin cache.
-
-= Version 0.8 =
-
-* Feature: Built-in caching. To improve page load speeds, shortcodes whose `key`s output spreadsheet table data will be cached for ten minutes by default.
-    * You can use the new `expire_in` attribute to set a custom cache lifetime (in seconds). For instance, to cache for 1 minute instead of 10, use `[gdoc key="ABCDEFG" expire_in="60"]`
-    * To turn off caching for a specific spreadsheet, set the `use_cache` attribute to `no`, like `[gdoc key="ABCDEFG" use_cache="no"]`. Disabling the cache for a spreadsheet is only recommended for relatively small datasets (under 100 rows or so) that change often, or for debugging purposes.
-    * Changing the `query` in a shortcode will also create a new cache, since a different query may return different data.
 
 Version history has been truncated due to [WordPress.org plugin repository `readme.txt` file length limitations](https://wordpress.org/support/topic/wordpress-plugin-repository-readmetxt-length-limit?replies=1). For [historical change log information](https://plugins.trac.wordpress.org/browser/inline-google-spreadsheet-viewer/tags/0.9.9.1/readme.txt#L272), please refer to the plugin source code repository.
 
@@ -656,3 +513,36 @@ This section documents hooks that the plugin implements. Developers of other plu
 * `gdoc_webapp_html` - Same as above, but applied to the HTTP response body of the [Google Apps Script Web App](https://developers.google.com/apps-script/guides/web). Use this filter to, for intance, customize the content returned by your GAS Web App similarly to how you might filter `the_content` of a WordPress post. The first argument is the HTTP response body of the request. The second argument is an array of all the attributes and their values passed to the current invocation of the shortcode.
 * `gdoc_query` - Filters the Google Visualization API query language query. The first argument is the string supplied to the `query` attribute, or `false` if no query was supplied. The second argument is an array of all the attributes and their values passed to the current invocation of the shortcode.
     * A common use case for this filter is to query a Google Spreadsheet using dynamically generated content, such as the email address or username of a logged-in user.
+* `gdoc_enqueued_front_end_styles` - An array in the form `$handle => array(...)` representing parameters to pass to [`wp_enqueue_style()`](https://developer.wordpress.org/reference/functions/wp_enqueue_style/). This filter lets you [`unset()`](https://secure.php.net/unset) stylesheets to prevent the plugin from enqueueing them. Use this to tweak your site's performance by removing any stylesheets you know you will not need.
+* `gdoc_enqueued_front_end_scripts` - An array in the form `$handle => array(...)` representing parameters to pass to [`wp_enqueue_script()`](https://developer.wordpress.org/reference/functions/wp_enqueue_script/). This filter lets you [`unset()`](https://secure.php.net/unset) JavaScript scripts to prevent the plugin from enqueuing them. Use this to tweak your site's performance by removing any scripts you know you will not need.
+
+== Registered script and stylesheet handles ==
+
+You can selectively dequeue any script or stylesheet this plugin adds by using the `gdoc_enqueued_front_end_*` filters to remove the scripts with the associated handle. The registered handles are listed here.
+
+**Scripts**
+
+* `jquery-datatables`
+* `datatables-buttons`
+* `datatables-buttons-colvis`
+* `datatables-buttons-print`
+* `pdfmake`
+* `pdfmake-fonts`
+* `jszip`
+* `datatables-buttons-html5`
+* `datatables-select`
+* `datatables-fixedheader`
+* `datatables-fixedcolumns`
+* `datatables-responsive`
+* `igsv-datatables`
+* `google-ajax-api`
+* `igsv-gvizcharts`
+
+**Stylesheets**
+
+* `jquery-datatables`
+* `datatables-buttons`
+* `datatables-select`
+* `datatables-fixedheader`
+* `datatables-fixedcolumns`
+* `datatables-responsive`
