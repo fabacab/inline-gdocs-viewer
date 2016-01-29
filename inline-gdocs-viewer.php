@@ -1,17 +1,32 @@
 <?php
 /**
- * Plugin Name: Inline Google Spreadsheet Viewer
- * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
- * Description: Retrieves data from a public Google Spreadsheet or CSV file and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * Version: 0.9.17
- * Author: Meitar Moscovitz <meitar@maymay.net>
- * Author URI: http://maymay.net/
- * Text Domain: inline-gdocs-viewer
- * Domain Path: /languages
+ * The Buoy plugin for WordPress.
+ *
+ * WordPress plugin header information:
+ *
+ * * Plugin Name: Inline Google Spreadsheet Viewer
+ * * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
+ * * Description: Retrieves data from a public Google Spreadsheet or CSV file and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
+ * * Version: 0.9.17
+ * * Author: Meitar Moscovitz <meitar@maymay.net>
+ * * Author URI: http://maymay.net/
+ * * Text Domain: inline-gdocs-viewer
+ * * Domain Path: /languages
+ *
+ * @link https://developer.wordpress.org/plugins/the-basics/header-requirements/
+ *
+ * @license https://www.gnu.org/licenses/gpl-3.0.en.html
+ *
+ * @copyright Copyright (c) 2010-2016 by Meitar "maymay" Moscovitz
+ *
+ * @package WordPress\Plugin\InlineGoogleSpreadsheetViewer
  */
 
 if (!defined('ABSPATH')) { exit; } // Disallow direct HTTP access.
 
+/**
+ * Plugin class.
+ */
 class InlineGoogleSpreadsheetViewerPlugin {
 
     private $shortcode = 'gdoc';
@@ -1375,7 +1390,11 @@ esc_html__('Inline Google Spreadsheet Viewer is provided as free software, but s
                 <label for="<?php esc_attr_e($this->prefix);?>datatables_classes"><?php esc_html_e('DataTables classes', 'inline-gdocs-viewer');?></label>
             </th>
             <td>
-                <input id="<?php esc_attr_e($this->prefix);?>datatables_classes" name="<?php esc_attr_e($this->prefix);?>settings[datatables_classes]" value="<?php esc_attr_e($options['datatables_classes'])?>" placeholder="<?php esc_attr_e('class-1 class-2', 'inline-gdocs-viewer')?>" />
+                <input class="regular-text code"
+                    id="<?php esc_attr_e($this->prefix);?>datatables_classes"
+                    name="<?php esc_attr_e($this->prefix);?>settings[datatables_classes]"
+                    value="<?php esc_attr_e($options['datatables_classes'])?>" placeholder="<?php esc_attr_e('class-1 class-2', 'inline-gdocs-viewer')?>"
+                />
                 <p class="description">
                     <?php print sprintf(
                         esc_html__('A space-separated list of HTML %1$sclass%2$s values. %1$s<table>%2$s elements with these classes will automatically be enhanced with %3$sjQuery DataTables%4$s, unless the given table also has the special %1$sno-datatables%2$s class. Leave blank to use the plugin default.', 'inline-gdocs-viewer'),
@@ -1390,11 +1409,11 @@ esc_html__('Inline Google Spreadsheet Viewer is provided as free software, but s
                 <label for="<?php esc_attr_e($this->prefix);?>datatables_defaults_object"><?php esc_html_e('DataTables defaults object', 'inline-gdocs-viewer');?></label>
             </th>
             <td>
-                <textarea
+                <textarea class="large-text code"
                     id="<?php esc_attr_e($this->prefix);?>datatables_defaults_object"
                     name="<?php esc_attr_e($this->prefix);?>settings[datatables_defaults_object]"
                     placeholder='{ "searching": false, "ordering": false }'
-                    style="width: 50%; min-height: 200px;"
+                    style="min-height: 200px;"
                 ><?php if (!empty($options['datatables_defaults_object'])) { print stripslashes($datatables_defaults_json); }?></textarea>
                 <p class="description"><?php print sprintf(
                     esc_html__('Define a DataTables defaults initialization object. This is useful if you wish to change the default DataTables enhancements for all affected tables on your site at once. All DataTables-enhanced tables will use the DataTables options configured here unless explicitly overriden in the shortcode, HTML, or JavaScript initialization for the given table, itself. To learn more, read the %1$sDataTables manual section on Setting defaults%2$s and refer to the %3$sdocumentation for shortcode attributes available via this plugin%2$s. Leave blank to use the plugin default.'),
