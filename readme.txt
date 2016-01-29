@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 3.5
 Tested up to: 4.4.1
-Stable tag: 0.9.18
+Stable tag: 0.10.0
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -284,8 +284,11 @@ See the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-vi
 
 == Change log ==
 
-= Version 0.9.18 =
+= Version 0.10.0 =
 
+This is a security and maintence release. All users are encouraged to update immediately.
+
+* Security: Harden the output of MySQL-sourced table IDs with [WordPress salt](https://developer.wordpress.org/reference/functions/wp_salt/). If you were using a MySQL datasource for a table and had custom code that referenced the table's HTML `id` attribute, you will need to update your code to refer to the new `id` value.
 * Usability: Admin options that expect code use monospace font.
 
 = Version 0.9.17 =

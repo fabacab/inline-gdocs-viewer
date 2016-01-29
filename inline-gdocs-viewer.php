@@ -7,7 +7,7 @@
  * * Plugin Name: Inline Google Spreadsheet Viewer
  * * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * * Description: Retrieves data from a public Google Spreadsheet or CSV file and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * * Version: 0.9.17
+ * * Version: 0.10.0
  * * Author: Meitar Moscovitz <meitar@maymay.net>
  * * Author URI: http://maymay.net/
  * * Text Domain: inline-gdocs-viewer
@@ -336,6 +336,16 @@ class InlineGoogleSpreadsheetViewerPlugin {
         return rawurldecode(str_replace('%253E', '%3E', str_replace('%253C', '%3C', rawurlencode($query))));
     }
 
+    /**
+     * Gets the shortcode's ID for output as an HTML ID attribute.
+     *
+     * @param string $key
+     *
+     * @uses sanitize_title_with_dashes()
+     * @uses wp_salt()
+     *
+     * @return string
+     */
     private function getDocId ($key) {
         $m = array();
         preg_match($this->gdoc_url_regex, $key, $m);
@@ -345,7 +355,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
             $id = sanitize_title_with_dashes($key);
         }
         if ('mysql' === $this->getDocTypeByKey($key)) {
-            $id = hash('md5', $key);
+            $id = hash('sha256', wp_salt() . $key);
         }
         return $id;
     }
