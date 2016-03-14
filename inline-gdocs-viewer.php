@@ -7,7 +7,7 @@
  * * Plugin Name: Inline Google Spreadsheet Viewer
  * * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * * Description: Retrieves data from a public Google Spreadsheet or CSV file and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * * Version: 0.10.0
+ * * Version: 0.10.1
  * * Author: Meitar Moscovitz <meitar@maymay.net>
  * * Author URI: http://maymay.net/
  * * Text Domain: inline-gdocs-viewer
@@ -477,8 +477,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
         if (!empty($options['class'])) { $options['class'] = " {$options['class']}"; }
         $html .= ' class="' . $this->dt_class . esc_attr($options['class']) . '"';
         $html .= ' lang="' . esc_attr($options['lang']) . '"';
-        $html .= ' summary="' . esc_attr($options['summary']) . '"';
-        $html .= ' title="' . esc_attr($options['title']) . '"';
+        $html .= (false === $options['summary']) ? '' : ' summary="' . esc_attr($options['summary']) . '"';
+        $html .= (false === $options['title']) ? '' : ' title="' . esc_attr($options['title']) . '"';
         $html .= ' style="' . esc_attr($options['style']) . '"';
         $html .= (array_search('no-datatables', explode(' ', $options['class'])))
             ? ''
@@ -644,10 +644,10 @@ class InlineGoogleSpreadsheetViewerPlugin {
     public function displayShortcode ($atts, $content = null) {
         $atts = shortcode_atts(array(
             'key'      => false,                // Google Doc URL or ID
-            'title'    => '',                   // Title (attribute) text or visible chart title
+            'title'    => false,                // Title (attribute) text or visible chart title
             'class'    => '',                   // Container element's custom class value
             'gid'      => false,                // Sheet ID for a Google Spreadsheet, if only one
-            'summary'  => 'Google Spreadsheet', // If spreadsheet, value for summary attribute
+            'summary'  => false,                // If spreadsheet, value for summary attribute
             'width'    => '100%',
             'height'   => false,
             'style'    => false,
@@ -1150,7 +1150,7 @@ jQuery(function () {
             <fieldset id="igsv-datasource-tab">
                 <legend><?php esc_html_e('Datasource options', 'inline-gdocs-viewer');?></legend>
                 <p><?php esc_html_e('Provide a datasource. A datasource is usually a URL. If your data is in a Google Spreadsheet, paste the Web address of the spreadsheet. The only required attribute is the datasource "key." All other attributes are optional.', 'inline-gdocs-viewer');?> </p>
-                <table class="form-table" summary="">
+                <table class="form-table">
                     <tbody>
                         <tr>
                             <th>
@@ -1185,7 +1185,7 @@ jQuery(function () {
             <fieldset id="igsv-integrations-tab">
                 <legend><?php esc_html_e('Integrations', 'inline-gdocs-viewer');?></legend>
                 <p><?php esc_html_e('If you use a custom theme or write custom functions, you can integrate your spreadsheet table or chart by specifying your integration values here. You can safely ignore these options if you do not have other code or are not using another plugin that needs them.', 'inline-gdocs-viewer');?> </p>
-                <table class="form-table" summary="">
+                <table class="form-table">
                     <tbody>
                         <tr>
                             <th>
@@ -1241,7 +1241,7 @@ jQuery(function () {
             </fieldset>
             <fieldset id="igsv-extras-tab">
                 <legend><?php esc_html_e('Extras', 'inline-gdocs-viewer');?></legend>
-                <table class="form-table" summary="">
+                <table class="form-table">
                     <tbody>
                         <tr>
                             <th>
@@ -1393,7 +1393,7 @@ esc_html__('Inline Google Spreadsheet Viewer is provided as free software, but s
 <form method="post" action="options.php">
 <?php settings_fields($this->prefix . 'settings');?>
 <fieldset><legend><?php esc_html_e('DataTables defaults', 'inline-gdocs-viewer');?></legend>
-<table class="form-table" summary="<?php esc_attr_e('Site-wide defaults for DataTables-enhanced tables.', 'inline-gdocs-viewer');?>">
+<table class="form-table">
     <tbody>
         <tr>
             <th>
@@ -1436,7 +1436,7 @@ esc_html__('Inline Google Spreadsheet Viewer is provided as free software, but s
 </table>
 </fieldset>
 <fieldset><legend><?php esc_html_e('Advanced options', 'inline-gdocs-viewer');?></legend>
-<table class="form-table" summary="<?php esc_attr_e('Advanced Options', 'inline-gdocs-viewer');?>">
+<table class="form-table">
     <tbody>
         <tr>
             <th>

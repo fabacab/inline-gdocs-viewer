@@ -2,9 +2,9 @@
 Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
-Requires at least: 3.5
-Tested up to: 4.4.1
-Stable tag: 0.10.0
+Requires at least: 4.0
+Tested up to: 4.4.2
+Stable tag: 0.10.1
 License: GPLv3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -283,6 +283,13 @@ See the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-vi
 7. This screenshot shows an example of what the previous screenshot might output with a given spreadsheet that contains data for the Aliens, Ninjas, Pirates, and Robots teams, and their player's respective points.
 
 == Change log ==
+
+= Version 0.10.1 =
+
+This is a maintenance release.
+
+* [Improvement](https://wordpress.org/support/topic/summary-and-title-attributes?replies=1): Conform more closely to HTML5 standard by default.
+* [Bugfix](https://wordpress.org/support/topic/summary-and-title-attributes?replies=1): Correctly report minimum required version.
 
 = Version 0.10.0 =
 
