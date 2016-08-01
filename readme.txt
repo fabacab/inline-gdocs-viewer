@@ -3,9 +3,9 @@ Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 4.0
-Tested up to: 4.4.2
-Stable tag: 0.10.1
-License: GPLv3
+Tested up to: 4.6
+Stable tag: 0.10.2
+License: GPL-3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 Embeds public Google Spreadsheets, Apps Scripts, or CSV files in WordPress posts or pages as HTML tables or interactive charts, and more.
@@ -284,9 +284,12 @@ See the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-vi
 
 == Change log ==
 
-= Version 0.10.1 =
+= Version 0.10.2 =
 
-This is a maintenance release.
+* [Bugfix](https://wordpress.org/support/topic/not-able-to-display-csv?replies=3#post-8705160): CSV files with spaces in their URL path now load correctly.
+* DataTables library and extensions have been updated to their current versions.
+
+= Version 0.10.1 =
 
 * [Improvement](https://wordpress.org/support/topic/summary-and-title-attributes?replies=1): Conform more closely to HTML5 standard by default.
 * [Bugfix](https://wordpress.org/support/topic/summary-and-title-attributes?replies=1): Correctly report minimum required version.
@@ -335,6 +338,11 @@ This is a security and maintence release. All users are encouraged to update imm
 * Feature: `Gauge` charts are now fully supported.
 
 Version history has been truncated due to [WordPress.org plugin repository `readme.txt` file length limitations](https://wordpress.org/support/topic/wordpress-plugin-repository-readmetxt-length-limit?replies=1). For [historical change log information](https://plugins.trac.wordpress.org/browser/inline-google-spreadsheet-viewer/tags/0.9.9.1/readme.txt#L272), please refer to the plugin source code repository.
+
+== Upgrade Notice ==
+
+= Version 0.10.2 =
+This is a bugfix and maintenance release.
 
 == Other notes ==
 
