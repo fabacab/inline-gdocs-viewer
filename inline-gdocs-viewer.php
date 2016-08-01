@@ -123,40 +123,40 @@ class InlineGoogleSpreadsheetViewerPlugin {
     public function addFrontEndScripts () {
         $styles = array(
             'jquery-datatables' => array(
-                'src' => 'https://cdn.datatables.net/1.10.10/css/jquery.dataTables.min.css'
+                'src' => '//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css'
             ),
             'datatables-buttons' => array(
-                'src' => 'https://cdn.datatables.net/buttons/1.1.0/css/buttons.dataTables.min.css'
+                'src' => '//cdn.datatables.net/buttons/1.2.1/css/buttons.dataTables.min.css'
             ),
             'datatables-select' => array(
-                'src' => 'https://cdn.datatables.net/select/1.1.0/css/select.dataTables.min.css'
+                'src' => '//cdn.datatables.net/select/1.2.0/css/select.dataTables.min.css'
             ),
             'datatables-fixedheader' => array(
-                'src' => 'https://cdn.datatables.net/fixedheader/3.1.0/css/fixedHeader.dataTables.min.css'
+                'src' => '//cdn.datatables.net/fixedheader/3.1.2/css/fixedHeader.dataTables.min.css'
             ),
             'datatables-fixedcolumns' => array(
-                'src' => 'https://cdn.datatables.net/fixedcolumns/3.2.0/css/fixedColumns.dataTables.min.css'
+                'src' => '//cdn.datatables.net/fixedcolumns/3.2.2/css/fixedColumns.dataTables.min.css'
             ),
             'datatables-responsive' => array(
-                'src' => 'https://cdn.datatables.net/responsive/2.0.0/css/responsive.dataTables.min.css'
+                'src' => '//cdn.datatables.net/responsive/2.1.0/css/responsive.dataTables.min.css'
             )
         );
 
         $scripts = array(
             'jquery-datatables' => array(
-                'src' => '//cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js',
+                'src' => '//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js',
                 'deps' => array('jquery')
             ),
             'datatables-buttons' => array(
-                'src' => 'https://cdn.datatables.net/buttons/1.1.0/js/dataTables.buttons.min.js',
+                'src' => '//cdn.datatables.net/buttons/1.2.1/js/dataTables.buttons.min.js',
                 'deps' => array('jquery-datatables')
             ),
             'datatables-buttons-colvis' => array(
-                'src' => '//cdn.datatables.net/buttons/1.1.0/js/buttons.colVis.min.js',
+                'src' => '//cdn.datatables.net/buttons/1.2.1/js/buttons.colVis.min.js',
                 'deps' => array('datatables-buttons')
             ),
             'datatables-buttons-print' => array(
-                'src' => '//cdn.datatables.net/buttons/1.1.0/js/buttons.print.min.js',
+                'src' => '//cdn.datatables.net/buttons/1.2.1/js/buttons.print.min.js',
                 'deps' => array('datatables-buttons')
             ),
             // PDFMake (required for DataTables' PDF buttons)
@@ -174,23 +174,23 @@ class InlineGoogleSpreadsheetViewerPlugin {
                 'deps' => array('datatables-buttons')
             ),
             'datatables-buttons-html5' => array(
-                'src' => '//cdn.datatables.net/buttons/1.1.0/js/buttons.html5.min.js',
+                'src' => '//cdn.datatables.net/buttons/1.2.1/js/buttons.html5.min.js',
                 'deps' => array('datatables-buttons')
             ),
             'datatables-select' => array(
-                'src' => 'https://cdn.datatables.net/select/1.1.0/js/dataTables.select.min.js',
+                'src' => '//cdn.datatables.net/select/1.2.0/js/dataTables.select.min.js',
                 'deps' => array('jquery-datatables')
             ),
             'datatables-fixedheader' => array(
-                'src' => 'https://cdn.datatables.net/fixedheader/3.1.0/js/dataTables.fixedHeader.min.js',
+                'src' => '//cdn.datatables.net/fixedheader/3.1.2/js/dataTables.fixedHeader.min.js',
                 'deps' => array('jquery-datatables')
             ),
             'datatables-fixedcolumns' => array(
-                'src' => 'https://cdn.datatables.net/fixedcolumns/3.2.0/js/dataTables.fixedColumns.min.js',
+                'src' => '//cdn.datatables.net/fixedcolumns/3.2.2/js/dataTables.fixedColumns.min.js',
                 'deps' => array('jquery-datatables')
             ),
             'datatables-responsive' => array(
-                'src' => 'https://cdn.datatables.net/responsive/2.0.0/js/dataTables.responsive.min.js',
+                'src' => '//cdn.datatables.net/responsive/2.1.0/js/dataTables.responsive.min.js',
                 'deps' => array('jquery-datatables')
             ),
             'igsv-datatables' => array(
