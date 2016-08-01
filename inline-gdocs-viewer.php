@@ -557,7 +557,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
             !$this->isValidNonce($_GET[$this->prefix . 'get_datasource_nonce'], $this->prefix . 'get_datasource_nonce')
         ) { return; }
         $url = rawurldecode($_GET['url']);
-        $http_response = $this->doHttpRequest($url, false);
+        $http_response = $this->doHttpRequest(esc_url($url), false);
 
         if (isset($_GET['chart'])) {
             $http_response['body'] = $this->setGVizCsvDataTypes($http_response['body']);
