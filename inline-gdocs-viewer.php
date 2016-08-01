@@ -955,7 +955,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
 
     private function getGDocsViewerOutput ($x) {
         $output  = '<iframe src="';
-        $output .= esc_attr('https://docs.google.com/viewer?url=' . esc_url($x['key']) . '&embedded=true');
+        $output .= esc_attr('https://docs.google.com/viewerng/viewer?url=' . esc_url($x['key']) . '&embedded=true');
         $output .= '" width="' . esc_attr($x['width']) . '" height="' . esc_attr($x['height']) . '" style="' . esc_attr($x['style']) . '">';
         $output .= esc_html__('Your Web browser must support inline frames to display this content:', 'inline-gdocs-viewer');
         $output .= ' <a href="' . esc_attr($x['key']) . '">' . esc_html($x['title']) . '</a>';
