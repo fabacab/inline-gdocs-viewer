@@ -820,7 +820,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         if ('spreadsheet' === $key_type) {
             // if a Google Spreadsheet, the URL to fetch needs to be modified.
             $url = $this->getSpreadsheetUrl($x);
-        } else {
+        } else if ('gasapp' !== $key_type) { // don't change the GAS app's URL
             if (!empty($x['chart'])) { $fmt = 'json'; }
             else { $fmt = 'csv'; }
             // the url should be proxied through this plugin
