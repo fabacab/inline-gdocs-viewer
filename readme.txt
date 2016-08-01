@@ -287,6 +287,9 @@ See the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-vi
 = Version 0.10.2 =
 
 * [Bugfix](https://wordpress.org/support/topic/not-able-to-display-csv?replies=3#post-8705160): CSV files with spaces in their URL path now load correctly.
+* Bugfix: You can now place two or more shortcodes with CSV file `key`s in the same post or page without errors.
+* Bugfix: Google Apps Script shortcodes now correctly redirect to their final `/exec` endpoint.
+* Enhancement: Google Docs Viewer now uses Google's newest `viewerng` URL.
 * DataTables library and extensions have been updated to their current versions.
 
 = Version 0.10.1 =
