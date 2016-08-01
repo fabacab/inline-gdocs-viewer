@@ -633,7 +633,6 @@ class InlineGoogleSpreadsheetViewerPlugin {
     private function isValidNonce ($nonce, $nonce_name) {
         $options = get_option($this->prefix . 'settings');
         $is_valid = ($nonce === $options[$nonce_name]) ? true : false;
-        unset($options[$this->prefix . 'get_datasource_nonce']);
         update_option($this->prefix . 'settings', $options);
         return $is_valid;
     }
