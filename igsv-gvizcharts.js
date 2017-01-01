@@ -2,7 +2,8 @@
 google.load('visualization', '1.0', {
     'packages' : [
         'corechart',
-        'gauge'
+        'gauge',
+        'timeline'
     ]
 });
 jQuery(document).ready(function () {
@@ -71,6 +72,9 @@ jQuery(document).ready(function () {
                 case 'SteppedArea':
                 case 'Steppedarea':
                     chart = new google.visualization.SteppedAreaChart(document.getElementById(chart_id));
+                    break;
+                case 'Timeline':
+                    chart = new google.visualization.Timeline(document.getElementById(chart_id));
                     break;
             }
             chart.draw(data, options);

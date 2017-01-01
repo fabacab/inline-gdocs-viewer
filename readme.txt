@@ -3,8 +3,8 @@ Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 4.0
-Tested up to: 4.6
-Stable tag: 0.10.2
+Tested up to: 4.7
+Stable tag: 0.11.0
 License: GPL-3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -91,6 +91,7 @@ Data from Google Spreadsheets or CSV files can be graphed in interactive charts.
 * `Pie` charts
 * `Scatter` charts
 * `Stepped` area charts
+* `Timeline` charts
 
 For example, if you have data for a sports league that records the goals each team has scored (where the first column is the team name and the second column is their total goals), you can create a bar chart, with an optional title, from that data using a shortcode like this:
 
@@ -284,6 +285,10 @@ See the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-vi
 
 == Change log ==
 
+= Version 0.11.0 =
+
+* Support for [Google's Timeline charts](https://developers.google.com/chart/interactive/docs/gallery/timeline).
+
 = Version 0.10.2 =
 
 * [Bugfix](https://wordpress.org/support/topic/not-able-to-display-csv?replies=3#post-8705160): CSV files with spaces in their URL path now load correctly.
@@ -344,8 +349,9 @@ Version history has been truncated due to [WordPress.org plugin repository `read
 
 == Upgrade Notice ==
 
-= Version 0.10.2 =
-This is a bugfix and maintenance release.
+= Version 0.11.0 =
+
+This release adds Timeline Chart support.
 
 == Other notes ==
 
@@ -407,10 +413,11 @@ To use chart customization options, you must also choose a chart type by includi
 
 The **complete list of attributes for configurable chart options** is below. Refer to [Google's Chart Gallery documentation](https://google-developers.appspot.com/chart/interactive/docs/gallery) for the type of chart you are using to learn more about which chart types support which chart options.
 
+* `chart_aggregation_target`
 * `chart_animation`
 * `chart_annotations`
-* `chart_aggregation_target`
 * `chart_area_opacity`
+* `chart_avoid_overlapping_grid_lines`
 * `chart_axis_titles_position`
 * `chart_background_color`
 * `chart_bars`
@@ -463,6 +470,7 @@ The **complete list of attributes for configurable chart options** is below. Ref
 * `chart_slice_visibility_threshold`
 * `chart_slices`
 * `chart_theme`
+* `chart_timeline`
 * `chart_title_position`
 * `chart_title_text_style`
 * `chart_tooltip`
