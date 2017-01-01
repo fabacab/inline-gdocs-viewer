@@ -7,7 +7,7 @@
  * * Plugin Name: Inline Google Spreadsheet Viewer
  * * Plugin URI: https://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * * Description: Retrieves data from a public Google Spreadsheet or CSV file and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * * Version: 0.11.1
+ * * Version: 0.11.2
  * * Author: Meitar Moscovitz <meitarm+wordpress@gmail.com>
  * * Author URI: https://maymay.net/
  * * Text Domain: inline-gdocs-viewer
@@ -732,12 +732,14 @@ class InlineGoogleSpreadsheetViewerPlugin {
             'chart_red_to'                     => false,
             'chart_reverse_categories'         => false,
             'chart_scale_columns'              => false,
+            'chart_scale_format'               => false,
             'chart_scale_type'                 => false,
             'chart_selection_mode'             => false,
             'chart_series'                     => false,
             'chart_size_axis'                  => false,
             'chart_slice_visibility_threshold' => false,
             'chart_slices'                     => false,
+            'chart_table'                      => false,
             'chart_theme'                      => false,
             'chart_thickness'                  => false,
             'chart_timeline'                   => false,

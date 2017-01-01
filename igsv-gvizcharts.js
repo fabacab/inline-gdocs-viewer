@@ -12,9 +12,10 @@
 google.load('visualization', '1.0', {
     'packages' : [
         'corechart',
+        'annotatedtimeline',
+        'annotationchart',
         'gauge',
-        'timeline',
-        'annotatedtimeline'
+        'timeline'
     ]
 });
 
@@ -49,6 +50,9 @@ jQuery(document).ready(function () {
             switch (jQuery('#' + chart_id).data('chart-type').toLowerCase()) {
                 case 'annotatedtimeline':
                     chart = new google.visualization.AnnotatedTimeLine(chart_el)
+                    break;
+                case 'annotation':
+                    chart = new google.visualization.AnnotationChart(chart_el)
                     break;
                 case 'area':
                     chart = new google.visualization.AreaChart(chart_el);

@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 4.0
 Tested up to: 4.7
-Stable tag: 0.11.1
+Stable tag: 0.11.2
 License: GPL-3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -79,19 +79,21 @@ Each table can be customized per-table, using shortcode attributes, or globally 
 
 Data from Google Spreadsheets or CSV files can be graphed in interactive charts. To visualize your data as a chart, add the `chart` attribute to your shortcode and supply a supported chart type. You can make:
 
-* `Area` charts
-* `Bar` charts
-* `Bubble` charts
-* `Candlestick` charts
-* `Column` charts
-* `Combo` charts
-* `Gauge` charts
-* `Histogram` charts
-* `Line` charts
-* `Pie` charts
-* `Scatter` charts
-* `Stepped` area charts
-* `Timeline` charts
+* [`AnnotatedTimeLine` charts](https://developers.google.com/chart/interactive/docs/gallery/annotatedtimeline)
+* [`Annotation` charts](https://developers.google.com/chart/interactive/docs/gallery/annotationchart)
+* [`Area` charts](https://developers.google.com/chart/interactive/docs/gallery/areachart)
+* [`Bar` charts](https://developers.google.com/chart/interactive/docs/gallery/areachart)
+* [`Bubble` charts](https://developers.google.com/chart/interactive/docs/gallery/bubblechart)
+* [`Candlestick` charts](https://developers.google.com/chart/interactive/docs/gallery/candlestickchart)
+* [`Column` charts](https://developers.google.com/chart/interactive/docs/gallery/columnchart)
+* [`Combo` charts](https://developers.google.com/chart/interactive/docs/gallery/combochart)
+* [`Gauge` charts](https://developers.google.com/chart/interactive/docs/gallery/gauge)
+* [`Histogram` charts](https://developers.google.com/chart/interactive/docs/gallery/histogram)
+* [`Line` charts](https://developers.google.com/chart/interactive/docs/gallery/linechart)
+* [`Pie` charts](https://developers.google.com/chart/interactive/docs/gallery/piechart)
+* [`Scatter` charts](https://developers.google.com/chart/interactive/docs/gallery/scatterchart)
+* [`Stepped` area charts](https://developers.google.com/chart/interactive/docs/gallery/steppedareachart)
+* [`Timeline` charts](https://developers.google.com/chart/interactive/docs/gallery/timeline)
 
 For example, if you have data for a sports league that records the goals each team has scored (where the first column is the team name and the second column is their total goals), you can create a bar chart, with an optional title, from that data using a shortcode like this:
 
@@ -285,6 +287,10 @@ See the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-vi
 
 == Change log ==
 
+= Version 0.11.2 =
+
+* Support for [Google's Annotation chart](https://developers.google.com/chart/interactive/docs/gallery/annotationchart).
+
 = Version 0.11.1 =
 
 * Support for [Google's Annotated Time Line charts](https://developers.google.com/chart/interactive/docs/gallery/annotatedtimeline).
@@ -353,9 +359,9 @@ Version history has been truncated due to [WordPress.org plugin repository `read
 
 == Upgrade Notice ==
 
-= Version 0.11.1 =
+= Version 0.11.2 =
 
-This release adds Timeline Chart and Annotated Time Line chart support.
+This release adds Timeline Chart, Annotated Time Line chart, and Annotation Chart support.
 
 == Other notes ==
 
@@ -486,12 +492,14 @@ The **complete list of attributes for configurable chart options** is below. Ref
 * `chart_red_to`
 * `chart_reverse_categories`
 * `chart_scale_columns`
+* `chart_scale_format`
 * `chart_scale_type`
 * `chart_selection_mode`
 * `chart_series`
 * `chart_size_axis`
 * `chart_slice_visibility_threshold`
 * `chart_slices`
+* `chart_table`
 * `chart_theme`
 * `chart_thickness`
 * `chart_timeline`
