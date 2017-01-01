@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 4.0
 Tested up to: 4.7
-Stable tag: 0.11.0
+Stable tag: 0.11.1
 License: GPL-3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -285,6 +285,10 @@ See the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-vi
 
 == Change log ==
 
+= Version 0.11.1 =
+
+* Support for [Google's Annotated Time Line charts](https://developers.google.com/chart/interactive/docs/gallery/annotatedtimeline).
+
 = Version 0.11.0 =
 
 * Support for [Google's Timeline charts](https://developers.google.com/chart/interactive/docs/gallery/timeline).
@@ -349,9 +353,9 @@ Version history has been truncated due to [WordPress.org plugin repository `read
 
 == Upgrade Notice ==
 
-= Version 0.11.0 =
+= Version 0.11.1 =
 
-This release adds Timeline Chart support.
+This release adds Timeline Chart and Annotated Time Line chart support.
 
 == Other notes ==
 

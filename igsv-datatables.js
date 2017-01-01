@@ -1,3 +1,14 @@
+/**
+ * Inline Google Spreadsheet Viewer's DataTables integrations.
+ *
+ * @file Loads and applies DataTables to any tables on the page.
+ * @license GPL-3.0
+ * @author Meitar Moscovitz <meitarm+wordpress@gmail.com>
+ * @copyright Copyright 2017 by Meitar "maymay" Moscovitz
+ */
+
+(function () { // start immediately-invoked function expresion (IIFE)
+
 // DataTables
 jQuery(document).ready(function () {
     // Set/load defaults.
@@ -53,3 +64,5 @@ jQuery(document).ready(function () {
         }
     });
 });
+
+})(); // end IIFE

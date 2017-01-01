@@ -5,11 +5,11 @@
  * WordPress plugin header information:
  *
  * * Plugin Name: Inline Google Spreadsheet Viewer
- * * Plugin URI: http://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
+ * * Plugin URI: https://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * * Description: Retrieves data from a public Google Spreadsheet or CSV file and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * * Version: 0.11.0
- * * Author: Meitar Moscovitz <meitar@maymay.net>
- * * Author URI: http://maymay.net/
+ * * Version: 0.11.1
+ * * Author: Meitar Moscovitz <meitarm+wordpress@gmail.com>
+ * * Author URI: https://maymay.net/
  * * Text Domain: inline-gdocs-viewer
  * * Domain Path: /languages
  *
@@ -17,7 +17,7 @@
  *
  * @license https://www.gnu.org/licenses/gpl-3.0.en.html
  *
- * @copyright Copyright (c) 2010-2016 by Meitar "maymay" Moscovitz
+ * @copyright Copyright (c) 2010-2017 by Meitar "maymay" Moscovitz
  *
  * @package WordPress\Plugin\InlineGoogleSpreadsheetViewer
  */
@@ -968,6 +968,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
     public function getGVizChartOutput ($url, $x) {
         $chart_id = 'igsv-' . $this->invocations . '-' . $x['chart'] . 'chart-'  . $this->getDocId($x['key']);
         $output  = '<div id="' . esc_attr($chart_id) . '" class="igsv-chart" title="' . esc_attr($x['title']) . '"';
+        $output .= (empty($x['style'])) ? '' : ' style="' . esc_attr($x['style']) . '"';
         $output .= ' data-chart-type="' . esc_attr(ucfirst($x['chart'])) . '"';
         $output .= ' data-datasource-href="' . esc_attr($url) . '&chart=true"';
         if ($chart_opts = $this->getChartOptions($x)) {

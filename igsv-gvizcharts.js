@@ -1,11 +1,23 @@
-// Google Visualizations
+/**
+ * Inline Google Spreadsheet Viewer's Google Chart API integrations.
+ *
+ * @file Loads and draws Google Chart API visualizations.
+ * @license GPL-3.0
+ * @author Meitar Moscovitz <meitarm+wordpress@gmail.com>
+ * @copyright Copyright 2017 by Meitar "maymay" Moscovitz
+ */
+
+(function () { // start immediately-invoked function expresion (IIFE)
+
 google.load('visualization', '1.0', {
     'packages' : [
         'corechart',
         'gauge',
-        'timeline'
+        'timeline',
+        'annotatedtimeline'
     ]
 });
+
 jQuery(document).ready(function () {
     jQuery('.igsv-chart').each(function () {
         var chart_id = jQuery(this).attr('id'),
@@ -32,49 +44,52 @@ jQuery(document).ready(function () {
                 return; // bail, let Google handle displaying errors
             }
             var data = response.getDataTable(),
+                chart_el = document.getElementById(chart_id),
                 chart;
-            switch (jQuery('#' + chart_id).data('chart-type')) {
-                case 'Area':
-                    chart = new google.visualization.AreaChart(document.getElementById(chart_id));
+            switch (jQuery('#' + chart_id).data('chart-type').toLowerCase()) {
+                case 'annotatedtimeline':
+                    chart = new google.visualization.AnnotatedTimeLine(chart_el)
                     break;
-                case 'Bar':
-                    chart = new google.visualization.BarChart(document.getElementById(chart_id));
+                case 'area':
+                    chart = new google.visualization.AreaChart(chart_el);
                     break;
-                case 'Bubble':
-                    chart = new google.visualization.BubbleChart(document.getElementById(chart_id));
+                case 'bar':
+                    chart = new google.visualization.BarChart(chart_el);
                     break;
-                case 'Candlestick':
-                    chart = new google.visualization.CandlestickChart(document.getElementById(chart_id));
+                case 'bubble':
+                    chart = new google.visualization.BubbleChart(chart_el);
                     break;
-                case 'Column':
+                case 'candlestick':
+                    chart = new google.visualization.CandlestickChart(chart_el);
+                    break;
+                case 'column':
                 default:
-                    chart = new google.visualization.ColumnChart(document.getElementById(chart_id));
+                    chart = new google.visualization.ColumnChart(chart_el);
                     break;
-                case 'Combo':
-                    chart = new google.visualization.ComboChart(document.getElementById(chart_id));
+                case 'combo':
+                    chart = new google.visualization.ComboChart(chart_el);
                     break;
-                case 'Gauge':
-                    chart = new google.visualization.Gauge(document.getElementById(chart_id));
+                case 'gauge':
+                    chart = new google.visualization.Gauge(chart_el);
                     break;
-                case 'Histogram':
-                    chart = new google.visualization.Histogram(document.getElementById(chart_id));
+                case 'histogram':
+                    chart = new google.visualization.Histogram(chart_el);
                     break;
-                case 'Line':
-                    chart = new google.visualization.LineChart(document.getElementById(chart_id));
+                case 'line':
+                    chart = new google.visualization.LineChart(chart_el);
                     break;
-                case 'Pie':
-                    chart = new google.visualization.PieChart(document.getElementById(chart_id));
+                case 'pie':
+                    chart = new google.visualization.PieChart(chart_el);
                     break;
-                case 'Scatter':
-                    chart = new google.visualization.ScatterChart(document.getElementById(chart_id));
+                case 'scatter':
+                    chart = new google.visualization.ScatterChart(chart_el);
                     break;
-                case 'Stepped':
-                case 'SteppedArea':
-                case 'Steppedarea':
-                    chart = new google.visualization.SteppedAreaChart(document.getElementById(chart_id));
+                case 'stepped':
+                case 'steppedarea':
+                    chart = new google.visualization.SteppedAreaChart(chart_el);
                     break;
-                case 'Timeline':
-                    chart = new google.visualization.Timeline(document.getElementById(chart_id));
+                case 'timeline':
+                    chart = new google.visualization.Timeline(chart_el);
                     break;
             }
             chart.draw(data, options);
@@ -101,3 +116,5 @@ jQuery(document).ready(function () {
         }
     });
 });
+
+})(); // end IIFE
