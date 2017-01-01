@@ -418,8 +418,12 @@ To use chart customization options, you must also choose a chart type by includi
 The **complete list of attributes for configurable chart options** is below. Refer to [Google's Chart Gallery documentation](https://google-developers.appspot.com/chart/interactive/docs/gallery) for the type of chart you are using to learn more about which chart types support which chart options.
 
 * `chart_aggregation_target`
+* `chart_all_values_suffix`
+* `chart_allow_html`
+* `chart_allow_redraw`
 * `chart_animation`
 * `chart_annotations`
+* `chart_annotations_width`
 * `chart_area_opacity`
 * `chart_avoid_overlapping_grid_lines`
 * `chart_axis_titles_position`
@@ -433,9 +437,19 @@ The **complete list of attributes for configurable chart options** is below. Ref
 * `chart_crosshair`
 * `chart_curve_type`
 * `chart_data_opacity`
+* `chart_date_format`
 * `chart_dimensions`
+* `chart_display_annotations`
+* `chart_display_annotations_filter`
+* `chart_display_date_bar_separator`
+* `chart_display_exact_values`
+* `chart_display_legend_dots`
+* `chart_display_legend_values`
+* `chart_display_range_selector`
+* `chart_display_zoom_buttons`
 * `chart_enable_interactivity`
 * `chart_explorer`
+* `chart_fill`
 * `chart_focus_target`
 * `chart_font_name`
 * `chart_font_size`
@@ -446,14 +460,17 @@ The **complete list of attributes for configurable chart options** is below. Ref
 * `chart_h_axes`
 * `chart_h_axis`
 * `chart_height`
+* `chart_highlight_dot`
 * `chart_interpolate_nulls`
 * `chart_is_stacked`
 * `chart_legend`
+* `chart_legend_position`
 * `chart_line_width`
 * `chart_major_ticks`
 * `chart_max`
 * `chart_min`
 * `chart_minor_ticks`
+* `chart_number_formats`
 * `chart_orientation`
 * `chart_pie_hole`
 * `chart_pie_residue_slice_color`
@@ -468,12 +485,15 @@ The **complete list of attributes for configurable chart options** is below. Ref
 * `chart_red_from`
 * `chart_red_to`
 * `chart_reverse_categories`
+* `chart_scale_columns`
+* `chart_scale_type`
 * `chart_selection_mode`
 * `chart_series`
 * `chart_size_axis`
 * `chart_slice_visibility_threshold`
 * `chart_slices`
 * `chart_theme`
+* `chart_thickness`
 * `chart_timeline`
 * `chart_title_position`
 * `chart_title_text_style`
@@ -482,9 +502,12 @@ The **complete list of attributes for configurable chart options** is below. Ref
 * `chart_v_axes`
 * `chart_v_axis`
 * `chart_width`
+* `chart_wmode`
 * `chart_yellow_color`
 * `chart_yellow_from`
 * `chart_yellow_to`
+* `chart_zoom_end_time`
+* `chart_zoom_start_time`
 
 = DataTables customization options =
 
