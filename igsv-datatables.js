@@ -37,7 +37,7 @@ jQuery(document).ready(function () {
         var x;
         if (table.is('.FixedHeader')) {
             new jQuery.fn.dataTable.FixedHeader(table);
-        } else if (x = this.className.match(/FixedHeader-(top|right|bottom|left)/g)) {
+        } else if (x = this.className.match(/FixedHeader-(top|right|footer|left)/g)) {
             for (var i = 0; i < x.length; i++) {
                 var side = x[i].split('-')[1];
                 var fheader_opts = {};

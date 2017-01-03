@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 4.0
 Tested up to: 4.7
-Stable tag: 0.11.2
+Stable tag: 0.11.3
 License: GPL-3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -287,6 +287,11 @@ See the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-vi
 
 == Change log ==
 
+= Version 0.11.3 =
+
+* New shortcode attribute `footer_rows` provides a way to define rows to place in `<tfoot>` element.
+* [Bugfix](https://wordpress.org/support/topic/how-to-define-a-footer/): `FixedHeader-footer` correctly freezes the table footer while scrolling vertically.
+
 = Version 0.11.2 =
 
 * Support for [Google's Annotation chart](https://developers.google.com/chart/interactive/docs/gallery/annotationchart).
@@ -359,9 +364,9 @@ Version history has been truncated due to [WordPress.org plugin repository `read
 
 == Upgrade Notice ==
 
-= Version 0.11.2 =
+= Version 0.11.3 =
 
-This release adds Timeline Chart, Annotated Time Line chart, and Annotation Chart support.
+This release adds Timeline Chart, Annotated Time Line chart, and Annotation Chart support, and fixes a minor DataTables integration bug.
 
 == Other notes ==
 
@@ -398,13 +403,14 @@ This plugin provides one shortcode (`gdoc`) that can do many things through a co
     * `no-datatables` deactivates all DataTables features.
     * `no-responsive` deactivates only DataTables' Responsive features.
     * `FixedHeader` or its synonym, `FixedHeader-top` freezes the table header (its `<thead>` content) to the top of the window while scrolling vertically.
-    * `FixedHeader-bottom` freezes the table footer (its `<tfoot>` content) to the bottom of the window while scrolling vertically.
+    * `FixedHeader-footer` freezes the table footer (its `<tfoot>` content) to the bottom of the window while scrolling vertically.
     * `FixedHeader-left` or `FixedHeader-right` freezes the left- or right-most column of the table while scrolling horizontally. (You will also need to set `datatables_scroll_x="true"` in your shortcode to enable horizontal scrolling.)
     * `FixedColumns-left-N` or `FixedColumns-right-N` freezes the left- or right-most `N` columns in the table, respectively.
 * `expire_in` - How long to cache responses from Google for, in seconds. Set to `0` to cache forever. (Default: `600`, which is ten minutes.)
+* `footer_rows` - A number specifying how many trailing rows to place in the output's `<tfoot>` element. (Default: `0`.)
 * `gid` - For old-style Google Spreadsheets, the ID of a worksheet in a Google Spreadsheet to load, other than the first one, like `[gdoc key="ABCDEFG" gid="123"]`. (This attribute is deprecated for new Google Sheets.)
 * `header_cols` - A number specifying how many column cells should be written with `<th>` elements. (Default: `0`.)
-* `header_rows` - A number specifying how many rows to place in the output's `<thead>` element. (Default: `1`.)
+* `header_rows` - A number specifying how many leading rows to place in the output's `<thead>` element. (Default: `1`.)
 * `height` - Height of the containing HTML element. Tables ignore this, use `style` instead. (Default: automatically calculated.)
 * `http_opts` - A JSON string representing options to pass to the [WordPress HTTP API](https://codex.wordpress.org/HTTP_API), like `[gdoc key="ABCDEFG" http_opts='{"method": "POST", "blocking": false, "user-agent": "My Custom User Agent String"}']`.
 * `lang` - The [ISO 639](http://www.iso.org/iso/home/standards/language_codes.htm) language code declaring the human language of the spreadsheet's contents. For instance, use `nl-NL` to declare that content is in Dutch. (Default: your site's [global language setting](https://codex.wordpress.org/WordPress_in_Your_Language).)

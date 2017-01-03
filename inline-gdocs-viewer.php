@@ -7,7 +7,7 @@
  * * Plugin Name: Inline Google Spreadsheet Viewer
  * * Plugin URI: https://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
  * * Description: Retrieves data from a public Google Spreadsheet or CSV file and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * * Version: 0.11.2
+ * * Version: 0.11.3
  * * Author: Meitar Moscovitz <meitarm+wordpress@gmail.com>
  * * Author URI: https://maymay.net/
  * * Text Domain: inline-gdocs-viewer
@@ -290,6 +290,13 @@ class InlineGoogleSpreadsheetViewerPlugin {
         return $type;
     }
 
+    /**
+     * Gets a Google spreadsheet URL from its key.
+     *
+     * @param array $atts Shortcode attributes.
+     *
+     * @return string
+     */
     private function getSpreadsheetUrl ($atts) {
         $url = '';
         // Assume a full link.
@@ -464,6 +471,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
 
         // Split into table headers and body.
         $thead = ((int) $options['header_rows']) ? array_splice($r, 0, $options['header_rows']) : array_splice($r, 0, 1);
+        $tfoot = ((int) $options['footer_rows']) ? array_splice($r, -$options['footer_rows']) : array();
         $tbody = $r;
 
         $ir = 1; // row number counter
@@ -501,8 +509,26 @@ class InlineGoogleSpreadsheetViewerPlugin {
             }
             $html .= "</tr>";
         }
-        $html .= "</thead><tbody>";
+        $html .= "</thead>";
 
+        if ($tfoot) {
+            $html .= "<tfoot>\n";
+            foreach ($tfoot as $v) {
+                $html .= "<tr class=\"row-$ir " . $this->evenOrOdd($ir) . "\">";
+                $ir++;
+                $ic = 1; // reset column counting
+                foreach ($v as $td) {
+                    $td = nl2br(esc_html($td));
+                    $el = ($ic <= $options['header_cols']) ? 'th' : 'td';
+                    $html .= "<$el class=\"col-$ic " . $this->evenOrOdd($ic) . "\">$td</$el>";
+                    $ic++;
+                }
+                $html .= "</tr>";
+            }
+            $html .= '</tfoot>';
+        }
+
+        $html .= "<tbody>\n";
         foreach ($tbody as $v) {
             $html .= "<tr class=\"row-$ir " . $this->evenOrOdd($ir) . "\">";
             $ir++;
@@ -515,7 +541,9 @@ class InlineGoogleSpreadsheetViewerPlugin {
             }
             $html .= "</tr>";
         }
-        $html .= '</tbody></table>';
+        $html .= '</tbody>';
+
+        $html .= '</table>';
 
         $html = apply_filters($this->shortcode . '_table_html', $html);
 
@@ -653,6 +681,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
             'strip'    => 0,                    // If spreadsheet, how many rows to omit from top
             'header_cols' => 0,                 // Number of columns to write as <th> elements
             'header_rows' => 1,                 // Number of rows in <thead>
+            'footer_rows' => 0,                 // Number of rows in <tfoot>
             'use_cache' => true,                // Whether to use Transients API for fetched data.
             'http_opts' => false,               // Arguments to pass to the WordPress HTTP API.
             // TODO: Make a plugin option setting for default transient expiry time.
