@@ -3,8 +3,8 @@ Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 4.0
-Tested up to: 4.7
-Stable tag: 0.11.3
+Tested up to: 4.7.1
+Stable tag: 0.11.4
 License: GPL-3
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -287,24 +287,28 @@ See the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-vi
 
 == Change log ==
 
-= Version 0.11.3 =
+= 0.11.4 =
+
+* Bugfix: Chart attribute values that require JSON arrays are correctly decoded.
+
+= 0.11.3 =
 
 * New shortcode attribute `footer_rows` provides a way to define rows to place in `<tfoot>` element.
 * [Bugfix](https://wordpress.org/support/topic/how-to-define-a-footer/): `FixedHeader-footer` correctly freezes the table footer while scrolling vertically.
 
-= Version 0.11.2 =
+= 0.11.2 =
 
 * Support for [Google's Annotation chart](https://developers.google.com/chart/interactive/docs/gallery/annotationchart).
 
-= Version 0.11.1 =
+= 0.11.1 =
 
 * Support for [Google's Annotated Time Line charts](https://developers.google.com/chart/interactive/docs/gallery/annotatedtimeline).
 
-= Version 0.11.0 =
+= 0.11.0 =
 
 * Support for [Google's Timeline charts](https://developers.google.com/chart/interactive/docs/gallery/timeline).
 
-= Version 0.10.2 =
+= 0.10.2 =
 
 * [Bugfix](https://wordpress.org/support/topic/not-able-to-display-csv?replies=3#post-8705160): CSV files with spaces in their URL path now load correctly.
 * Bugfix: You can now place two or more shortcodes with CSV file `key`s in the same post or page without errors.
@@ -312,41 +316,41 @@ See the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-vi
 * Enhancement: Google Docs Viewer now uses Google's newest `viewerng` URL.
 * DataTables library and extensions have been updated to their current versions.
 
-= Version 0.10.1 =
+= 0.10.1 =
 
 * [Improvement](https://wordpress.org/support/topic/summary-and-title-attributes?replies=1): Conform more closely to HTML5 standard by default.
 * [Bugfix](https://wordpress.org/support/topic/summary-and-title-attributes?replies=1): Correctly report minimum required version.
 
-= Version 0.10.0 =
+= 0.10.0 =
 
 This is a security and maintence release. All users are encouraged to update immediately.
 
 * Security: Harden the output of MySQL-sourced table IDs with [WordPress salt](https://developer.wordpress.org/reference/functions/wp_salt/). If you were using a MySQL datasource for a table and had custom code that referenced the table's HTML `id` attribute, you will need to update your code to refer to the new `id` value.
 * Usability: Admin options that expect code use monospace font.
 
-= Version 0.9.17 =
+= 0.9.17 =
 
 * Developer:
     * Add `gdoc_enqueued_front_end_scripts` and `gdoc_enqueued_front_end_styles` filters to allow performance tuning by removing unused scripts and stylesheets.
     * Update DataTables libraries.
 
-= Version 0.9.16 =
+= 0.9.16 =
 
 * [Feature](https://wordpress.org/support/topic/no-datatables-setting-first-column-and-first-row-as-headings): Add support for customizable column headers using new `header_cols` attribute.
 
-= Version 0.9.15 =
+= 0.9.15 =
 
 * [Feature](https://wordpress.org/support/topic/vaxes): Add support for Google Charts' `vAxes` configuration option (use the `chart_v_axes` attribute in your shortcode).
 
-= Version 0.9.14 =
+= 0.9.14 =
 
 * [Usability](https://wordpress.org/support/topic/pages-126): Show built-in help tabs on all post types, not just the Post type.
 
-= Version 0.9.13 =
+= 0.9.13 =
 
 * Bugfix: Fix bug wherein a lack of a `buttons` member in the DataTables defaults object caused a JavaScript error.
 
-= Version 0.9.12 =
+= 0.9.12 =
 
 * Usability: The plugin's settings screen now reports which user roles are SQL-capable.
 * Developer:
@@ -356,7 +360,7 @@ This is a security and maintence release. All users are encouraged to update imm
         * **You may need to visit the plugin's settings screen and rewrite your DataTables defaults object value for the new extension to work.** If you are not sure what defaults you want, simply leave that field blank and press `Save Changes`.
         * Only modern (HTML5 capable) Web browsers are able to use the buttons, as they no longer use Flash. While a [Flash-based fallback is available](https://datatables.net/extensions/buttons/examples/flash/index.html) to support legacy (IE9 and earlier) browsers, it no longer ships with this plugin.
 
-= Version 0.9.11 =
+= 0.9.11 =
 
 * Feature: `Gauge` charts are now fully supported.
 
@@ -364,9 +368,9 @@ Version history has been truncated due to [WordPress.org plugin repository `read
 
 == Upgrade Notice ==
 
-= Version 0.11.3 =
+= 0.11.4 =
 
-This release adds Timeline Chart, Annotated Time Line chart, and Annotation Chart support, and fixes a minor DataTables integration bug.
+This release adds Timeline Chart, Annotated Time Line chart, and Annotation Chart support, and fixes minor integration bugs.
 
 == Other notes ==
 
