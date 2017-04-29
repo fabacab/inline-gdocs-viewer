@@ -1,4 +1,5 @@
 <?php
+namespace WP_IGSV;
 /***********************************************************************
     Copyright 2008-2009 Mark Williams
 
@@ -88,8 +89,8 @@ abstract class vistable {
         $this->tz = $tz;
         $this->locale = $locale;
 
-        $timezone = new DateTimeZone($tz);
-        $date = new DateTime("", $timezone);
+        $timezone = new \DateTimeZone($tz);
+        $date = new \DateTime("", $timezone);
         $this->gmt_offset = $timezone->getOffset($date);
     }
 

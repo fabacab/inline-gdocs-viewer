@@ -5,9 +5,9 @@
  * WordPress plugin header information:
  *
  * * Plugin Name: Inline Google Spreadsheet Viewer
- * * Plugin URI: https://maymay.net/blog/projects/inline-google-spreadsheet-viewer/
+ * * Plugin URI: https://wordpress.org/plugins/inline-google-spreadsheet-viewer/
  * * Description: Retrieves data from a public Google Spreadsheet or CSV file and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * * Version: 0.11.4
+ * * Version: 0.12
  * * Author: Meitar Moscovitz <meitarm+wordpress@gmail.com>
  * * Author URI: https://maymay.net/
  * * Text Domain: inline-gdocs-viewer
@@ -22,105 +22,170 @@
  * @package WordPress\Plugin\InlineGoogleSpreadsheetViewer
  */
 
-if (!defined('ABSPATH')) { exit; } // Disallow direct HTTP access.
+namespace WP_IGSV;
+
+if ( ! defined( 'ABSPATH' ) ) { exit; } // Disallow direct HTTP access.
 
 /**
  * Plugin class.
  */
 class InlineGoogleSpreadsheetViewerPlugin {
 
-    private $shortcode = 'gdoc';
-    private $dt_class = 'igsv-table'; //< Default table class.
-    private $dt_defaults; //< Defaults for DataTables defaults object.
+    /**
+     * The shortcode itself.
+     *
+     * @var string
+     */
+    const shortcode = 'gdoc';
+
+    /**
+     * Internal prefix for settings, etc., derived from shortcode.
+     *
+     * @var string
+     */
+    const prefix = 'gdoc_';
+
+    /**
+     * Default table class.
+     *
+     * @var string
+     */
+    private $dt_class = 'igsv-table';
+
+    /**
+     * Default for the DataTables defaults object in JSON format.
+     *
+     * @var string
+     */
+    private $dt_defaults;
+
+    /**
+     * Number of invocations for each page load.
+     *
+     * @var int
+     */
     private $invocations = 0;
-    private $prefix; //< Internal prefix for settings, etc., derived from shortcode.
+
+    /**
+     * List of custom capabilities.
+     *
+     * @var array
+     */
     private $capabilities; //< List of custom capabilities.
-    private $gdoc_url_regex =
+
+    /**
+     * Regular expression to match a Google Sheet address in an URI.
+     *
+     * @var string
+     */
+    private static $gdoc_url_regex =
         '!https://(?:docs\.google\.com/spreadsheets/d/|script\.google\.com/macros/s/)([^/]+)!';
 
+    /**
+     * Constructor.
+     */
     public function __construct () {
-        // Initialize private defaults.
-        $this->prefix = $this->shortcode . '_';
-        $this->dt_defaults = json_encode(array(
+        $this->dt_defaults = json_encode( array(
             'dom' => "B<'clear'>lfrtip",
             'buttons' => array(
                 'colvis', 'copy', 'csv', 'excel', 'pdf', 'print'
             )
-        ));
+        ) );
         $this->capabilities = array(
-            $this->prefix . 'query_sql_databases'
+            self::prefix . 'query_sql_databases'
         );
+    }
 
-        add_action('plugins_loaded', array($this, 'registerL10n'));
-        add_action('init', array($this, 'maybeFetchGvizDataSource'));
-        add_action('admin_init', array($this, 'registerSettings'));
-        add_action('admin_menu', array($this, 'registerAdminMenu'));
-        add_action('admin_head', array($this, 'doAdminHeadActions'));
-        add_action('admin_enqueue_scripts', array($this, 'addAdminScripts'));
-        add_action('admin_print_footer_scripts', array($this, 'addQuickTagButton'));
+    /**
+     * Entry code for WordPress framework.
+     */
+    public static function register () {
+        add_action( 'plugins_loaded', array( __CLASS__, 'registerL10n' ) );
+        add_action( 'init', array( __CLASS__, 'maybeFetchGvizDataSource' ) );
+        add_action( 'admin_init', array( __CLASS__, 'registerSettings' ) );
+        add_action( 'admin_menu', array( __CLASS__, 'registerAdminMenu' ) );
+        add_action( 'admin_head', array( __CLASS__, 'registerContextualHelp' ) );
+        add_action( 'admin_enqueue_scripts', array( __CLASS__, 'addAdminScripts' ) );
+        add_action( 'admin_print_footer_scripts', array( __CLASS__, 'addQuickTagButton' ) );
+        add_action( 'wp_enqueue_scripts', array( __CLASS__, 'addFrontEndScripts' ) );
 
-        add_action('wp_enqueue_scripts', array($this, 'addFrontEndScripts'));
+        $plugin = new self();
+        add_shortcode( self::shortcode, array( $plugin, 'displayShortcode' ) );
 
-        add_shortcode($this->shortcode, array($this, 'displayShortcode'));
         wp_embed_register_handler(
-            $this->shortcode . 'spreadsheet',
-            $this->gdoc_url_regex,
-            array($this, 'oEmbedHandler')
+            self::shortcode . 'spreadsheet',
+            self::$gdoc_url_regex,
+            array( __CLASS__, 'oEmbedHandler' )
         );
 
-        register_activation_hook(__FILE__, array($this, 'activate'));
+        register_activation_hook( __FILE__, array( __CLASS__, 'activate' ) );
     }
 
-    public function activate () {
-        $options = get_option($this->prefix . 'settings');
-        if (!isset($options['datatables_classes'])) { $options['datatables_classes'] = $this->dt_class; }
-        if (empty($options['datatables_defaults_object'])) {
-            $options['datatables_defaults_object'] = json_decode($this->dt_defaults);
+    /**
+     * Sets up plugin during activation.
+     */
+    public static function activate () {
+        $options = get_option( self::prefix . 'settings' );
+        if ( ! isset( $options['datatables_classes'] ) ) {
+            $options['datatables_classes'] = $this->dt_class;
         }
-        update_option($this->prefix . 'settings', $options);
-        $admin_role = get_role('administrator');
-        $admin_role->add_cap($this->prefix . 'query_sql_databases', true);
+        if ( empty( $options['datatables_defaults_object'] ) ) {
+            $options['datatables_defaults_object'] = json_decode( $this->dt_defaults );
+        }
+        update_option( self::prefix . 'settings', $options );
+        $admin_role = get_role( 'administrator' );
+        $admin_role->add_cap( self::prefix . 'query_sql_databases', true );
     }
 
-    public function registerL10n () {
-        load_plugin_textdomain('inline-gdocs-viewer', false, dirname(plugin_basename(__FILE__)) . '/languages/');
+    /**
+     * Loads i18n from languages directory.
+     */
+    public static function registerL10n () {
+        load_plugin_textdomain( 'inline-gdocs-viewer', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
     }
 
-    public function registerSettings () {
+    /**
+     * @see https://developer.wordpress.org/reference/hooks/admin_init/
+     */
+    public static function registerSettings () {
         register_setting(
-            $this->prefix . 'settings',
-            $this->prefix . 'settings',
-            array($this, 'validateSettings')
+            self::prefix . 'settings',
+            self::prefix . 'settings',
+            array( __CLASS__, 'validateSettings' )
         );
     }
 
-    public function registerAdminMenu () {
+    /**
+     * Adds the option page.
+     */
+    public static function registerAdminMenu () {
         add_options_page(
-            __('Inline Google Spreadsheet Viewer Settings', 'inline-gdocs-viewer'),
-            __('Inline Google Spreadsheet Viewer', 'inline-gdocs-viewer'),
+            __( 'Inline Google Spreadsheet Viewer Settings', 'inline-gdocs-viewer' ),
+            __( 'Inline Google Spreadsheet Viewer', 'inline-gdocs-viewer' ),
             'manage_options',
-            $this->prefix . 'settings',
-            array($this, 'renderOptionsPage')
+            self::prefix . 'settings',
+            array( __CLASS__, 'renderOptionsPage' )
         );
     }
 
-    public function doAdminHeadActions () {
-        $this->registerContextualHelp();
-    }
-
-    public function addAdminScripts () {
-        wp_enqueue_style('wp-jquery-ui-dialog');
-        wp_enqueue_script('jquery-ui-dialog');
-        wp_enqueue_script('jquery-ui-tabs');
-        //wp_enqueue_script('jquery-ui-tooltip');
+    /**
+     * @see https://developer.wordpress.org/reference/hooks/admin_enqueue_scripts/
+     */
+    public static function addAdminScripts () {
+        wp_enqueue_style( 'wp-jquery-ui-dialog' );
+        wp_enqueue_script( 'jquery-ui-dialog' );
+        wp_enqueue_script( 'jquery-ui-tabs' );
 
         wp_enqueue_style(
             'inline-gdocs-viewer',
-            plugins_url('inline-gdocs-viewer.css', __FILE__)
+            plugins_url( 'inline-gdocs-viewer.css', __FILE__ )
         );
     }
 
-    public function addFrontEndScripts () {
+    /**
+     * @see https://developer.wordpress.org/reference/hooks/wp_enqueue_scripts/
+     */
+    public static function addFrontEndScripts () {
         $styles = array(
             'jquery-datatables' => array(
                 'src' => '//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css'
@@ -145,88 +210,88 @@ class InlineGoogleSpreadsheetViewerPlugin {
         $scripts = array(
             'jquery-datatables' => array(
                 'src' => '//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js',
-                'deps' => array('jquery')
+                'deps' => array( 'jquery' )
             ),
             'datatables-buttons' => array(
                 'src' => '//cdn.datatables.net/buttons/1.2.1/js/dataTables.buttons.min.js',
-                'deps' => array('jquery-datatables')
+                'deps' => array( 'jquery-datatables' )
             ),
             'datatables-buttons-colvis' => array(
                 'src' => '//cdn.datatables.net/buttons/1.2.1/js/buttons.colVis.min.js',
-                'deps' => array('datatables-buttons')
+                'deps' => array( 'datatables-buttons' )
             ),
             'datatables-buttons-print' => array(
                 'src' => '//cdn.datatables.net/buttons/1.2.1/js/buttons.print.min.js',
-                'deps' => array('datatables-buttons')
+                'deps' => array( 'datatables-buttons' )
             ),
             // PDFMake (required for DataTables' PDF buttons)
             'pdfmake' => array(
                 'src' => '//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js',
-                'deps' => array('datatables-buttons')
+                'deps' => array( 'datatables-buttons' )
             ),
             'pdfmake-fonts' => array(
                 'src' => '//cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js',
-                'deps' => array('pdfmake')
+                'deps' => array( 'pdfmake' )
             ),
             // JSZip (required for DataTables' Excel button)
             'jszip' => array(
                 'src' => '//cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js',
-                'deps' => array('datatables-buttons')
+                'deps' => array( 'datatables-buttons' )
             ),
             'datatables-buttons-html5' => array(
                 'src' => '//cdn.datatables.net/buttons/1.2.1/js/buttons.html5.min.js',
-                'deps' => array('datatables-buttons')
+                'deps' => array( 'datatables-buttons' )
             ),
             'datatables-select' => array(
                 'src' => '//cdn.datatables.net/select/1.2.0/js/dataTables.select.min.js',
-                'deps' => array('jquery-datatables')
+                'deps' => array( 'jquery-datatables' )
             ),
             'datatables-fixedheader' => array(
                 'src' => '//cdn.datatables.net/fixedheader/3.1.2/js/dataTables.fixedHeader.min.js',
-                'deps' => array('jquery-datatables')
+                'deps' => array( 'jquery-datatables' )
             ),
             'datatables-fixedcolumns' => array(
                 'src' => '//cdn.datatables.net/fixedcolumns/3.2.2/js/dataTables.fixedColumns.min.js',
-                'deps' => array('jquery-datatables')
+                'deps' => array( 'jquery-datatables' )
             ),
             'datatables-responsive' => array(
                 'src' => '//cdn.datatables.net/responsive/2.1.0/js/dataTables.responsive.min.js',
-                'deps' => array('jquery-datatables')
+                'deps' => array( 'jquery-datatables' )
             ),
             'igsv-datatables' => array(
-                'src' => plugins_url('igsv-datatables.js', __FILE__),
-                'deps' => array('jquery-datatables')
+                'src' => plugins_url( 'igsv-datatables.js', __FILE__ ),
+                'deps' => array( 'jquery-datatables' )
             ),
             // Google Charts and Visualization libraries
             'google-ajax-api' => array(
                 'src' => '//www.google.com/jsapi'
             ),
             'igsv-gvizcharts' => array(
-                'src' => plugins_url('igsv-gvizcharts.js', __FILE__),
-                'deps' => array('google-ajax-api')
+                'src' => plugins_url( 'igsv-gvizcharts.js', __FILE__ ),
+                'deps' => array( 'google-ajax-api' )
             )
         );
 
-        $styles  = apply_filters($this->prefix . 'enqueued_front_end_styles', $styles);
-        $scripts = apply_filters($this->prefix . 'enqueued_front_end_scripts', $scripts);
+        $styles  = apply_filters( self::prefix . 'enqueued_front_end_styles', $styles );
+        $scripts = apply_filters( self::prefix . 'enqueued_front_end_scripts', $scripts );
 
-        foreach ($styles as $handle => $style) {
+        foreach ( $styles as $handle => $style ) {
             wp_enqueue_style(
                 $handle,
                 $style['src']
             );
         }
 
-        foreach ($scripts as $handle => $script) {
+        foreach ( $scripts as $handle => $script ) {
             wp_enqueue_script(
                 $handle,
                 $script['src'],
-                (isset($script['deps'])) ? $script['deps'] : array()
+                ( isset( $script['deps'] ) ) ? $script['deps'] : array()
             );
         }
 
-        if (wp_script_is('igsv-datatables', 'enqueued')) {
-            wp_localize_script('igsv-datatables', 'igsv_plugin_vars', $this->getLocalizedPluginVars());
+        if ( wp_script_is( 'igsv-datatables', 'enqueued') )  {
+            wp_localize_script( 'igsv-datatables', 'igsv_plugin_vars', self::getLocalizedPluginVars() );
         }
     }
 
@@ -235,23 +300,35 @@ class InlineGoogleSpreadsheetViewerPlugin {
      *
      * @param string $key The ID of the document, extracted from the key attribute of the shortcode.
      * @param string $q The query, if one exists, from the query attribute of the shortcode.
+     *
      * @return string A 40 character unique string representing the name of the transient for this key and query.
+     *
      * @see https://codex.wordpress.org/Transients_API
      */
-    private function getTransientName ($key, $q, $gid) {
-        return substr($this->shortcode . hash('sha1', $this->shortcode . $key . $q . $gid), 0, 40);
+    private function getTransientName ( $key, $q, $gid ) {
+        return substr( self::shortcode . hash( 'sha1', self::shortcode . $key . $q . $gid ), 0, 40 );
     }
 
     /**
+     * Gets the transient.
+     *
      * This simple getter/setter pair works around a bug in WP's own
      * serialization, apparently, by serializing the data ourselves
      * and then base64 encoding it.
+     *
+     * @return mixed
      */
-    private function getTransient ($transient) {
-        return unserialize(base64_decode(get_transient($transient)));
+    private function getTransient ( $transient ) {
+        return unserialize( base64_decode( get_transient( $transient ) ) );
     }
-    private function setTransient ($transient, $data, $expiry) {
-        return set_transient($transient, base64_encode(serialize($data)), $expiry);
+
+    /**
+     * Saves data as a WordPress transient.
+     *
+     * @return bool
+     */
+    private function setTransient ( $transient, $data, $expiry ) {
+        return set_transient( $transient, base64_encode( serialize( $data ) ), $expiry );
     }
 
     /**
@@ -262,17 +339,17 @@ class InlineGoogleSpreadsheetViewerPlugin {
      * @param string $key The key passed from the shortcode.
      * @return string A keyword referring to the type of document the key refers to.
      */
-    private function getDocTypeByKey ($key) {
+    private static function getDocTypeByKey ( $key ) {
         $type = '';
-        $p = parse_url($key);
-        if ('csv' === strtolower(pathinfo($p['path'], PATHINFO_EXTENSION))) {
+        $p = parse_url( $key );
+        if ( 'csv' === strtolower( pathinfo( $p['path'], PATHINFO_EXTENSION ) ) ) {
             $type = 'csv';
-        } else if (!isset($p['scheme']) && 'wordpress' === $p['path']) {
+        } else if ( empty( $p['scheme'] ) && 'wordpress' === $p['path'] ) {
             $type = 'wpdb';
-        } else if ('mysql' === $p['scheme']) {
+        } else if ( isset( $p['scheme'] ) && 'mysql' === $p['scheme'] ) {
             $type = 'mysql';
-        } else if (isset($p['host'])) {
-            switch ($p['host']) {
+        } else if ( isset( $p['host'] ) ) {
+            switch ( $p['host'] ) {
                 case 'docs.google.com':
                     $type = 'spreadsheet';
                     break;
@@ -284,7 +361,6 @@ class InlineGoogleSpreadsheetViewerPlugin {
                     break;
             }
         } else {
-            // without a host part, assume an old-style Spreadsheet
             $type = 'spreadsheet';
         }
         return $type;
@@ -297,50 +373,74 @@ class InlineGoogleSpreadsheetViewerPlugin {
      *
      * @return string
      */
-    private function getSpreadsheetUrl ($atts) {
+    private function getSpreadsheetUrl ( $atts ) {
         $url = '';
-        // Assume a full link.
+        $parts = parse_url( $atts['key'] );
+        // Force a full URL path if only the document ID was passed in.
+        $path = ( false === strpos( $parts['path'], '/' ) )
+            ? "/spreadsheets/d/{$parts['path']}/view"
+            : $parts['path'];
+        if ( ! empty( $parts['fragment'] ) ) {
+            $frag = array();
+            parse_str( $parts['fragment'], $frag );
+            if ( $frag['gid'] ) {
+                $atts['gid'] = $frag['gid'];
+            }
+        }
+        $atts['key']  = ( empty( $parts['scheme'] ) ) ? 'https' : $parts['scheme'];
+        $atts['key'] .= '://';
+        $atts['key'] .= ( empty( $parts['host'] ) ) ? 'docs.google.com' : $parts['host'];
+        $atts['key'] .= $path;
+        $action = ( $atts['query'] || $atts['chart'] )
+            ? 'gviz/tq?tqx=out:csv&tq=' . rawurlencode( $atts['query'] )
+            : 'export?format=csv';
         $m = array();
-        if (preg_match('/\/(edit|view|pubhtml|htmlview).*$/', $atts['key'], $m) && 'http' === substr($atts['key'], 0, 4)) {
-            $parts = parse_url($atts['key']);
-            if (!empty($parts['fragment'])) {
-                $frag = array();
-                parse_str($parts['fragment'], $frag);
-                if ($frag['gid']) { $atts['gid'] = $frag['gid']; }
-            }
-            $atts['key'] = $parts['scheme'] . '://' . $parts['host'] . $parts['path'];
-            $action = ($atts['query'] || $atts['chart'])
-                ? 'gviz/tq?tqx=out:csv&tq=' . rawurlencode($atts['query'])
-                : 'export?format=csv';
-            $url = str_replace($m[1], $action, $atts['key']);
-            if ($atts['gid']) {
-                $url .= '&gid=' . $atts['gid'];
-            }
-        } else {
-            $url .= "https://spreadsheets.google.com/pub?key={$atts['key']}&output=csv";
-            if ($gid) {
-                $url .= "&single=true&gid={$atts['gid']}";
-            }
+        preg_match( '/\/(edit|view|pubhtml|htmlview).*$/', $atts['key'], $m );
+        $url = str_replace( $m[1], $action, $atts['key'] );
+        if ( $atts['gid'] ) {
+            $url .= '&gid=' . $atts['gid'];
         }
         return $url;
     }
 
-    private function getGVizDataSourceUrl ($key, $query, $format) {
-        $format = ($format) ? $format : 'json';
-        $base = trailingslashit(get_site_url()) . '?';
+    /**
+     * Returns a URL for a Google Visualization Query.
+     *
+     * @param string $key
+     * @param string $query
+     * @param string $format
+     *
+     * @return string
+     */
+    private function getGVizDataSourceUrl ( $key, $query, $format ) {
+        $format = ( $format ) ? $format : 'json';
+        $base = trailingslashit( get_site_url() ) . '?';
         $qs = 'url=';
-        $qs .= rawurlencode($key) . '&tq=' . rawurlencode($query) . "&tqx=out:$format";
+        $qs .= rawurlencode( $key ) . '&tq=' . rawurlencode( $query ) . "&tqx=out:$format";
         return $base . $qs;
     }
 
-    private function sanitizeQuery ($query) {
+    /**
+     * Sanitizes the "query" part of the shortcode.
+     *
+     * @param string $query
+     *
+     * @return string
+     */
+    private static function sanitizeQuery ( $query ) {
         // Due to shortcode parsing limitations of angle brackets (< and > characters),
         // manually decode only the URL encoded values for those values, which are
         // themselves expected to be entered manually by the user. That is, to supply
         // the shortcode with a less than sign, the user ought enter %3C, but after
         // the initial urlencode($query), this will encode the percent sign, returning
         // instead the value %253C, so we manually replace this in the query ourselves.
-        return rawurldecode(str_replace('%253E', '%3E', str_replace('%253C', '%3C', rawurlencode($query))));
+        return rawurldecode(
+            str_replace(
+                '%253E',
+                '%3E',
+                str_replace( '%253C', '%3C', rawurlencode( $query ) )
+            )
+        );
     }
 
     /**
@@ -353,29 +453,31 @@ class InlineGoogleSpreadsheetViewerPlugin {
      *
      * @return string
      */
-    private function getDocId ($key) {
+    private function getDocId ( $key ) {
         $m = array();
-        preg_match($this->gdoc_url_regex, $key, $m);
-        if (!empty($m[1])) {
+        preg_match( self::$gdoc_url_regex, $key, $m );
+        if ( ! empty( $m[1] ) ) {
             $id = $m[1];
         } else {
-            $id = sanitize_title_with_dashes($key);
+            $id = sanitize_title_with_dashes( $key );
         }
-        if ('mysql' === $this->getDocTypeByKey($key)) {
-            $id = hash('sha256', wp_salt() . $key);
+        if ( 'mysql' === self::getDocTypeByKey( $key ) ) {
+            $id = hash( 'sha256', wp_salt() . $key );
         }
         return $id;
     }
 
     /**
+     * Gets the roles permitted to use SQL statements in shortcodes.
+     *
      * @return array The roles capable of executing SQL directly from a shortcode.
      */
-    function getSqlCapableRoles () {
+    private static function getSqlCapableRoles () {
         global $wp_roles;
         $sql_capable_roles = array();
-        foreach ($wp_roles->roles as $k => $v) {
-            if (array_key_exists($this->prefix . 'query_sql_databases', $v['capabilities'])) {
-                $sql_capable_roles[$k] = $v;
+        foreach ( $wp_roles->roles as $k => $v ) {
+            if ( array_key_exists( self::prefix . 'query_sql_databases', $v['capabilities'] ) ) {
+                $sql_capable_roles[ $k ] = $v;
             }
         }
         return $sql_capable_roles;
@@ -406,32 +508,45 @@ class InlineGoogleSpreadsheetViewerPlugin {
      *
      * @param string $url The URL to request.
      * @param string $http_opts A JSON string representing options to pass to the WordPress HTTP API.
+     *
      * @return array $resp The HTTP response from the WordPress HTTP API.
+     *
+     * @see https://developer.wordpress.org/reference/classes/WP_HTTP/
      */
-    private function doHttpRequest ($url, $opts) {
+    private static function doHttpRequest ( $url, $opts ) {
         $http_args = array();
-        if ($opts) {
+        if ( $opts ) {
             try {
-                foreach (json_decode($opts) as $k => $v) {
-                    $http_args[$k] = $v;
+                foreach ( json_decode( $opts ) as $k => $v ) {
+                    $http_args[ $k ] = $v;
                 }
-            } catch (Exception $e) {
-                $this->runtimeError(__('Error parsing HTTP options attribute:', 'inline-gdocs-viewer') . $e->getMessage());
+            } catch ( Exception $e ) {
+                $this->runtimeError( __( 'Error parsing HTTP options attribute:', 'inline-gdocs-viewer' ) . $e->getMessage() );
             }
         }
-        $resp = (empty($http_args)) ? wp_remote_get($url) : wp_remote_request($url, $http_args);
-        if (is_wp_error($resp)) { // bail on error
-            $this->runtimeError(__('Error requesting data:', 'inline-gdocs-viewer') . ' ' . $resp->get_error_message());
+        $resp = ( empty( $http_args ) ) ? wp_remote_get( $url ) : wp_remote_request( $url, $http_args );
+        if ( is_wp_error( $resp ) ) { // bail on error
+            $this->runtimeError(__( 'Error requesting data:', 'inline-gdocs-viewer' ) . ' ' . $resp->get_error_message() );
         }
         return $resp;
     }
 
-    private function runtimeError ($msg) {
-        throw new Exception(esc_html("[{$this->shortcode} $msg]"));
+    /**
+     * @param string $msg
+     *
+     * @throws Exception
+     */
+    private function runtimeError ( $msg ) {
+        throw new Exception( esc_html( '[' . self::shortcode . ": $msg]" ) );
     }
 
-    public function parseCsv ($csv_str) {
-        return $this->str_getcsv($csv_str); // Yo, why is PHP's built-in str_getcsv() frakking things up?
+    /**
+     * @param string csv_str
+     *
+     * @return array
+     */
+    public static function parseCsv ( $csv_str ) {
+        return self::str_getcsv( $csv_str ); // Yo, why is PHP's built-in str_getcsv() frakking things up?
     }
 
     /**
@@ -439,17 +554,18 @@ class InlineGoogleSpreadsheetViewerPlugin {
      * attributes that DataTables can use.
      *
      * @param array $atts Values passed from the shortcode.
+     *
      * @return A string representing attribute-value pairs in HTML.
      */
-    function dataTablesAttributes ($atts) {
+    private function dataTablesAttributes ( $atts ) {
         $str = '';
-        foreach ($atts as $k => $v) {
-            if (0 === strpos($k, 'datatables_') && false !== $v) {
-                $k = str_replace('datatables', 'data', str_replace('_', '-', $k));
+        foreach ( $atts as $k => $v ) {
+            if ( 0 === strpos( $k, 'datatables_' ) && false !== $v ) {
+                $k = str_replace( 'datatables', 'data', str_replace( '_', '-', $k ) );
                 // We urldecode() the value here because WordPress shortcodes
                 // use square brackets, but so do JavaScript arrays so users
                 // are advised to sometimes enter URL-encoded equivalents.
-                $str .= esc_attr($k) . '=\'' . esc_attr(urldecode($v)) . '\' ';
+                $str .= esc_attr( $k ) . '=\'' . esc_attr( urldecode( $v ) ) . '\' ';
             }
         }
         return $str;
@@ -466,7 +582,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
      * @return An HTML string of the complete <table> element.
      * @see displayShortcode
      */
-    public function dataToHtml ($r, $options, $caption = '') {
+    private function dataToHtml ($r, $options, $caption = '') {
         if ($options['strip'] > 0) { $r = array_slice($r, $options['strip']); } // discard
 
         // Split into table headers and body.
@@ -545,7 +661,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
 
         $html .= '</table>';
 
-        $html = apply_filters($this->shortcode . '_table_html', $html);
+        $html = apply_filters(self::shortcode . '_table_html', $html);
 
         if (false === $options['linkify'] || 'no' === strtolower($options['linkify'])) {
             return $html;
@@ -554,15 +670,22 @@ class InlineGoogleSpreadsheetViewerPlugin {
         }
     }
 
+    /**
+     * Prints either `odd` or `even`.
+     *
+     * @param int $x
+     *
+     * @return string
+     */
     private function evenOrOdd ($x) {
-        return ((int) $x % 2) ? 'odd' : 'even'; // cast to integer just in case
+        return ( (int) $x % 2 ) ? 'odd' : 'even'; // cast to integer just in case
     }
 
     /**
      * Simple CSV parsing, taken directly from PHP manual.
      * @see http://www.php.net/manual/en/function.str-getcsv.php#100579
      */
-    private function str_getcsv ($input, $delimiter=',', $enclosure='"', $escape=null, $eol=null) {
+    private static function str_getcsv ($input, $delimiter=',', $enclosure='"', $escape=null, $eol=null) {
         $temp=fopen("php://memory", "rw");
         fwrite($temp, $input);
         fseek($temp, 0);
@@ -574,33 +697,42 @@ class InlineGoogleSpreadsheetViewerPlugin {
         return $r;
     }
 
-    public function oEmbedHandler ($matches, $attr, $url, $rawattr) {
-        return $this->displayShortcode(array('key' => $url));
+    /**
+     * Handles oEmbed calls.
+     *
+     * @return string
+     */
+    public static function oEmbedHandler ( $matches, $attr, $url, $rawattr ) {
+        $plugin = new self();
+        return $plugin->displayShortcode( array( 'key' => $url ) );
     }
 
-    public function maybeFetchGvizDataSource () {
+    /**
+     * @see https://developer.wordpress.org/reference/hooks/init/
+     */
+    public static function maybeFetchGvizDataSource () {
         if (
-            !isset($_GET[$this->prefix . 'get_datasource_nonce'])
+            ! isset( $_GET[self::prefix . 'get_datasource_nonce'] )
             ||
-            !$this->isValidNonce($_GET[$this->prefix . 'get_datasource_nonce'], $this->prefix . 'get_datasource_nonce')
+            ! self::isValidNonce( $_GET[self::prefix . 'get_datasource_nonce'], self::prefix . 'get_datasource_nonce' )
         ) { return; }
-        $url = rawurldecode($_GET['url']);
-        $http_response = $this->doHttpRequest(esc_url($url), false);
+        $url = rawurldecode( $_GET['url'] );
+        $http_response = self::doHttpRequest( esc_url( $url ), false );
 
-        if (isset($_GET['chart'])) {
-            $http_response['body'] = $this->setGVizCsvDataTypes($http_response['body']);
+        if ( isset( $_GET['chart'] ) ) {
+            $http_response['body'] = self::setGVizCsvDataTypes( $http_response['body'] );
         }
 
-        require_once dirname(__FILE__) . '/lib/vistable.php';
+        require_once dirname( __FILE__ ) . '/lib/vistable.php';
         $vt = new csv_vistable(
-            (isset($_GET['tqx']))  ? $_GET['tqx'] : '',
-            (isset($_GET['tq']))   ? $_GET['tq']  : '',
-            (isset($_GET['tqrt'])) ? $_GET['tqrt']: '',
-            (isset($_GET['tz']))   ? $_GET['tz']  : 'PDT', // TODO: will get_option('timezone_string') work?
+            ( isset( $_GET['tqx'] ) )  ? $_GET['tqx'] : '',
+            ( isset( $_GET['tq'] ) )   ? $_GET['tq']  : '',
+            ( isset( $_GET['tqrt'] ) ) ? $_GET['tqrt']: '',
+            ( isset($_GET['tz'] ) )   ? $_GET['tz']  : 'PDT', // TODO: will get_option('timezone_string') work?
             get_locale(),
             array()
         );
-        $vt->setup_table($http_response['body']);
+        $vt->setup_table( $http_response['body'] );
         print @$vt->execute();
         exit;
     }
@@ -612,67 +744,89 @@ class InlineGoogleSpreadsheetViewerPlugin {
      * the data as a string.
      *
      * @param string $csv_str The raw CSV data.
+     *
      * @return string The same CSV data with a type-hinted header row.
      */
-    private function setGVizCsvDataTypes ($csv_str) {
-        $data = $this->parseCsv($csv_str);
-        $head = array_shift($data);
+    private static function setGVizCsvDataTypes ( $csv_str ) {
+        $data = self::parseCsv( $csv_str );
+        $head = array_shift( $data );
         $cols = array();
         // peek at lines 2 through 20 (not the header)
-        $peek = (count($data) > 20) ? 20 : count($data);
-        for ($i = 0; $i < $peek; $i++) {
-            foreach ($data[$i] as $k => $v) {
-                if (ctype_digit($v) || preg_match('/^[0-9]+(?:\.[0-9]*)?$/', $v)) {
-                    $cols[$k] = 'number';
-                } else if (strtotime($v)) {
-                    $cols[$k] = 'datetime';
+        $peek = ( count( $data ) > 20 ) ? 20 : count( $data );
+        for ( $i = 0; $i < $peek; $i++ ) {
+            foreach ( $data[ $i ] as $k => $v ) {
+                if ( ctype_digit( $v ) || preg_match( '/^[0-9]+(?:\.[0-9]*)?$/', $v ) ) {
+                    $cols[ $k ] = 'number';
+                } else if ( strtotime( $v ) ) {
+                    $cols[ $k ] = 'datetime';
                 } else {
-                    $cols[$k] = 'string';
+                    $cols[ $k ] = 'string';
                 }
             }
         }
         $head_typed = array();
-        foreach ($head as $k => $v) {
-            if ('string' === $cols[$k]) {
+        foreach ( $head as $k => $v ) {
+            if ( 'string' === $cols[ $k ] ) {
                 $head_typed[] = $v;
             } else {
-                $head_typed[] = $v . ' as ' . $cols[$k];
+                $head_typed[] = $v . ' as ' . $cols[ $k ];
             }
         }
-        array_unshift($data, $head_typed);
+        array_unshift( $data, $head_typed );
         $lines = array();
-        foreach ($data as $row) {
-            $lines[] = implode(',', $row);
+        foreach ( $data as $row ) {
+            $lines[] = implode( ',', $row );
         }
-        return implode("\n", $lines);
+        return implode( "\n", $lines );
     }
 
-    private function makeNonceUrl ($url) {
-        $options = get_option($this->prefix . 'settings');
-        $options[$this->prefix . 'get_datasource_nonce'] = wp_create_nonce($this->prefix . 'get_datasource_nonce');
-        update_option($this->prefix . 'settings', $options);
-        $p = parse_url($url);
+    /**
+     * Returns the given URL with a nonce attached.
+     *
+     * @param string $url
+     *
+     * @return string
+     */
+    private function makeNonceUrl ( $url ) {
+        $options = get_option( self::prefix . 'settings' );
+        $options[self::prefix . 'get_datasource_nonce'] = wp_create_nonce( self::prefix . 'get_datasource_nonce' );
+        update_option( self::prefix . 'settings', $options );
+        $p = parse_url( $url );
         return $p['scheme']
             . '://' . $p['host'] . $p['path']
             . '?' . $p['query'] . '&'
-            . $this->prefix . 'get_datasource_nonce=' . $options[$this->prefix . 'get_datasource_nonce'];
+            . self::prefix . 'get_datasource_nonce=' . $options[self::prefix . 'get_datasource_nonce'];
     }
 
-    private function isValidNonce ($nonce, $nonce_name) {
-        $options = get_option($this->prefix . 'settings');
-        $is_valid = ($nonce === $options[$nonce_name]) ? true : false;
-        update_option($this->prefix . 'settings', $options);
+    /**
+     * Checks whether or not a recently-created valid nonce is valid.
+     *
+     * @param string $nonce
+     * @param string $nonce_name
+     *
+     * @return bool
+     */
+    private static function isValidNonce ( $nonce, $nonce_name ) {
+        $options = get_option( self::prefix . 'settings' );
+        $is_valid = ( $nonce === $options[ $nonce_name ] ) ? true : false;
+        update_option( self::prefix . 'settings', $options );
         return $is_valid;
     }
 
     /**
      * WordPress Shortcode handler.
+     *
+     * @param array $atts
+     * @param mixed $content
+     *
+     * @return string
      */
-    public function displayShortcode ($atts, $content = null) {
-        $atts = shortcode_atts(array(
+    public function displayShortcode ( $atts, $content = null ) {
+        $atts = shortcode_atts( array(
             'key'      => false,                // Google Doc URL or ID
             'title'    => false,                // Title (attribute) text or visible chart title
             'class'    => '',                   // Container element's custom class value
+            // TODO: Determine if `gid` attribute is still required by code.
             'gid'      => false,                // Sheet ID for a Google Spreadsheet, if only one
             'summary'  => false,                // If spreadsheet, value for summary attribute
             'width'    => '100%',
@@ -840,19 +994,19 @@ class InlineGoogleSpreadsheetViewerPlugin {
             // @see https://www.datatables.net/reference/option/#Columnes
             'datatables_column_defs' => false,
             'datatables_columns'     => false,
-        ), $atts, $this->shortcode);
+        ), $atts, self::shortcode );
 
-        $atts['key'] = $this->sanitizeKey($atts['key']);
-        $atts['query'] = apply_filters($this->shortcode . '_query', $this->sanitizeQuery($atts['query']), $atts);
+        $atts['key'] = self::sanitizeKey( $atts['key'] );
+        $atts['query'] = apply_filters( self::shortcode . '_query', self::sanitizeQuery( $atts['query'] ), $atts );
 
         try {
-            switch ($this->getDocTypeByKey($atts['key'])) {
+            switch ( self::getDocTypeByKey( $atts['key'] ) ) {
                 case 'wpdb':
                 case 'mysql':
-                    $output = $this->getSqlOutput($atts, $content);
+                    $output = $this->getSqlOutput( $atts, $content );
                     break;
                 default:
-                    $output = $this->getHttpOutput($atts, $content);
+                    $output = $this->getHttpOutput( $atts, $content );
                 break;
             }
         } catch (Exception $e) {
@@ -867,20 +1021,21 @@ class InlineGoogleSpreadsheetViewerPlugin {
      *
      * @param array $x The shortcode attributes.
      * @param string $content The content of the shortcode.
+     *
      * @return string The HTML output as requested by the shortcode or an error message.
      */
-    private function getHttpOutput ($x, $content) {
+    private function getHttpOutput ( $x, $content ) {
         // Set up datasource URL.
         $url = $x['key']; // in the default case, the URL is the shortcode's key
-        $key_type = $this->getDocTypeByKey($x['key']);
-        if ('spreadsheet' === $key_type) {
+        $key_type = self::getDocTypeByKey( $x['key'] );
+        if ( 'spreadsheet' === $key_type ) {
             // if a Google Spreadsheet, the URL to fetch needs to be modified.
-            $url = $this->getSpreadsheetUrl($x);
-        } else if ('gasapp' !== $key_type) { // don't change the GAS app's URL
-            if (!empty($x['chart'])) { $fmt = 'json'; }
+            $url = $this->getSpreadsheetUrl( $x );
+        } else if ( 'gasapp' !== $key_type ) { // don't change the GAS app's URL
+            if ( ! empty( $x['chart'] ) ) { $fmt = 'json'; }
             else { $fmt = 'csv'; }
             // the url should be proxied through this plugin
-            $url = $this->makeNonceUrl($this->getGVizDataSourceUrl($x['key'], $x['query'], $fmt));
+            $url = $this->makeNonceUrl( $this->getGVizDataSourceUrl( $x['key'], $x['query'], $fmt ) );
         }
 
         // Retrieve and set HTML output.
@@ -896,7 +1051,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
                         $output = $this->csvToDataTable($http_response['body'], $x, $content);
                         break;
                     default:
-                        $output = apply_filters($this->shortcode . '_webapp_html', $http_response['body'], $x);
+                        $output = apply_filters(self::shortcode . '_webapp_html', $http_response['body'], $x);
                         if ('csv' === $key_type) {
                             // even if the response is text/plain, parse as CSV if the filename
                             // we detected earlier (by using the key attribute) suggests it is.
@@ -916,62 +1071,63 @@ class InlineGoogleSpreadsheetViewerPlugin {
      *
      * @param array $atts The shortcode attributes.
      * @param string $content The content of the shortcode.
+     *
      * @return string The HTML output as requested by the shortcode or an error message.
      */
-    private function getSqlOutput ($atts, $content) {
-        if (!$this->isSqlDbEnabled()) {
+    private function getSqlOutput ( $atts, $content ) {
+        if ( ! $this->isSqlDbEnabled() ) {
             $this->runtimeError(
-                esc_html__('Error:', 'inline-gdocs-viewer') . ' '
-                . esc_html__('SQL datasources are disabled.', 'inline-gdocs-viewer')
+                esc_html__( 'Error:', 'inline-gdocs-viewer' ) . ' '
+                . esc_html__( 'SQL datasources are disabled.', 'inline-gdocs-viewer' )
             );
         }
-        if (!$this->canQuerySqlDatabases()) {
+        if ( ! $this->canQuerySqlDatabases() ) {
             $this->runtimeError(
-                esc_html__('Error:', 'inline-gdocs-viewer') . ' '
-                . esc_html__('The author does not have permission to perform a SQL query.', 'inline-gdocs-viewer')
-            );
-        }
-
-        $query = trim($atts['query']);
-        if (empty($query)) {
-            $this->runtimeError(
-                esc_html__('Error:', 'inline-gdocs-viewer') . ' '
-                . esc_html__('Missing query.', 'inline-gdocs-viewer')
+                esc_html__( 'Error:', 'inline-gdocs-viewer' ) . ' '
+                . esc_html__( 'The author does not have permission to perform a SQL query.', 'inline-gdocs-viewer' )
             );
         }
 
-        if (0 !== strpos(strtoupper($query), 'SELECT')) {
+        $query = trim( $atts['query'] );
+        if ( empty( $query ) ) {
             $this->runtimeError(
-                esc_html__('Error:', 'inline-gdocs-viewer') . ' '
-                . esc_html__('Unsupported query:', 'inline-gdocs-viewer')
-                . ' ' . esc_html($query)
+                esc_html__( 'Error:', 'inline-gdocs-viewer' ) . ' '
+                . esc_html__( 'Missing query.', 'inline-gdocs-viewer' )
             );
         }
 
-        if ('wpdb' === $this->getDocTypeByKey($atts['key'])) {
+        if ( 0 !== strpos( strtoupper( $query ), 'SELECT' ) ) {
+            $this->runtimeError(
+                esc_html__( 'Error:', 'inline-gdocs-viewer' ) . ' '
+                . esc_html__( 'Unsupported query:', 'inline-gdocs-viewer' )
+                . ' ' . esc_html( $query )
+            );
+        }
+
+        if ( 'wpdb' === self::getDocTypeByKey( $atts['key'] ) ) {
             global $wpdb;
         } else {
-            $p = parse_url($atts['key']);
+            $p = parse_url( $atts['key'] );
             $wpdb = new wpdb(
-                isset($p['user']) ? $p['user'] : '',
-                isset($p['pass']) ? $p['pass'] : '',
-                isset($p['path']) ? basename($p['path']) : '',
-                isset($p['port']) ? "{$p['host']}:{$p['port']}" : $p['host']
+                isset( $p['user'] ) ? $p['user'] : '',
+                isset( $p['pass'] ) ? $p['pass'] : '',
+                isset( $p['path'] ) ? basename( $p['path'] ) : '',
+                isset( $p['port'] ) ? "{$p['host']}:{$p['port']}" : $p['host']
             );
         }
-        $data = $wpdb->get_results($query, ARRAY_A);
-        if (empty($data)) {
+        $data = $wpdb->get_results( $query, ARRAY_A );
+        if ( empty( $data ) ) {
             $this->runtimeError(
-                esc_html__('Error:', 'inline-gdocs-viewer') . ' '
-                . esc_html__('Query produced zero results:', 'inline-gdocs-viewer')
-                . ' ' . esc_html($query)
+                esc_html__( 'Error:', 'inline-gdocs-viewer' ) . ' '
+                . esc_html__( 'Query produced zero results:', 'inline-gdocs-viewer' )
+                . ' ' . esc_html( $query )
             );
         }
-        $header = array(array()); // 2D
-        foreach ($data[0] as $k => $v) {
+        $header = array( array() ); // 2D
+        foreach ( $data[0] as $k => $v ) {
             $header[0][] = $k;
         }
-        $output = $this->dataToHtml(array_merge($header, $data), $atts, $content);
+        $output = $this->dataToHtml( array_merge( $header, $data ), $atts, $content );
         return $output;
     }
 
@@ -981,7 +1137,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
      * @return bool
      */
     private function isSqlDbEnabled () {
-        $options = get_option($this->prefix . 'settings');
+        $options = get_option(self::prefix . 'settings');
         return isset($options['allow_sql_db_queries']);
     }
     /**
@@ -991,7 +1147,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
      */
     private function canQuerySqlDatabases () {
         $author = get_userdata(get_the_author_meta('ID'));
-        return $author->has_cap($this->prefix . 'query_sql_databases');
+        return $author->has_cap(self::prefix . 'query_sql_databases');
     }
 
     /**
@@ -1000,37 +1156,61 @@ class InlineGoogleSpreadsheetViewerPlugin {
      * @param string $key The value passed to the shortcode's `key` attribute.
      * @return string The "sanitized" key value.
      */
-    private function sanitizeKey ($key) {
-        return str_replace('&#038;', '&', $key);
+    private static function sanitizeKey ( $key ) {
+        return str_replace( '&#038;', '&', $key );
     }
 
-    public function csvToDataTable ($csv, $x, $content) {
-        $data = $this->parseCsv($csv);
-        return $this->dataToHtml($data, $x, $content);
+    /**
+     * Gets the HTML representation of CSV data according to shortcode attributes.
+     *
+     * @param string $csv Data in CSV format.
+     * @param array $x Attributes from the shortcode.
+     * @param mixed $content Any contents of the shortcode if not self-closing.
+     *
+     * @return string
+     */
+    private function csvToDataTable ( $csv, $x, $content ) {
+        $data = $this->parseCsv( $csv );
+        return $this->dataToHtml( $data, $x, $content );
     }
 
-    private function getGDocsViewerOutput ($x) {
+    /**
+     * Prints HTML for the Google Document Viewer.
+     *
+     * @param array $x Attributes from the shortcode invocation.
+     *
+     * @return string
+     */
+    private function getGDocsViewerOutput ( $x ) {
         $output  = '<iframe src="';
-        $output .= esc_attr('https://docs.google.com/viewerng/viewer?url=' . esc_url($x['key']) . '&embedded=true');
-        $output .= '" width="' . esc_attr($x['width']) . '" height="' . esc_attr($x['height']) . '" style="' . esc_attr($x['style']) . '">';
-        $output .= esc_html__('Your Web browser must support inline frames to display this content:', 'inline-gdocs-viewer');
-        $output .= ' <a href="' . esc_attr($x['key']) . '">' . esc_html($x['title']) . '</a>';
+        $output .= esc_attr( 'https://docs.google.com/viewerng/viewer?url=' . esc_url( $x['key'] ) . '&embedded=true' );
+        $output .= '" width="' . esc_attr( $x['width'] ) . '" height="' . esc_attr( $x['height'] ) . '" style="' . esc_attr( $x['style'] ) . '">';
+        $output .= esc_html__( 'Your Web browser must support inline frames to display this content:', 'inline-gdocs-viewer' );
+        $output .= ' <a href="' . esc_attr( $x['key'] ) . '">' . esc_html( $x['title'] ) . '</a>';
         $output .= '</iframe>';
-        return apply_filters($this->shortcode . '_viewer_html', $output);
+        return apply_filters( self::shortcode . '_viewer_html', $output );
     }
 
-    public function getGVizChartOutput ($url, $x) {
-        $chart_id = 'igsv-' . $this->invocations . '-' . $x['chart'] . 'chart-'  . $this->getDocId($x['key']);
-        $output  = '<div id="' . esc_attr($chart_id) . '" class="igsv-chart" title="' . esc_attr($x['title']) . '"';
-        $output .= (empty($x['style'])) ? '' : ' style="' . esc_attr($x['style']) . '"';
-        $output .= ' data-chart-type="' . esc_attr(ucfirst($x['chart'])) . '"';
-        $output .= ' data-datasource-href="' . esc_attr($url) . '&chart=true"';
-        if ($chart_opts = $this->getChartOptions($x)) {
-            foreach ($chart_opts as $k => $v) {
-                if (!empty($v)) {
+    /**
+     * Prints HTML for turning into a Google Visualization.
+     *
+     * @param string $url
+     * @param array $x Attributes from shortcode.
+     *
+     * @return string
+     */
+    private function getGVizChartOutput ( $url, $x ) {
+        $chart_id = 'igsv-' . $this->invocations . '-' . $x['chart'] . 'chart-'  . $this->getDocId( $x['key'] );
+        $output  = '<div id="' . esc_attr( $chart_id ) . '" class="igsv-chart" title="' . esc_attr( $x['title'] ) . '"';
+        $output .= ( empty( $x['style'] ) ) ? '' : ' style="' . esc_attr( $x['style'] ) . '"';
+        $output .= ' data-chart-type="' . esc_attr( ucfirst( $x['chart'] ) ) . '"';
+        $output .= ' data-datasource-href="' . esc_attr( $url ) . '&chart=true"';
+        if ( $chart_opts = $this->getChartOptions( $x ) ) {
+            foreach ( $chart_opts as $k => $v ) {
+                if ( ! empty( $v ) ) {
                     // use single-quoted attribute-value syntax for later JSON parsing in JavaScript
                     // and use `urldecode()` to handle JSON's array literal (square bracket) syntax
-                    $output .= ' data-' . str_replace('_', '-', $k) . "='" . urldecode($v) . "'";
+                    $output .= ' data-' . str_replace( '_', '-', $k ) . "='" . urldecode( $v ) . "'";
                 }
             }
         }
@@ -1044,36 +1224,46 @@ class InlineGoogleSpreadsheetViewerPlugin {
      * @return array An array of data suitable for passing to wp_localize_script().
      * @see https://codex.wordpress.org/Function_Reference/wp_localize_script
      */
-    private function getLocalizedPluginVars () {
-        $options = get_option($this->prefix . 'settings', array());
+    private static function getLocalizedPluginVars () {
+        $options = get_option( self::prefix . 'settings', array() );
         $data = array(
-            'lang_dir' => plugins_url('languages', __FILE__)
+            'lang_dir' => plugins_url( 'languages', __FILE__ )
         );
-        if (empty($options)) {
-            $data['datatables_classes'] = ".{$this->dt_class}:not(.no-datatables)";
+        if ( empty( $options ) ) {
+            $data['datatables_classes'] = '.' . self::$dt_class . ':not(.no-datatables)';
         } else {
             $dt_classes = array();
-            foreach (explode(' ', $options['datatables_classes']) as $cls) {
-                $cls = (empty($cls)) ? $this->dt_class : $cls;
+            foreach ( explode(' ', $options['datatables_classes'] ) as $cls ) {
+                $cls = ( empty( $cls ) ) ? self::$dt_class : $cls;
                 $dt_classes[] = ".$cls:not(.no-datatables)";
             }
-            $data['datatables_classes'] = implode(', ', $dt_classes);
+            $data['datatables_classes'] = implode( ', ', $dt_classes );
             $data['datatables_defaults_object'] = $options['datatables_defaults_object'];
         }
         return $data;
     }
 
-    private function getChartOptions($atts) {
+    /**
+     * Gets the shortcode options related to charts.
+     *
+     * @param array $atts
+     *
+     * @return array
+     */
+    private function getChartOptions( $atts ) {
         $opts = array();
-        foreach ($atts as $k => $v) {
-            if (0 === strpos($k, 'chart_')) {
-                $opts[$k] = $v;
+        foreach ( $atts as $k => $v ) {
+            if ( 0 === strpos( $k, 'chart_' ) ) {
+                $opts[ $k ] = $v;
             }
         }
         return $opts;
     }
 
-    public function addQuickTagButton () {
+    /**
+     * @see https://developer.wordpress.org/reference/hooks/admin_print_footer_scripts/
+     */
+    public static function addQuickTagButton () {
         $screen = get_current_screen();
         if (wp_script_is('quicktags') && 'post' === $screen->base) {
 ?>
@@ -1359,107 +1549,129 @@ jQuery(function () {
             </fieldset>
         </form>
     </div><!-- #qt_content_igsv_dialog_tabs_container -->
-    <?php print $this->showDonationAppeal();?>
+    <?php print self::showDonationAppeal();?>
 </div><!-- #qt_content_igsv_dialog -->
 <?php
         }
     }
 
-    private function registerContextualHelp () {
+    /**
+     * Adds on-screen help.
+     *
+     * @see https://developer.wordpress.org/reference/hooks/admin_head/
+     */
+    public static function registerContextualHelp () {
         $screen = get_current_screen();
-        if (empty($screen->post_type)) { return; }
+        if ( empty( $screen->post_type ) ) { return; }
         $html = '<p>';
         $html .= sprintf(
-            esc_html__('You can insert a Google Spreadsheet in this %1$s. To do so, type %2$s[gdoc key="%4$sYOUR_SPREADSHEET_URL%5$s"]%3$s wherever you would like the spreadsheet to appear. Remember to replace %4$sYOUR_SPREADSHEET_URL%5$s with the web address of your Google Spreadsheet.', 'inline-gdocs-viewer'),
-            esc_html($screen->post_type),
+            esc_html__( 'You can insert a Google Spreadsheet in this %1$s. To do so, type %2$s[gdoc key="%4$sYOUR_SPREADSHEET_URL%5$s"]%3$s wherever you would like the spreadsheet to appear. Remember to replace %4$sYOUR_SPREADSHEET_URL%5$s with the web address of your Google Spreadsheet.', 'inline-gdocs-viewer' ),
+            esc_html( $screen->post_type ),
             '<kbd>', '</kbd>',
             '<var>', '</var>'
         );
         $html .= '</p>';
         $html .= '<p>';
-        $html .= esc_html__('Only Google Spreadsheets that have been shared using either the "Public on the web" or "anyone with the link" options will be visible on this page.', 'inline-gdocs-viewer');
+        $html .= esc_html__( 'Only Google Spreadsheets that have been shared using either the "Public on the web" or "anyone with the link" options will be visible on this page.', 'inline-gdocs-viewer' );
         $html .= '</p>';
         $html .= '<p>' . sprintf(
-            esc_html__('You can also transform your data into an interactive chart by using the %1$schart%2$s attribute. Supported chart types are Area, Bar, Bubble, Candlestick, Column, Combo, Histogram, Line, Pie, Scatter, and Stepped. For instance, to make a Pie chart, type %1$s[gdoc key="%3$sYOUR_SPREADSHEET_URL%4$s" chart="Pie"]%2$s. Customize your chart with your own choice of colors by supplying a space-separated list of color values with the %1$schart_colors%2$s attribute, like %1$schart_colors="red green"%2$s. Additional options depend on the chart you use.' ,'inline-gdocs-viewer'),
+            esc_html__( 'You can also transform your data into an interactive chart by using the %1$schart%2$s attribute. Supported chart types are Area, Bar, Bubble, Candlestick, Column, Combo, Histogram, Line, Pie, Scatter, and Stepped. For instance, to make a Pie chart, type %1$s[gdoc key="%3$sYOUR_SPREADSHEET_URL%4$s" chart="Pie"]%2$s. Customize your chart with your own choice of colors by supplying a space-separated list of color values with the %1$schart_colors%2$s attribute, like %1$schart_colors="red green"%2$s. Additional options depend on the chart you use.' ,'inline-gdocs-viewer' ),
             '<kbd>', '</kbd>',
             '<var>', '</var>'
         ) . '</p>';
         $html .= '<p>' . sprintf(
-            esc_html__('Refer to the %1$sshortcode attribute documentation%3$s for a complete list of shortcode attributes, and the %2$sGoogle Chart API documentation%3$s for more information about each option.' ,'inline-gdocs-viewer'),
+            esc_html__( 'Refer to the %1$sshortcode attribute documentation%3$s for a complete list of shortcode attributes, and the %2$sGoogle Chart API documentation%3$s for more information about each option.' ,'inline-gdocs-viewer' ),
             '<a href="https://wordpress.org/plugins/inline-google-spreadsheet-viewer/other_notes/" target="_blank">',
             '<a href="https://developers.google.com/chart/interactive/docs/gallery" target="_blank">', '</a>'
         ) . '</p>';
         $html .= '<p>';
         $html .= sprintf(
-            esc_html__('If you are having trouble getting your Spreadsheet to show up on your website, you can %sget help from the plugin support forum%s. Consider searching the support forum to see if your question has already been answered before posting a new thread.', 'inline-gdocs-viewer'),
+            esc_html__( 'If you are having trouble getting your Spreadsheet to show up on your website, you can %sget help from the plugin support forum%s. Consider searching the support forum to see if your question has already been answered before posting a new thread.', 'inline-gdocs-viewer' ),
             '<a href="https://wordpress.org/support/plugin/inline-google-spreadsheet-viewer/" target="_blank">', '</a>'
         );
         $html .= '</p>';
         ob_start();
-        $this->showDonationAppeal();
+        self::showDonationAppeal();
         $html .= ob_get_clean();
-        $screen->add_help_tab(array(
-            'id' => $this->shortcode . '-' . $screen->base . '-help',
-            'title' => __('Inserting a Google Spreadsheet', 'inline-gdocs-viewer'),
+        $screen->add_help_tab( array(
+            'id' => self::shortcode . '-' . $screen->base . '-help',
+            'title' => __( 'Inserting a Google Spreadsheet', 'inline-gdocs-viewer' ),
             'content' => $html
         ));
     }
 
-    private function showDonationAppeal () {
+    /**
+     * Prints HTML asking for a donation for the plugin use.
+     */
+    private static function showDonationAppeal () {
 ?>
 <div class="donation-appeal">
     <p style="text-align: center; font-style: italic; margin: 1em 3em;"><?php print sprintf(
-esc_html__('Inline Google Spreadsheet Viewer is provided as free software, but sadly grocery stores do not offer free food. If you like this plugin, please consider %1$s to its %2$s. &hearts; Thank you!', 'inline-gdocs-viewer'),
-'<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=meitarm%40gmail%2ecom&lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer%20WordPress%20Plugin&amp;item_number=inline%2dgdocs%2dviewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted">' . esc_html__('making a donation', 'inline-gdocs-viewer') . '</a>',
-'<a href="http://Cyberbusking.org/">' . esc_html__('houseless, jobless, nomadic developer', 'inline-gdocs-viewer') . '</a>'
+esc_html__( 'Inline Google Spreadsheet Viewer is provided as free software, but sadly grocery stores do not offer free food. If you like this plugin, please consider %1$s to its %2$s. &hearts; Thank you!', 'inline-gdocs-viewer' ),
+'<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=meitarm%40gmail%2ecom&lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer%20WordPress%20Plugin&amp;item_number=inline%2dgdocs%2dviewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted">' . esc_html__( 'making a donation', 'inline-gdocs-viewer' ) . '</a>',
+'<a href="http://Cyberbusking.org/">' . esc_html__( 'houseless, jobless, nomadic developer', 'inline-gdocs-viewer' ) . '</a>'
 );?></p>
 </div>
 <?php
     }
 
-    public function validateSettings ($input) {
+    /**
+     * Validates settings.
+     *
+     * @param array $input
+     *
+     * @return array
+     */
+    public static function validateSettings ( $input ) {
         $safe_input = array();
-        foreach ($input as $k => $v) {
-            switch ($k) {
+        foreach ( $input as $k => $v ) {
+            switch ( $k ) {
                 case 'allow_sql_db_queries':
-                    $safe_input[$k] = intval($v);
+                    $safe_input[ $k ] = intval( $v );
                     break;
                 case 'datatables_classes':
-                    if (empty($v)) { $v = $this->dt_class; }
-                    $safe_input[$k] = sanitize_text_field($v);
+                    if ( empty( $v ) ) {
+                        $v = $this->dt_class;
+                    }
+                    $safe_input[ $k ] = sanitize_text_field( $v );
                     break;
                 case 'datatables_defaults_object':
-                    if (empty($v)) { $v = $this->dt_defaults; }
-                    $safe_input[$k] = json_decode($v);
+                    if ( empty( $v )) {
+                        $v = $this->dt_defaults;
+                    }
+                    $safe_input[ $k ] = json_decode( $v );
                     break;
             }
         }
         return $safe_input;
     }
 
-    public function renderOptionsPage () {
-        if (!current_user_can('manage_options')) {
-            wp_die(__('You do not have sufficient permissions to access this page.', 'inline-gdocs-viewer'));
+    /**
+     * Prints the options screens.
+     */
+    public static function renderOptionsPage () {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            wp_die( __( 'You do not have sufficient permissions to access this page.', 'inline-gdocs-viewer' ) );
         }
-        $options = get_option($this->prefix . 'settings');
-        $datatables_defaults_json = (defined('JSON_PRETTY_PRINT'))
-            ? json_encode($options['datatables_defaults_object'], JSON_PRETTY_PRINT)
-            : json_encode($options['datatables_defaults_object']);
+        $options = get_option( self::prefix . 'settings' );
+        $datatables_defaults_json = ( defined( 'JSON_PRETTY_PRINT' ) )
+            ? json_encode( $options['datatables_defaults_object'], JSON_PRETTY_PRINT )
+            : json_encode( $options['datatables_defaults_object'] );
 ?>
-<h2><?php esc_html_e('Inline Google Spreadsheet Viewer Settings', 'inline-gdocs-viewer');?></h2>
+<h2><?php esc_html_e( 'Inline Google Spreadsheet Viewer Settings', 'inline-gdocs-viewer' );?></h2>
 <form method="post" action="options.php">
-<?php settings_fields($this->prefix . 'settings');?>
-<fieldset><legend><?php esc_html_e('DataTables defaults', 'inline-gdocs-viewer');?></legend>
+<?php settings_fields( self::prefix . 'settings' );?>
+<fieldset><legend><?php esc_html_e( 'DataTables defaults', 'inline-gdocs-viewer' );?></legend>
 <table class="form-table">
     <tbody>
         <tr>
             <th>
-                <label for="<?php esc_attr_e($this->prefix);?>datatables_classes"><?php esc_html_e('DataTables classes', 'inline-gdocs-viewer');?></label>
+                <label for="<?php esc_attr_e(self::prefix);?>datatables_classes"><?php esc_html_e('DataTables classes', 'inline-gdocs-viewer');?></label>
             </th>
             <td>
                 <input class="regular-text code"
-                    id="<?php esc_attr_e($this->prefix);?>datatables_classes"
-                    name="<?php esc_attr_e($this->prefix);?>settings[datatables_classes]"
+                    id="<?php esc_attr_e(self::prefix);?>datatables_classes"
+                    name="<?php esc_attr_e(self::prefix);?>settings[datatables_classes]"
                     value="<?php esc_attr_e($options['datatables_classes'])?>" placeholder="<?php esc_attr_e('class-1 class-2', 'inline-gdocs-viewer')?>"
                 />
                 <p class="description">
@@ -1473,18 +1685,19 @@ esc_html__('Inline Google Spreadsheet Viewer is provided as free software, but s
         </tr>
         <tr>
             <th>
-                <label for="<?php esc_attr_e($this->prefix);?>datatables_defaults_object"><?php esc_html_e('DataTables defaults object', 'inline-gdocs-viewer');?></label>
+                <label for="<?php esc_attr_e(self::prefix);?>datatables_defaults_object"><?php esc_html_e('DataTables defaults object', 'inline-gdocs-viewer');?></label>
             </th>
             <td>
                 <textarea class="large-text code"
-                    id="<?php esc_attr_e($this->prefix);?>datatables_defaults_object"
-                    name="<?php esc_attr_e($this->prefix);?>settings[datatables_defaults_object]"
+                    id="<?php esc_attr_e(self::prefix);?>datatables_defaults_object"
+                    name="<?php esc_attr_e(self::prefix);?>settings[datatables_defaults_object]"
                     placeholder='{ "searching": false, "ordering": false }'
                     style="min-height: 200px;"
                 ><?php if (!empty($options['datatables_defaults_object'])) { print stripslashes($datatables_defaults_json); }?></textarea>
                 <p class="description"><?php print sprintf(
-                    esc_html__('Define a DataTables defaults initialization object. This is useful if you wish to change the default DataTables enhancements for all affected tables on your site at once. All DataTables-enhanced tables will use the DataTables options configured here unless explicitly overriden in the shortcode, HTML, or JavaScript initialization for the given table, itself. To learn more, read the %1$sDataTables manual section on Setting defaults%2$s and refer to the %3$sdocumentation for shortcode attributes available via this plugin%2$s. Leave blank to use the plugin default.'),
-                    '<a href="https://datatables.net/manual/options#Setting-defaults">', '</a>',
+                    esc_html__('Define a DataTables defaults initialization object (in %1$sJSON%2$s syntax). This is useful if you wish to change the default DataTables enhancements for all affected tables on your site at once. All DataTables-enhanced tables will use the DataTables options configured here unless explicitly overriden in the shortcode, HTML, or JavaScript initialization for the given table, itself. To learn more, read the %3$sDataTables manual section on Setting defaults%2$s and refer to the %4$sdocumentation for shortcode attributes available via this plugin%2$s. Leave blank to use the plugin default.'),
+                    '<a href="http://json.org/">', '</a>',
+                    '<a href="https://datatables.net/manual/options#Setting-defaults">',
                     '<a href="https://wordpress.org/plugins/inline-google-spreadsheet-viewer/other_notes/">'
                 );?></p>
             </td>
@@ -1497,33 +1710,32 @@ esc_html__('Inline Google Spreadsheet Viewer is provided as free software, but s
     <tbody>
         <tr>
             <th>
-                <label for="<?php esc_attr_e($this->prefix);?>allow_sql_db_queries"><?php esc_html_e('Allow SQL queries in shortcodes?', 'inline-gdocs-viewer');?></label>
+                <label for="<?php esc_attr_e(self::prefix);?>allow_sql_db_queries"><?php esc_html_e('Allow SQL queries in shortcodes?', 'inline-gdocs-viewer');?></label>
             </th>
             <td>
-                <input type="checkbox" <?php if (isset($options['allow_sql_db_queries'])) : print 'checked="checked"'; endif; ?> value="1" id="<?php esc_attr_e($this->prefix);?>allow_sql_db_queries" name="<?php esc_attr_e($this->prefix);?>settings[allow_sql_db_queries]" />
-                <label for="<?php esc_attr_e($this->prefix);?>allow_sql_db_queries"><span class="description"><?php
+                <input type="checkbox" <?php if (isset($options['allow_sql_db_queries'])) : print 'checked="checked"'; endif; ?> value="1" id="<?php esc_attr_e(self::prefix);?>allow_sql_db_queries" name="<?php esc_attr_e(self::prefix);?>settings[allow_sql_db_queries]" />
+                <label for="<?php esc_attr_e(self::prefix);?>allow_sql_db_queries"><span class="description"><?php
         print sprintf(
             esc_html__('Enabling this option permits SQL queries against arbitrary MySQL databases to be inserted as part of a %1$s shortcode. This is useful but can also be easily abused, so it is disabled by default. Even once enabled, such queries will only work in posts whose author has been granted the %2$s capability. (Only Administrators have this capability by default.)', 'inline-gdocs-viewer'),
-            $this->shortcode,
-            "<code>{$this->prefix}query_sql_databases</code>"
+            self::shortcode,
+            '<code>' . self::prefix . 'query_sql_databases</code>'
         );
             ?></span><p class="description"><?php esc_html_e('User role(s) capable of using SQL queries:', 'inline-gdocs-viewer');?></p>
             <ul class="description">
-            <?php foreach ($this->getSqlCapableRoles() as $k => $v) {
-                print '<li>' . esc_html($v['name']) . '</li>';
+            <?php foreach ( self::getSqlCapableRoles() as $k => $v ) {
+                print '<li>' . esc_html( $v['name'] ) . '</li>';
             }?>
             </ul></label>
-            </td>
             </td>
         </tr>
     </tbody>
 </table>
 </fieldset>
-<?php submit_button();?>
+<?php submit_button(); ?>
 </form>
 <?php
-        $this->showDonationAppeal();
+        self::showDonationAppeal();
     }
 }
 
-$inline_gdoc_viewer = new InlineGoogleSpreadsheetViewerPlugin();
+InlineGoogleSpreadsheetViewerPlugin::register();

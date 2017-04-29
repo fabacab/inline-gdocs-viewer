@@ -3,9 +3,9 @@ Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 4.0
-Tested up to: 4.7.1
-Stable tag: 0.11.4
-License: GPL-3
+Tested up to: 4.7.4
+Stable tag: 0.12
+License: GPL-3.0
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 Embeds public Google Spreadsheets, Apps Scripts, or CSV files in WordPress posts or pages as HTML tables or interactive charts, and more.
@@ -37,14 +37,6 @@ You can transform your spreadsheet into an interactive chart or graph, embed doc
 After saving the appropriate Sharing setting, copy the URL you use to view the Google Spreadsheet from your browser's address bar into the shortcode. For example, to display the spreadsheet at `https://docs.google.com/spreadsheets/d/ABCDEFG/edit#gid=123456`, use the following shortcode in your WordPress post or page:
 
     [gdoc key="https://docs.google.com/spreadsheets/d/ABCDEFG/edit#gid=123456"]
-
-If your spreadsheet uses the "old" Google Spreadsheets, you need to [ensure that your spreadsheet is "Published to the Web"](https://docs.google.com/support/bin/answer.py?hl=en&answer=47134) and you need to copy only the "key" out of the URL. For instance, if the URL of your old Google Spreadsheet is `https://docs.google.com/spreadsheets/pub?key=ABCDEFG`, then your shortcode should look like this:
-
-    [gdoc key="ABCDEFG"]
-
-Use the `gid` attribute to fetch data from a worksheet other than the first one (the one on the far left). For example, to display a worksheet published at `https://spreadsheets.google.com/pub?key=ABCDEFG&gid=4`, use the following shortcode in your WordPress post or page:
-
-    [gdoc key="ABCDEFG" gid="4"]
 
 **CSV files**
 
@@ -148,6 +140,10 @@ To tweak the way your preview looks, you can use the `width`, `height`, or `styl
 1. Upload the unzipped `inline-google-spreadsheet-viewer` folder to the `/wp-content/plugins/` directory.
 1. Activate the plugin through the 'Plugins' menu in WordPress.
 1. Use the `[gdoc key="ABCDEFG"]` shortcode wherever you'd like to insert the Google Spreadsheet.
+
+= Requirements =
+
+* PHP 5.3 or later is required.
 
 == Frequently Asked Questions ==
 
@@ -287,6 +283,11 @@ See the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-vi
 
 == Change log ==
 
+= 0.12 =
+
+* Automatically force new-style URLs for `key` attribute values that are still using deprecated old-style document IDs.
+* [Bugfix](https://wordpress.org/support/topic/fatal-error-cannot-redeclare-class-numberformatter-in/): Fix collision with class names in some cases. This change requires the use of PHP 5.3 or later.
+
 = 0.11.4 =
 
 * Bugfix: Chart attribute values that require JSON arrays are correctly decoded.
@@ -368,9 +369,9 @@ Version history has been truncated due to [WordPress.org plugin repository `read
 
 == Upgrade Notice ==
 
-= 0.11.4 =
+= 0.12 =
 
-This release adds Timeline Chart, Annotated Time Line chart, and Annotation Chart support, and fixes minor integration bugs.
+This release retires the old-style `[gdoc key="ABCDEFG"]` syntax. Don't worry! The plugn will automatically re-interpret your shortcode correctly.
 
 == Other notes ==
 
@@ -382,9 +383,8 @@ This plugin provides one shortcode (`gdoc`) that can do many things through a co
 
 * `key` - Specifies the document to retrieve.
     * **required** Every `gdoc` shortcode must have one and only one `key` attribute. (All other attributes are optional.)
-    * `key` can be one of seven types:
+    * `key` can be one of six types:
         * The fully-qualified URL of a Google Spreadsheet that has been publicly shared, like `[gdoc key="https://docs.google.com/spreadsheets/d/ABCDEFG/htmlview#gid=123456"]`
-        * The document ID of an old-style Google Spreadsheet that has been "Published to the web," like `[gdoc key="ABCDEFG"]`
         * The fully-qualified URL of a Google Apps Script Web App, like `[gdoc key="https://script.google.com/macros/s/ABCDEFG/exec"]`
         * The fully-qualified URL of a CSV file or a web service endpoint that produces CSV data, like `[gdoc key="http://viewportsizes.com/devices.csv"]`
         * The fully-qualified URL of a document on the Web. PDF, DOC, XLS, and other file formats supported by the [Google Docs Viewer](https://docs.google.com/viewer) will be rendered using the Viewer, like `[gdoc key="http://example.com/my_final_paper.pdf"]`
@@ -412,7 +412,6 @@ This plugin provides one shortcode (`gdoc`) that can do many things through a co
     * `FixedColumns-left-N` or `FixedColumns-right-N` freezes the left- or right-most `N` columns in the table, respectively.
 * `expire_in` - How long to cache responses from Google for, in seconds. Set to `0` to cache forever. (Default: `600`, which is ten minutes.)
 * `footer_rows` - A number specifying how many trailing rows to place in the output's `<tfoot>` element. (Default: `0`.)
-* `gid` - For old-style Google Spreadsheets, the ID of a worksheet in a Google Spreadsheet to load, other than the first one, like `[gdoc key="ABCDEFG" gid="123"]`. (This attribute is deprecated for new Google Sheets.)
 * `header_cols` - A number specifying how many column cells should be written with `<th>` elements. (Default: `0`.)
 * `header_rows` - A number specifying how many leading rows to place in the output's `<thead>` element. (Default: `1`.)
 * `height` - Height of the containing HTML element. Tables ignore this, use `style` instead. (Default: automatically calculated.)

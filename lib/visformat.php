@@ -1,4 +1,5 @@
 <?php
+namespace WP_IGSV;
 /***********************************************************************
     Copyright 2008-2009 Mark Williams
 
@@ -337,8 +338,8 @@ class DateFormatter {
             $format = $matches[2];
         }
         $this->format = $format;
-        $this->timezone = new DateTimeZone($tz);
-        $date = new DateTime("", $this->timezone);
+        $this->timezone = new \DateTimeZone($tz);
+        $date = new \DateTime("", $this->timezone);
         $this->gmt_offset = $this->timezone->getOffset($date);
         $abbrev = timezone_abbreviations_list();
         $this->abbrev = $tz;
