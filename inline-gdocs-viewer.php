@@ -599,7 +599,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         $html  = '<table id="' . esc_attr($id) . '"';
         // Prepend a space character onto the 'class' value, if one exists.
         if (!empty($options['class'])) { $options['class'] = " {$options['class']}"; }
-        $html .= ' class="' . $this->dt_class . esc_attr($options['class']) . '"';
+        $html .= ' class="' . self::$dt_class . esc_attr($options['class']) . '"';
         $html .= ' lang="' . esc_attr($options['lang']) . '"';
         $html .= (false === $options['summary']) ? '' : ' summary="' . esc_attr($options['summary']) . '"';
         $html .= (false === $options['title']) ? '' : ' title="' . esc_attr($options['title']) . '"';
