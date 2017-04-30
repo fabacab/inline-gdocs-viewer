@@ -7,7 +7,7 @@
  * * Plugin Name: Inline Google Spreadsheet Viewer
  * * Plugin URI: https://wordpress.org/plugins/inline-google-spreadsheet-viewer/
  * * Description: Retrieves data from a public Google Spreadsheet or CSV file and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * * Version: 0.12
+ * * Version: 0.12.1
  * * Author: Meitar Moscovitz <meitarm+wordpress@gmail.com>
  * * Author URI: https://maymay.net/
  * * Text Domain: inline-gdocs-viewer
@@ -50,14 +50,14 @@ class InlineGoogleSpreadsheetViewerPlugin {
      *
      * @var string
      */
-    private $dt_class = 'igsv-table';
+    private static $dt_class = 'igsv-table';
 
     /**
      * Default for the DataTables defaults object in JSON format.
      *
      * @var string
      */
-    private $dt_defaults;
+    private static $dt_defaults;
 
     /**
      * Number of invocations for each page load.
@@ -85,7 +85,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
      * Constructor.
      */
     public function __construct () {
-        $this->dt_defaults = json_encode( array(
+        self::$dt_defaults = json_encode( array(
             'dom' => "B<'clear'>lfrtip",
             'buttons' => array(
                 'colvis', 'copy', 'csv', 'excel', 'pdf', 'print'
@@ -127,10 +127,10 @@ class InlineGoogleSpreadsheetViewerPlugin {
     public static function activate () {
         $options = get_option( self::prefix . 'settings' );
         if ( ! isset( $options['datatables_classes'] ) ) {
-            $options['datatables_classes'] = $this->dt_class;
+            $options['datatables_classes'] = self::$dt_class;
         }
         if ( empty( $options['datatables_defaults_object'] ) ) {
-            $options['datatables_defaults_object'] = json_decode( $this->dt_defaults );
+            $options['datatables_defaults_object'] = json_decode( self::$dt_defaults );
         }
         update_option( self::prefix . 'settings', $options );
         $admin_role = get_role( 'administrator' );
@@ -1631,13 +1631,13 @@ esc_html__( 'Inline Google Spreadsheet Viewer is provided as free software, but 
                     break;
                 case 'datatables_classes':
                     if ( empty( $v ) ) {
-                        $v = $this->dt_class;
+                        $v = self::$dt_class;
                     }
                     $safe_input[ $k ] = sanitize_text_field( $v );
                     break;
                 case 'datatables_defaults_object':
                     if ( empty( $v )) {
-                        $v = $this->dt_defaults;
+                        $v = self::$dt_defaults;
                     }
                     $safe_input[ $k ] = json_decode( $v );
                     break;
