@@ -24,7 +24,7 @@
 
 namespace WP_IGSV;
 
-if ( ! defined( 'ABSPATH' ) ) { exit; } // Disallow direct HTTP access.
+if ( ! defined( 'ABSPATH' ) ) { exit(); } // Disallow direct HTTP access.
 
 /**
  * Plugin class.
@@ -511,6 +511,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
      *
      * @return array $resp The HTTP response from the WordPress HTTP API.
      *
+     * @throws \RuntimeException
+     *
      * @see https://developer.wordpress.org/reference/classes/WP_HTTP/
      */
     private static function doHttpRequest ( $url, $opts ) {
@@ -520,24 +522,15 @@ class InlineGoogleSpreadsheetViewerPlugin {
                 foreach ( json_decode( $opts ) as $k => $v ) {
                     $http_args[ $k ] = $v;
                 }
-            } catch ( Exception $e ) {
-                $this->runtimeError( __( 'Error parsing HTTP options attribute:', 'inline-gdocs-viewer' ) . $e->getMessage() );
+            } catch ( \Exception $e ) {
+                throw new \RuntimeException( __( 'Error parsing HTTP options attribute:', 'inline-gdocs-viewer' ) . $e->getMessage() );
             }
         }
         $resp = ( empty( $http_args ) ) ? wp_remote_get( $url ) : wp_remote_request( $url, $http_args );
         if ( is_wp_error( $resp ) ) { // bail on error
-            $this->runtimeError(__( 'Error requesting data:', 'inline-gdocs-viewer' ) . ' ' . $resp->get_error_message() );
+            throw new \RuntimeException( __( 'Error requesting data:', 'inline-gdocs-viewer' ) . ' ' . $resp->get_error_message() );
         }
         return $resp;
-    }
-
-    /**
-     * @param string $msg
-     *
-     * @throws Exception
-     */
-    private function runtimeError ( $msg ) {
-        throw new Exception( esc_html( '[' . self::shortcode . ": $msg]" ) );
     }
 
     /**
@@ -708,6 +701,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
     }
 
     /**
+     * Initialization hook to proxy own requests for Google Visualizations.
+     *
      * @see https://developer.wordpress.org/reference/hooks/init/
      */
     public static function maybeFetchGvizDataSource () {
@@ -717,7 +712,12 @@ class InlineGoogleSpreadsheetViewerPlugin {
             ! self::isValidNonce( $_GET[self::prefix . 'get_datasource_nonce'], self::prefix . 'get_datasource_nonce' )
         ) { return; }
         $url = rawurldecode( $_GET['url'] );
-        $http_response = self::doHttpRequest( esc_url( $url ), false );
+        try {
+            $http_response = self::doHttpRequest( esc_url( $url ), false );
+        } catch ( \Exception $e ) {
+            error_log( '[' . self::shortcode . ' Error fetching GViz data source]: ' . $e->getMessage(), 'inline-gdocs-viewer' );
+            exit();
+        }
 
         if ( isset( $_GET['chart'] ) ) {
             $http_response['body'] = self::setGVizCsvDataTypes( $http_response['body'] );
@@ -734,7 +734,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         );
         $vt->setup_table( $http_response['body'] );
         print @$vt->execute();
-        exit;
+        exit();
     }
 
     /**
@@ -1009,7 +1009,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
                     $output = $this->getHttpOutput( $atts, $content );
                 break;
             }
-        } catch (Exception $e) {
+        } catch ( \Exception $e ) {
             $output = $e->getMessage();
         }
         $this->invocations++;
@@ -1073,16 +1073,18 @@ class InlineGoogleSpreadsheetViewerPlugin {
      * @param string $content The content of the shortcode.
      *
      * @return string The HTML output as requested by the shortcode or an error message.
+     *
+     * @throws \RuntimeException
      */
     private function getSqlOutput ( $atts, $content ) {
         if ( ! $this->isSqlDbEnabled() ) {
-            $this->runtimeError(
+            throw new \RuntimeException(
                 esc_html__( 'Error:', 'inline-gdocs-viewer' ) . ' '
                 . esc_html__( 'SQL datasources are disabled.', 'inline-gdocs-viewer' )
             );
         }
         if ( ! $this->canQuerySqlDatabases() ) {
-            $this->runtimeError(
+            throw new \RuntimeException(
                 esc_html__( 'Error:', 'inline-gdocs-viewer' ) . ' '
                 . esc_html__( 'The author does not have permission to perform a SQL query.', 'inline-gdocs-viewer' )
             );
@@ -1090,14 +1092,14 @@ class InlineGoogleSpreadsheetViewerPlugin {
 
         $query = trim( $atts['query'] );
         if ( empty( $query ) ) {
-            $this->runtimeError(
+            throw new \RuntimeException(
                 esc_html__( 'Error:', 'inline-gdocs-viewer' ) . ' '
                 . esc_html__( 'Missing query.', 'inline-gdocs-viewer' )
             );
         }
 
         if ( 0 !== strpos( strtoupper( $query ), 'SELECT' ) ) {
-            $this->runtimeError(
+            throw new \RuntimeException(
                 esc_html__( 'Error:', 'inline-gdocs-viewer' ) . ' '
                 . esc_html__( 'Unsupported query:', 'inline-gdocs-viewer' )
                 . ' ' . esc_html( $query )
@@ -1117,7 +1119,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         }
         $data = $wpdb->get_results( $query, ARRAY_A );
         if ( empty( $data ) ) {
-            $this->runtimeError(
+            throw new \RuntimeException(
                 esc_html__( 'Error:', 'inline-gdocs-viewer' ) . ' '
                 . esc_html__( 'Query produced zero results:', 'inline-gdocs-viewer' )
                 . ' ' . esc_html( $query )
@@ -1137,8 +1139,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
      * @return bool
      */
     private function isSqlDbEnabled () {
-        $options = get_option(self::prefix . 'settings');
-        return isset($options['allow_sql_db_queries']);
+        $options = get_option( self::prefix . 'settings' );
+        return isset( $options['allow_sql_db_queries'] );
     }
     /**
      * Determines if a user has the required capability to run a SQL query from the shortcode.
@@ -1146,8 +1148,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
      * @return bool Whether or not the author of the current post can do SQL queries.
      */
     private function canQuerySqlDatabases () {
-        $author = get_userdata(get_the_author_meta('ID'));
-        return $author->has_cap(self::prefix . 'query_sql_databases');
+        $author = get_userdata( get_the_author_meta('ID') );
+        return $author->has_cap( self::prefix . 'query_sql_databases' );
     }
 
     /**
