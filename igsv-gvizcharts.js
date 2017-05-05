@@ -15,6 +15,7 @@ google.load('visualization', '1.0', {
         'annotatedtimeline',
         'annotationchart',
         'gauge',
+        'geochart',
         'timeline'
     ]
 });
@@ -75,6 +76,9 @@ jQuery(document).ready(function () {
                     break;
                 case 'gauge':
                     chart = new google.visualization.Gauge(chart_el);
+                    break;
+                case 'geo':
+                    chart = new google.visualization.GeoChart(chart_el);
                     break;
                 case 'histogram':
                     chart = new google.visualization.Histogram(chart_el);
