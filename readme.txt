@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 4.0
 Tested up to: 4.7.4
-Stable tag: 0.12.1
+Stable tag: 0.12.2
 License: GPL-3.0
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -80,6 +80,7 @@ Data from Google Spreadsheets or CSV files can be graphed in interactive charts.
 * [`Column` charts](https://developers.google.com/chart/interactive/docs/gallery/columnchart)
 * [`Combo` charts](https://developers.google.com/chart/interactive/docs/gallery/combochart)
 * [`Gauge` charts](https://developers.google.com/chart/interactive/docs/gallery/gauge)
+* [`Geo` charts](https://developers.google.com/chart/interactive/docs/gallery/geochart)
 * [`Histogram` charts](https://developers.google.com/chart/interactive/docs/gallery/histogram)
 * [`Line` charts](https://developers.google.com/chart/interactive/docs/gallery/linechart)
 * [`Pie` charts](https://developers.google.com/chart/interactive/docs/gallery/piechart)
@@ -271,17 +272,22 @@ See the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-vi
 
 2. On-screen help gives you instructions for using the plugin where you need it. Paste the address of your Google Spreadsheet into the `key` parameter of the plugin's shortcode (`[gdoc key="YOUR_SPREADSHEET_URL_HERE"]`), then save your post.
 
-3. By default, Inline Google Spreadsheet Viewer produces a feature-rich HTML table on your site. Sort columns, filter rows, browse long tables by page number, show and hide individual columns, or export the table data in three different formats (CSV, Excel, and PDF). The plugin's ouput includes plenty of CSS and JavaScript hooks for unlimited customizability. Read [the FAQ](https://wordpress.org/plugins/inline-google-spreadsheet-viewer/faq/) for coding details.
+3. By default, Inline Google Spreadsheet Viewer produces a feature-rich HTML table on your site. Sort columns, filter rows, browse long tables by page number, show and hide individual columns, or export the table data in three different formats (CSV, Excel, and PDF). The plugin's ouput includes plenty of CSS and JavaScript hooks for unlimited customizability. Read [the FAQ](https://wordpress.org/plugins/inline-google-spreadsheet-viewer/#faq) for coding details.
 
 4. QuickTags integration lets you embed a spreadsheet with point-and-click ease.
 
-5. Transform your spreadsheet's data into an interactive graph or chart by adding a single shortcode attribute. 11 chart types are supported, including `Area`, `Bar`, `Column`, `Pie`, `Line`, `Scatter` and more. Every chart can be customized with user-defined colors, opacity, and even 3D effects. There are over 50 configuration options to choose from. See [the FAQ](https://wordpress.org/plugins/inline-google-spreadsheet-viewer/faq/) for a detailed list.
+5. Transform your spreadsheet's data into an interactive graph or chart by adding a single shortcode attribute. More than a dozen chart types are supported, including `Area`, `Bar`, `Column`, `Geo`, `Pie`, `Line`, `Scatter` and more. Every chart can be customized with user-defined colors, opacity, and even 3D effects. There are over 50 configuration options to choose from. See [the FAQ](https://wordpress.org/plugins/inline-google-spreadsheet-viewer/#faq) for a detailed list.
 
 6. Use all the features of the [Google Query Language](https://developers.google.com/chart/interactive/docs/querylanguage) to pinpoint the exact data you want. Over 50 additional configuration options let you customize the exact way your graphs, charts, and tables look.
 
 7. This screenshot shows an example of what the previous screenshot might output with a given spreadsheet that contains data for the Aliens, Ninjas, Pirates, and Robots teams, and their player's respective points.
 
 == Change log ==
+
+= 0.12.2 =
+
+* [Feature](https://wordpress.org/support/topic/geochart/): Support [Google GeoCharts](https://developers.google.com/chart/interactive/docs/gallery/geochart) using the `Geo` chart type (`[gdoc key="ABCDEFG" chart="Geo"]`).
+* [Bugfix](https://wordpress.org/support/topic/breaking-the-website-in-div-entry-content/): Exception handling no longer fails to return a human-readable error when using SQL data sources.
 
 = 0.12.1 =
 
@@ -373,9 +379,9 @@ Version history has been truncated due to [WordPress.org plugin repository `read
 
 == Upgrade Notice ==
 
-= 0.12 =
+= 0.12.2 =
 
-This release retires the old-style `[gdoc key="ABCDEFG"]` syntax. Don't worry! The plugn will automatically re-interpret your shortcode correctly.
+This is primarily a bugfix release and is recommended for all users, especially those using SQL-based queries.
 
 == Other notes ==
 
@@ -456,7 +462,9 @@ The **complete list of attributes for configurable chart options** is below. Ref
 * `chart_crosshair`
 * `chart_curve_type`
 * `chart_data_opacity`
+* `chart_dataless_region_color`
 * `chart_date_format`
+* `chart_default_color`
 * `chart_dimensions`
 * `chart_display_annotations`
 * `chart_display_annotations_filter`
@@ -464,9 +472,12 @@ The **complete list of attributes for configurable chart options** is below. Ref
 * `chart_display_exact_values`
 * `chart_display_legend_dots`
 * `chart_display_legend_values`
+* `chart_display_mode`
 * `chart_display_range_selector`
 * `chart_display_zoom_buttons`
+* `chart_domain`
 * `chart_enable_interactivity`
+* `chart_enable_region_interactivity`
 * `chart_explorer`
 * `chart_fill`
 * `chart_focus_target`
@@ -482,10 +493,13 @@ The **complete list of attributes for configurable chart options** is below. Ref
 * `chart_highlight_dot`
 * `chart_interpolate_nulls`
 * `chart_is_stacked`
+* `chart_keep_aspect_ratio`
 * `chart_legend`
 * `chart_legend_position`
 * `chart_line_width`
+* `chart_magnifying_glass`
 * `chart_major_ticks`
+* `chart_marker_opacity`
 * `chart_max`
 * `chart_min`
 * `chart_minor_ticks`
@@ -503,6 +517,8 @@ The **complete list of attributes for configurable chart options** is below. Ref
 * `chart_red_color`
 * `chart_red_from`
 * `chart_red_to`
+* `chart_region`
+* `chart_resolution`
 * `chart_reverse_categories`
 * `chart_scale_columns`
 * `chart_scale_format`
