@@ -1120,7 +1120,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
             global $wpdb;
         } else {
             $p = parse_url( $atts['key'] );
-            $wpdb = new wpdb(
+            $wpdb = new \wpdb(
                 isset( $p['user'] ) ? $p['user'] : '',
                 isset( $p['pass'] ) ? $p['pass'] : '',
                 isset( $p['path'] ) ? basename( $p['path'] ) : '',
