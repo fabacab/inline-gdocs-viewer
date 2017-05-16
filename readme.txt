@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 4.0
 Tested up to: 4.7.4
-Stable tag: 0.12.2
+Stable tag: 0.12.3
 License: GPL-3.0
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -284,6 +284,10 @@ See the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-vi
 
 == Change log ==
 
+= 0.12.3 =
+
+* [Bugfix](https://wordpress.org/support/topic/breaking-the-website-in-div-entry-content/): Fix errors when using MySQL databse access shortcodes.
+
 = 0.12.2 =
 
 * [Feature](https://wordpress.org/support/topic/geochart/): Support [Google GeoCharts](https://developers.google.com/chart/interactive/docs/gallery/geochart) using the `Geo` chart type (`[gdoc key="ABCDEFG" chart="Geo"]`).
@@ -379,7 +383,7 @@ Version history has been truncated due to [WordPress.org plugin repository `read
 
 == Upgrade Notice ==
 
-= 0.12.2 =
+= 0.12.3 =
 
 This is primarily a bugfix release and is recommended for all users, especially those using SQL-based queries.
 
