@@ -462,7 +462,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
             $id = sanitize_title_with_dashes( $key );
         }
         if ( 'mysql' === self::getDocTypeByKey( $key ) ) {
-            $id = hash( 'sha256', wp_salt() . $key );
+            $p = parse_url( $key ); // Omit the password from the hash.
+            $id = hash( 'sha256', wp_salt() . "{$p['scheme']}://{$p['user']}@{$p['host']}{$p['path']}" );
         }
         return $id;
     }
@@ -1122,7 +1123,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
             $p = parse_url( $atts['key'] );
             $wpdb = new \wpdb(
                 isset( $p['user'] ) ? $p['user'] : '',
-                isset( $p['pass'] ) ? $p['pass'] : '',
+                isset( $p['pass'] ) ? rawurldecode( $p['pass'] ) : '',
                 isset( $p['path'] ) ? basename( $p['path'] ) : '',
                 isset( $p['port'] ) ? "{$p['host']}:{$p['port']}" : $p['host']
             );

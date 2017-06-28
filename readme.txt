@@ -1,9 +1,9 @@
-=== Plugin Name ===
+=== Inline Google Spreadsheet Viewer ===
 Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 4.0
-Tested up to: 4.7.4
+Tested up to: 4.8
 Stable tag: 0.12.4
 License: GPL-3.0
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -287,6 +287,9 @@ See the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-vi
 = 0.12.4 =
 
 * Enhancement: Google Charts now accept fallback content as part of the shortcode like other options.
+* [Bugfix](https://wordpress.org/support/topic/special-characters-in-mysql-password/): Support URL-encoded MySQL connection strings.
+* Security: MySQL datasources have been hardened, but their HTML IDs have changed. If you have styles or scripts looking for specific HTML IDs, you will need to update those resources to match the newly generated ID values.
+
 
 = 0.12.3 =
 
@@ -387,9 +390,9 @@ Version history has been truncated due to [WordPress.org plugin repository `read
 
 == Upgrade Notice ==
 
-= 0.12.3 =
+= 0.12.4 =
 
-This is primarily a bugfix release and is recommended for all users, especially those using SQL-based queries.
+This release fixes bugs with MySQL data sources and improves accessibility for Google Charts.
 
 == Other notes ==
 
