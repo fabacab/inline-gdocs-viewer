@@ -1070,7 +1070,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
                         break;
                 }
             } else {
-                $output = $this->getGVizChartOutput($url, $x);
+                $output = $this->getGVizChartOutput( $url, $x, $content );
             }
         }
         return $output;
@@ -1208,10 +1208,11 @@ class InlineGoogleSpreadsheetViewerPlugin {
      *
      * @param string $url
      * @param array $x Attributes from shortcode.
+     * @param string $content The content of the shortcode.
      *
      * @return string
      */
-    private function getGVizChartOutput ( $url, $x ) {
+    private function getGVizChartOutput ( $url, $x, $content ) {
         $chart_id = 'igsv-' . $this->invocations . '-' . $x['chart'] . 'chart-'  . $this->getDocId( $x['key'] );
         $output  = '<div id="' . esc_attr( $chart_id ) . '" class="igsv-chart" title="' . esc_attr( $x['title'] ) . '"';
         $output .= ( empty( $x['style'] ) ) ? '' : ' style="' . esc_attr( $x['style'] ) . '"';
@@ -1226,7 +1227,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
                 }
             }
         }
-        $output .= '></div>'; // .igsv-chart
+        $output .= '>' . $content . '</div>'; // .igsv-chart
         return $output;
     }
 
