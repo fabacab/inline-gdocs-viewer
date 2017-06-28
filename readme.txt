@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 4.0
 Tested up to: 4.7.4
-Stable tag: 0.12.3
+Stable tag: 0.12.4
 License: GPL-3.0
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -283,6 +283,10 @@ See the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-vi
 7. This screenshot shows an example of what the previous screenshot might output with a given spreadsheet that contains data for the Aliens, Ninjas, Pirates, and Robots teams, and their player's respective points.
 
 == Change log ==
+
+= 0.12.4 =
+
+* Enhancement: Google Charts now accept fallback content as part of the shortcode like other options.
 
 = 0.12.3 =
 

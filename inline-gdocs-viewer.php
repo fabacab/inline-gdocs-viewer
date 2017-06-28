@@ -7,7 +7,7 @@
  * * Plugin Name: Inline Google Spreadsheet Viewer
  * * Plugin URI: https://wordpress.org/plugins/inline-google-spreadsheet-viewer/
  * * Description: Retrieves data from a public Google Spreadsheet or CSV file and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * * Version: 0.12.3
+ * * Version: 0.12.4
  * * Author: Meitar Moscovitz <meitarm+wordpress@gmail.com>
  * * Author URI: https://maymay.net/
  * * Text Domain: inline-gdocs-viewer
@@ -1049,23 +1049,23 @@ class InlineGoogleSpreadsheetViewerPlugin {
         }
 
         // Retrieve and set HTML output.
-        if ('docsviewer' === $key_type) {
-            $output = $this->getGDocsViewerOutput($x);
+        if ( 'docsviewer' === $key_type ) {
+            $output = $this->getGDocsViewerOutput( $x );
         } else {
-            if (false === $x['chart']) {
-                $http_response = $this->fetchData($url, $x);
-                $http_content_type = explode(';', $http_response['headers']['content-type']);
-                switch ($http_content_type[0]) {
+            if ( false === $x['chart'] ) {
+                $http_response = $this->fetchData( $url, $x );
+                $http_content_type = explode( ';', $http_response['headers']['content-type'] );
+                switch ( $http_content_type[0] ) {
                     case 'text/csv':
                         // This catches any HTTP response served as text/csv
-                        $output = $this->csvToDataTable($http_response['body'], $x, $content);
+                        $output = $this->csvToDataTable( $http_response['body'], $x, $content );
                         break;
                     default:
-                        $output = apply_filters(self::shortcode . '_webapp_html', $http_response['body'], $x);
-                        if ('csv' === $key_type) {
+                        $output = apply_filters( self::shortcode . '_webapp_html', $http_response['body'], $x );
+                        if ( 'csv' === $key_type ) {
                             // even if the response is text/plain, parse as CSV if the filename
                             // we detected earlier (by using the key attribute) suggests it is.
-                            $output = $this->csvToDataTable($output, $x, $content);
+                            $output = $this->csvToDataTable( $output, $x, $content );
                         }
                         break;
                 }
