@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 4.0
 Tested up to: 4.8
-Stable tag: 0.12.4
+Stable tag: 0.12.5
 License: GPL-3.0
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -284,6 +284,10 @@ See the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-vi
 
 == Change log ==
 
+= 0.12.5 =
+
+* [Bugfix](https://wordpress.org/support/topic/chart_legend_position-not-working/): Remove `chart_legend_position` attribute and update the documentation. This should be `chart_legend` with a JSON object attribute value.
+
 = 0.12.4 =
 
 * Enhancement: Google Charts now accept fallback content as part of the shortcode like other options.
@@ -506,7 +510,6 @@ The **complete list of attributes for configurable chart options** is below. Ref
 * `chart_is_stacked`
 * `chart_keep_aspect_ratio`
 * `chart_legend`
-* `chart_legend_position`
 * `chart_line_width`
 * `chart_magnifying_glass`
 * `chart_major_ticks`
