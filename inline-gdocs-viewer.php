@@ -577,60 +577,64 @@ class InlineGoogleSpreadsheetViewerPlugin {
      * @see displayShortcode
      */
     private function dataToHtml ($r, $options, $caption = '') {
-        if ($options['strip'] > 0) { $r = array_slice($r, $options['strip']); } // discard
+        if ( $options['strip'] > 0 ) {
+            $r = array_slice( $r, $options['strip'] ); // discard
+        }
 
         // Split into table headers and body.
-        $thead = ((int) $options['header_rows']) ? array_splice($r, 0, $options['header_rows']) : array_splice($r, 0, 1);
-        $tfoot = ((int) $options['footer_rows']) ? array_splice($r, -$options['footer_rows']) : array();
+        $thead = ( (int) $options['header_rows'] ) ? array_splice( $r, 0, $options['header_rows'] ) : array_splice( $r, 0, 1 );
+        $tfoot = ( (int) $options['footer_rows'] ) ? array_splice( $r, -$options['footer_rows'] ) : array();
         $tbody = $r;
 
         $ir = 1; // row number counter
         $ic = 1; // column number counter
 
-        $id = (0 === $this->invocations)
-            ? 'igsv-' . $this->getDocId($options['key'])
-            : "igsv-{$this->invocations}-" . $this->getDocId($options['key']);
-        $html  = '<table id="' . esc_attr($id) . '"';
+        $id = ( 0 === $this->invocations )
+            ? 'igsv-' . $this->getDocId( $options['key'] )
+            : "igsv-{$this->invocations}-" . $this->getDocId( $options['key'] );
+        $html  = '<table id="' . esc_attr( $id ) . '"';
         // Prepend a space character onto the 'class' value, if one exists.
-        if (!empty($options['class'])) { $options['class'] = " {$options['class']}"; }
-        $html .= ' class="' . self::$dt_class . esc_attr($options['class']) . '"';
-        $html .= ' lang="' . esc_attr($options['lang']) . '"';
-        $html .= (false === $options['summary']) ? '' : ' summary="' . esc_attr($options['summary']) . '"';
-        $html .= (false === $options['title']) ? '' : ' title="' . esc_attr($options['title']) . '"';
+        if ( ! empty( $options['class'] ) ) {
+            $options['class'] = " {$options['class']}";
+        }
+        $html .= ' class="' . self::$dt_class . esc_attr( $options['class'] ) . '"';
+        $html .= ' lang="' . esc_attr( $options['lang'] ) . '"';
+        $html .= ( false === $options['summary'] ) ? '' : ' summary="' . esc_attr( $options['summary'] ) . '"';
+        $html .= ( false === $options['title'] ) ? '' : ' title="' . esc_attr( $options['title'] ) . '"';
         $html .= ' style="' . esc_attr($options['style']) . '"';
-        $html .= (array_search('no-datatables', explode(' ', $options['class'])))
+        $html .= ( array_search( 'no-datatables', explode( ' ', $options['class'] ) ) )
             ? ''
-            : ' ' . $this->dataTablesAttributes($options);
+            : ' ' . $this->dataTablesAttributes( $options );
         $html .= '>';
 
-        if (!empty($caption)) {
-            $html .= '<caption>' . esc_html($caption) . '</caption>';
+        if ( ! empty( $caption ) ) {
+            $html .= '<caption>' . esc_html( $caption ) . '</caption>';
         }
 
         $html .= "<thead>\n";
-        foreach ($thead as $v) {
-            $html .= "<tr class=\"row-$ir " . $this->evenOrOdd($ir) . "\">";
+        foreach ( $thead as $v ) {
+            $html .= "<tr class=\"row-$ir " . $this->evenOrOdd( $ir ) . "\">";
             $ir++;
             $ic = 1; // reset column counting
-            foreach ($v as $th) {
-                $th = nl2br(esc_html($th));
-                $html .= "<th class=\"col-$ic " . $this->evenOrOdd($ic) . "\"><div>$th</div></th>";
+            foreach ( $v as $th ) {
+                $th = nl2br( esc_html( $th ) );
+                $html .= "<th class=\"col-$ic " . $this->evenOrOdd( $ic ) . "\"><div>$th</div></th>";
                 $ic++;
             }
             $html .= "</tr>";
         }
         $html .= "</thead>";
 
-        if ($tfoot) {
+        if ( $tfoot ) {
             $html .= "<tfoot>\n";
-            foreach ($tfoot as $v) {
-                $html .= "<tr class=\"row-$ir " . $this->evenOrOdd($ir) . "\">";
+            foreach ( $tfoot as $v ) {
+                $html .= "<tr class=\"row-$ir " . $this->evenOrOdd( $ir ) . "\">";
                 $ir++;
                 $ic = 1; // reset column counting
-                foreach ($v as $td) {
-                    $td = nl2br(esc_html($td));
-                    $el = ($ic <= $options['header_cols']) ? 'th' : 'td';
-                    $html .= "<$el class=\"col-$ic " . $this->evenOrOdd($ic) . "\">$td</$el>";
+                foreach ( $v as $td ) {
+                    $td = nl2br( esc_html( $td ) );
+                    $el = ( $ic <= $options['header_cols'] ) ? 'th' : 'td';
+                    $html .= "<$el class=\"col-$ic " . $this->evenOrOdd( $ic ) . "\">$td</$el>";
                     $ic++;
                 }
                 $html .= "</tr>";
@@ -639,14 +643,14 @@ class InlineGoogleSpreadsheetViewerPlugin {
         }
 
         $html .= "<tbody>\n";
-        foreach ($tbody as $v) {
-            $html .= "<tr class=\"row-$ir " . $this->evenOrOdd($ir) . "\">";
+        foreach ( $tbody as $v ) {
+            $html .= "<tr class=\"row-$ir " . $this->evenOrOdd( $ir ) . "\">";
             $ir++;
             $ic = 1; // reset column counting
-            foreach ($v as $td) {
-                $td = nl2br(esc_html($td));
-                $el = ($ic <= $options['header_cols']) ? 'th' : 'td';
-                $html .= "<$el class=\"col-$ic " . $this->evenOrOdd($ic) . "\">$td</$el>";
+            foreach ( $v as $td ) {
+                $td = nl2br( esc_html( $td ) );
+                $el = ( $ic <= $options['header_cols'] ) ? 'th' : 'td';
+                $html .= "<$el class=\"col-$ic " . $this->evenOrOdd( $ic ) . "\">$td</$el>";
                 $ic++;
             }
             $html .= "</tr>";
@@ -655,12 +659,12 @@ class InlineGoogleSpreadsheetViewerPlugin {
 
         $html .= '</table>';
 
-        $html = apply_filters(self::shortcode . '_table_html', $html);
+        $html = apply_filters( self::shortcode . '_table_html', $html );
 
-        if (false === $options['linkify'] || 'no' === strtolower($options['linkify'])) {
+        if ( false === $options['linkify'] || 'no' === strtolower( $options['linkify'] ) ) {
             return $html;
         } else {
-            return make_clickable($html);
+            return make_clickable( $html );
         }
     }
 
