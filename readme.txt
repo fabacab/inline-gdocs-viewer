@@ -3,8 +3,8 @@ Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 4.0
-Tested up to: 4.8
-Stable tag: 0.12.5
+Tested up to: 4.8.2
+Stable tag: 0.12.6
 License: GPL-3.0
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -284,6 +284,11 @@ See the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-vi
 
 == Change log ==
 
+= 0.12.6 =
+
+* Update DataTables libraries to current release versions.
+* Minor code cleanup. (Fixes broken links in readme, code style, etc.)
+
 = 0.12.5 =
 
 * [Bugfix](https://wordpress.org/support/topic/chart_legend_position-not-working/): Remove `chart_legend_position` attribute and update the documentation. This should be `chart_legend` with a JSON object attribute value.
@@ -394,9 +399,9 @@ Version history has been truncated due to [WordPress.org plugin repository `read
 
 == Upgrade Notice ==
 
-= 0.12.4 =
+= 0.12.6 =
 
-This release fixes bugs with MySQL data sources and improves accessibility for Google Charts.
+This is a maintenance release. Update if you want to use the latest versions of DataTables.
 
 == Other notes ==
 
