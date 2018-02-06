@@ -165,7 +165,7 @@ abstract class vistable {
             case 'date':
             case 'datetime':
             case 'timeofday':
-                return "'".mysql_real_escape_string($v)."'";
+                return "'".mysqli_real_escape_string($v)."'";
             case 'number':
                 return $v;
             }
@@ -1049,7 +1049,7 @@ class mysql_vistable extends vistable {
         }
         $q .= implode(",",$fields)." FROM ".$this->tables;
         $q .= " LIMIT 0";
-        $result = mysql_query($q);
+        $result = mysqli_query($q);
         if ($result) {
             $sql_types = array(
                                "number" => "INT|FLOAT|DOUBLE|REAL|DECIMAL|NUMERIC|BIT",
@@ -1058,11 +1058,12 @@ class mysql_vistable extends vistable {
                                "timeofday" => '^TIME$',
                                "datetime" => '^DATETIME|TIMESTAMP$',
                                );
-            $ncol = mysql_num_fields($result);
+            $ncol = mysqli_num_fields($result);
             for ($i=0; $i < $ncol; $i++) {
-                $fname = mysql_field_name($result, $i);
+                $finfo = mysqli_fetch_field_direct($result, $i);
+                $fname = $fname->name;
                 if (!isset($this->fields[$fname]['type'])) {
-                    $ftype = mysql_field_type($result, $i);
+                    $ftype = $finfo->type;
                     $type = 'string';
                     foreach ($sql_types as $t => $pat) {
                         if (preg_match("/$pat/i", $ftype)) {
@@ -1212,9 +1213,9 @@ class mysql_vistable extends vistable {
             } else {
                 $t .= $q;
             }
-            $data = mysql_query($t);
-            if (!$data || !($t = mysql_fetch_row($data))) {
-                $this->error("internal_error", "query_failed", "query `$t' failed:".mysql_error());
+            $data = mysqli_query($t);
+            if (!$data || !($t = mysqli_fetch_row($data))) {
+                $this->error("internal_error", "query_failed", "query `$t' failed:".mysqli_error());
                 return FALSE;
             }
             $total = (int)$t[0];
@@ -1262,15 +1263,15 @@ class mysql_vistable extends vistable {
             if ($q === FALSE) return FALSE;
         }
 
-        $data = mysql_query($q);
+        $data = mysqli_query($q);
 
         if (!$data) {
-            $this->error("internal_error", "query failed", "query `$q' failed:".mysql_error());
+            $this->error("internal_error", "query failed", "query `$q' failed:".mysqli_error());
             return FALSE;
         }
 
         $rows = array();
-        while ($row = mysql_fetch_assoc($data)) {
+        while ($row = mysqli_fetch_assoc($data)) {
             $rows[] = $row;
         }
 
