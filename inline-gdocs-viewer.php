@@ -613,7 +613,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
 
         $html .= "<thead>\n";
         foreach ( $thead as $v ) {
-            $html .= "<tr id=\"" . esc_attr( $id ) . "-row-$ir\" class=\"row-$ir " . $this->evenOrOdd( $ir ) . "\">";
+            $html .= '<tr id="' . esc_attr( $id ) . '-row-' . $ir . '"';
+            $html .= 'class="row-' . $ir . '"'. $this->evenOrOdd( $ir ) . '">';
             $ir++;
             $ic = 1; // reset column counting
             foreach ( $v as $th ) {
@@ -628,7 +629,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
         if ( $tfoot ) {
             $html .= "<tfoot>\n";
             foreach ( $tfoot as $v ) {
-                $html .= "<tr id=\"" . esc_attr( $id ) . "-row-$ir\" class=\"row-$ir " . $this->evenOrOdd( $ir ) . "\">";
+                $html .= '<tr id="' . esc_attr( $id ) . '-row-' . $ir . '"';
+                $html .= 'class="row-' . $ir . '"'. $this->evenOrOdd( $ir ) . '">';
                 $ir++;
                 $ic = 1; // reset column counting
                 foreach ( $v as $td ) {
@@ -644,7 +646,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
 
         $html .= "<tbody>\n";
         foreach ( $tbody as $v ) {
-            $html .= "<tr id=\"" . esc_attr( $id ) . "-row-$ir\" class=\"row-$ir " . $this->evenOrOdd( $ir ) . "\">";
+            $html .= '<tr id="' . esc_attr( $id ) . '-row-' . $ir . '"';
+            $html .= 'class="row-' . $ir . '"'. $this->evenOrOdd( $ir ) . '">';
             $ir++;
             $ic = 1; // reset column counting
             foreach ( $v as $td ) {
