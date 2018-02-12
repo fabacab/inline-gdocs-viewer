@@ -7,7 +7,7 @@
  * * Plugin Name: Inline Google Spreadsheet Viewer
  * * Plugin URI: https://wordpress.org/plugins/inline-google-spreadsheet-viewer/
  * * Description: Retrieves data from a public Google Spreadsheet or CSV file and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * * Version: 0.12.7
+ * * Version: 0.12.8
  * * Author: Meitar Moscovitz <meitarm+wordpress@gmail.com>
  * * Author URI: https://maymay.net/
  * * Text Domain: inline-gdocs-viewer
@@ -613,13 +613,15 @@ class InlineGoogleSpreadsheetViewerPlugin {
 
         $html .= "<thead>\n";
         foreach ( $thead as $v ) {
-            $html .= '<tr id="' . esc_attr( $id ) . '-row-' . $ir . '"';
-            $html .= 'class="row-' . $ir . '"'. $this->evenOrOdd( $ir ) . '">';
+            $html .= '<tr id="' . esc_attr( $id ) . '-row-' . esc_attr( $ir ) . '"';
+            $html .= 'class="row-' . esc_attr( $ir ) . ' ' . esc_attr( $this->evenOrOdd( $ir ) ) . '">';
             $ir++;
             $ic = 1; // reset column counting
             foreach ( $v as $th ) {
                 $th = nl2br( esc_html( $th ) );
-                $html .= "<th class=\"col-$ic " . $this->evenOrOdd( $ic ) . "\"><div>$th</div></th>";
+                $html .= '<th class="col-' . esc_attr( $ic ) . ' ' . esc_attr( $this->evenOrOdd( $ic ) ) . '">';
+                $html .= "<div>$th</div>";
+                $html .= '</th>';
                 $ic++;
             }
             $html .= "</tr>";
@@ -629,8 +631,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
         if ( $tfoot ) {
             $html .= "<tfoot>\n";
             foreach ( $tfoot as $v ) {
-                $html .= '<tr id="' . esc_attr( $id ) . '-row-' . $ir . '"';
-                $html .= 'class="row-' . $ir . '"'. $this->evenOrOdd( $ir ) . '">';
+                $html .= '<tr id="' . esc_attr( $id ) . '-row-' . esc_attr( $ir ) . '"';
+                $html .= 'class="row-' . esc_attr( $ir ) . ' ' . esc_attr( $this->evenOrOdd( $ir ) ) . '">';
                 $ir++;
                 $ic = 1; // reset column counting
                 foreach ( $v as $td ) {
@@ -646,8 +648,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
 
         $html .= "<tbody>\n";
         foreach ( $tbody as $v ) {
-            $html .= '<tr id="' . esc_attr( $id ) . '-row-' . $ir . '"';
-            $html .= 'class="row-' . $ir . '"'. $this->evenOrOdd( $ir ) . '">';
+            $html .= '<tr id="' . esc_attr( $id ) . '-row-' . esc_attr( $ir ) . '"';
+            $html .= 'class="row-' . esc_attr( $ir ) . ' ' . esc_attr( $this->evenOrOdd( $ir ) ) . '">';
             $ir++;
             $ic = 1; // reset column counting
             foreach ( $v as $td ) {

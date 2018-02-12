@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJ
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 4.0
 Tested up to: 4.9.4
-Stable tag: 0.12.7
+Stable tag: 0.12.8
 License: GPL-3.0
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -284,6 +284,10 @@ See the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-vi
 
 == Change log ==
 
+= 0.12.8 =
+
+* [Bugfix](https://wordpress.org/support/topic/html-error-fouling-up-css/): Fix invalid HTML output affecting some CSS hooks.
+
 = 0.12.7 =
 
 * [Feature](https://github.com/meitar/inline-gdocs-viewer/pull/23): Add HTML IDs to table rows. Thanks, @ThaiWood. :)
@@ -325,9 +329,9 @@ See the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-vi
 
 == Upgrade Notice ==
 
-= 0.12.7 =
+= 0.12.8 =
 
-This release adds PHP 7.0 compatibility, and adds HTML IDs to table rows. Thanks, @ThaiWood. :)
+This is a minor bugfix release.
 
 == Other notes ==
 
