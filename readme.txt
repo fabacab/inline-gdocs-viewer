@@ -3,8 +3,8 @@ Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 4.0
-Tested up to: 4.9.4
-Stable tag: 0.12.8
+Tested up to: 4.9.8
+Stable tag: 0.12.9
 License: GPL-3.0
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -284,6 +284,10 @@ See the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-vi
 
 == Change log ==
 
+= 0.12.9 =
+
+* Bugfix: Fix incorrect spacing causing invalid HTML table row markup.
+
 = 0.12.8 =
 
 * [Bugfix](https://wordpress.org/support/topic/html-error-fouling-up-css/): Fix invalid HTML output affecting some CSS hooks.
@@ -329,7 +333,7 @@ See the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-vi
 
 == Upgrade Notice ==
 
-= 0.12.8 =
+= 0.12.9 =
 
 This is a minor bugfix release.
 
