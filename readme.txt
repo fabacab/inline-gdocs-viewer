@@ -46,13 +46,13 @@ Using a CSV file works the same way as Google Spreadsheets. Set the `key` to the
 
 **HTML Tables**
 
-Customizing the HTML tables that are produced is easy. For instance, to supply the table's `title`, `summary`, `<caption>`, and a customized `class` value, you can do the following:
+Customizing the HTML tables that are produced is easy. For instance, to supply the table's `title`, `<caption>`, and a customized `class` value, you can do the following:
 
-    [gdoc key="ABCDEFG" class="my-sheet" title="Tooltip text displayed on hover" summary="An example spreadsheet, with a summary."]This is the table's caption.[/gdoc]
+    [gdoc key="ABCDEFG" class="my-sheet" title="Tooltip text displayed on hover"]This is the table's caption.[/gdoc]
 
 The above shortcode will produce HTML that looks something like the following:
 
-    <table id="igsv-ABCDEFG" class="igsv-table my-sheet" title="Tooltip text displayed on hover" summary="An example spreadsheet, with a summary.">
+    <table id="igsv-ABCDEFG" class="igsv-table my-sheet" title="Tooltip text displayed on hover">
         <caption>This is the table's caption.</caption>
         <!-- ...rest of table code using spreadsheet data here... -->
     </table>
@@ -355,9 +355,11 @@ This plugin provides one shortcode (`gdoc`) that can do many things through a co
         * The fully-qualified URL of a Google Apps Script Web App, like `[gdoc key="https://script.google.com/macros/s/ABCDEFG/exec"]`
         * The fully-qualified URL of a CSV file or a web service endpoint that produces CSV data, like `[gdoc key="http://viewportsizes.com/devices.csv"]`
         * The fully-qualified URL of a document on the Web. PDF, DOC, XLS, and other file formats supported by the [Google Docs Viewer](https://googlesystem.blogspot.com/2015/02/google-docs-viewer-page-no-longer.html) will be rendered using the Viewer, like `[gdoc key="http://example.com/my_final_paper.pdf"]`
-        * The keyword `wordpress` to make a SQL query against the current blog's database, like [gdoc key="wordpress" query="SELECT * FROM custom_table"]`
+        * The keyword `wordpress` to make a SQL query against the current blog's database, like `[gdoc key="wordpress" query="SELECT * FROM custom_table"]`
         * A MySQL connection URL to make a SQL query against an arbitrary MySQL server, like `[gdoc key="mysql://user:password@server.example.com:12345/database" query="SELECT * FROM custom_table"]`
 * `chart` - Displays Google Sheet data as a chart instead of a table. Valid values are:
+    * `AnnotatedTimeLine`
+    * `Annotation`
     * `Area`
     * `Bar`
     * `Bubble`
@@ -365,19 +367,21 @@ This plugin provides one shortcode (`gdoc`) that can do many things through a co
     * `Column`
     * `Combo`
     * `Gauge`
+    * `Geo`
     * `Histogram`
     * `Line`
     * `Pie`
     * `Scatter`
     * `Stepped`
+    * `Timeline`
 * `class` - An optional custom HTML `class` value or space-separated list of values. The following class names are treated specially:
     * `no-datatables` deactivates all DataTables features.
-    * `no-responsive` deactivates only DataTables' Responsive features.
-    * `FixedHeader` or its synonym, `FixedHeader-top` freezes the table header (its `<thead>` content) to the top of the window while scrolling vertically.
+    * `no-responsive` deactivates only DataTables' [Responsive](https://datatables.net/extensions/responsive/) features.
+    * `FixedHeader` or its synonym, `FixedHeader-top`, freezes the table header (its `<thead>` content) to the top of the window while scrolling vertically.
     * `FixedHeader-footer` freezes the table footer (its `<tfoot>` content) to the bottom of the window while scrolling vertically.
     * `FixedHeader-left` or `FixedHeader-right` freezes the left- or right-most column of the table while scrolling horizontally. (You will also need to set `datatables_scroll_x="true"` in your shortcode to enable horizontal scrolling.)
-    * `FixedColumns-left-N` or `FixedColumns-right-N` freezes the left- or right-most `N` columns in the table, respectively.
-* `expire_in` - How long to cache responses from Google for, in seconds. Set to `0` to cache forever. (Default: `600`, which is ten minutes.)
+    * `FixedColumns-left-N` or `FixedColumns-right-N` freezes the left- or right-most `N` columns in the table, respectively. For example, `class="FixedColumns-left-3"` will freeze the three left-most columns.
+* `expire_in` - How long to cache responses for, in seconds. Set this to `0` to cache forever. (Default: `600`, which is ten minutes.)
 * `footer_rows` - A number specifying how many trailing rows to place in the output's `<tfoot>` element. (Default: `0`.)
 * `header_cols` - A number specifying how many column cells should be written with `<th>` elements. (Default: `0`.)
 * `header_rows` - A number specifying how many leading rows to place in the output's `<thead>` element. (Default: `1`.)
@@ -386,9 +390,9 @@ This plugin provides one shortcode (`gdoc`) that can do many things through a co
 * `lang` - The [ISO 639](http://www.iso.org/iso/home/standards/language_codes.htm) language code declaring the human language of the spreadsheet's contents. For instance, use `nl-NL` to declare that content is in Dutch. (Default: your site's [global language setting](https://codex.wordpress.org/WordPress_in_Your_Language).)
 * `linkify` - Whether or not to automatically turn URLs, email addresses, and so on, into clickable links. Set to `no` to disable this behavior. (Default: `true`.)
 * `query` - A [Google Query Language](https://developers.google.com/chart/interactive/docs/querylanguage#Language_Syntax) query if the data source is a Google Spreadsheet or CSV file, or a SQL `SELECT` statement if the data source is a MySQL database. *Note:* Arrow bracktets (`<` and `>`) in queries must be URL-encoded (`%3C` and `%3E`, respectively) to avoid confusing the WordPress HTML parser. (Default: none.)
-* `strip` - The number of leading rows to omit from the resulting HTML table. (Default: `0`.)
+* `strip` - The number of leading data source rows to omit from the resulting HTML table. (Default: `0`.)
 * `style` - An inline CSS rule applied to the containing HTML element. For example, to set a fixed height on a table, use `[gdoc key="ABCDEFG" style="height: 480px;"]`. (Default: none.)
-* `summary` - A brief description of the information displayed for the `summary` attribute of the resulting HTML `<table>`. (Default: `Google Spreadsheet`.)
+* `summary` - A brief description of the information displayed for [the `summary` attribute](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table#attr-summary) of the resulting HTML `<table>`. Web pages written in HTML5 should not use this; use a table caption instead. (Default: none.)
 * `title` - An optional title for your data visualization or table. This is usually displayed in Web browsers as a tooltip when a user hovers over the table or is shown as the headline of a chart. (Default: none.)
 * `use_cache` - Whether or not to cache spreadsheet data. Set this to `no` to disable caching for that shortcode invocation. (Default: `true`.)
 * `width` - Width of the containing HTML element. Tables ignore this, use `style` instead. (Default: `100%`.)
@@ -558,20 +562,20 @@ This section documents hooks that the plugin implements. Developers of other plu
 
 == Filters ==
 
-* `gdoc_table_html` - Filters the Google Spreadsheet data after it has been converted to an HTML `<table>` element. Some notes about this filter:
-    * The most common use for this filter is to use [`html_entity_decode()`](https://php.net/html-entity-decode) to allow the data source to include raw HTML that will be displayed. This is considered a potential security risk and so is not recommended unless you are absolutely sure you need this functionality. In the majority of cases where users assume they need this functionality, it turns out there are other, more preferable alternatives, despite its convenience.
-    * Another related use case for this filter is to allow [WordPress shortcodes](https://codex.wordpress.org/Shortcode) that are present in the data source to be evaluated at runtime. See [this thread](https://wordpress.org/support/topic/using-filter-hooks-1) for a brief discussion of that use case. However, this can also be problematic and is not recommended unless you are certain the shortcodes being used will not cause issues like invalid and broken markup, since most shortcode functions do not expect to be inside of an HTML `<table>`.
-    * This filter runs immediately after HTML conversion is complete, but *before* that HTML is processed through the [`make_clickable()`](https://codex.wordpress.org/Function_Reference/make_clickable) function. This means that the value of the `linkify` shortcode attribute will affect the ultimate output of the shortcode invocation regardless of your filter function, and also means you should not call `make_clickable()` yourself.
+* `gdoc_table_html` - Filters the datasource's data after it has been converted to an HTML `<table>` element.
+    * The most common use for this filter is to use [`html_entity_decode()`](https://php.net/html-entity-decode) to allow the data source to include raw HTML that will be displayed, so that spreadsheet cells that reference images such as `<img src="https://example.com/my-image.png" alt="" />` will show up. However, if the datasource is editable by a malicious user, this is easily abused and is considered a security risk. The author strongly advises caution here and suggests you do not do this unless you are absolutely sure you need this functionality. A much safer technique is to include only the filename of an image in the original datasource (`my-image.png`) and then write your filter function to append the value of the cell's data to a base URL so that you can control the source of embedded objects in your HTML pages. Security vulnerabilities are serious, so please make use of the [WordPress support forums](https://wordpress.org/support/forums/) if you are unsure whether your code is safe.
+    * Another related use case for this filter is to allow [WordPress shortcodes](https://codex.wordpress.org/Shortcode) that are present in the data source to be evaluated at runtime. See [this thread](https://wordpress.org/support/topic/using-filter-hooks-1) for a brief discussion of that use case. However, this can also be problematic and is not recommended unless you are certain the shortcodes being used will not cause issues like broken pages, since most shortcode functions do not expect to be inside of an HTML `<table>`.
+    * This filter runs immediately after HTML conversion is complete, but *before* that HTML is processed through the [`make_clickable()`](https://codex.wordpress.org/Function_Reference/make_clickable) function. This means that the value of the `linkify` shortcode attribute will affect the ultimate output of the shortcode invocation regardless of your filter function, and also means you should *not* call `make_clickable()` yourself.
 * `gdoc_viewer_html` - Same as above, but applied to the `<iframe>` that loads the [Google Docs Viewer](https://googlesystem.blogspot.com/2015/02/google-docs-viewer-page-no-longer.html). Use this filter to, for intance, customize the fallback content in the case that the user's browser does not support `<iframe>` elements.
-* `gdoc_webapp_html` - Same as above, but applied to the HTTP response body of the [Google Apps Script Web App](https://developers.google.com/apps-script/guides/web). Use this filter to, for intance, customize the content returned by your GAS Web App similarly to how you might filter `the_content` of a WordPress post. The first argument is the HTTP response body of the request. The second argument is an array of all the attributes and their values passed to the current invocation of the shortcode.
-* `gdoc_query` - Filters the Google Visualization API query language query. The first argument is the string supplied to the `query` attribute, or `false` if no query was supplied. The second argument is an array of all the attributes and their values passed to the current invocation of the shortcode.
-    * A common use case for this filter is to query a Google Spreadsheet using dynamically generated content, such as the email address or username of a logged-in user.
+* `gdoc_webapp_html` - Same as above, but applied to the HTTP response body of the [Google Apps Script Web App](https://developers.google.com/apps-script/guides/web). Use this filter to, for intance, customize the content returned by your GAS Web App similarly to how you might [filter `the_content`](https://developer.wordpress.org/reference/hooks/the_content/) of a WordPress post. The first argument is the HTTP response body of the request. The second argument is an array of all the attributes and their values passed to the current invocation of the shortcode.
+* `gdoc_query` - Filters the query language query. The first argument is the string supplied to the `query` attribute, or `false` if no query was supplied. The second argument is an array of all the attributes and their values passed to the current invocation of the shortcode.
+    * A common use case for this filter is to query a datasource such as a Google Spreadsheet using dynamically generated content, like the email address or username of the current user.
 * `gdoc_enqueued_front_end_styles` - An array in the form `$handle => array(...)` representing parameters to pass to [`wp_enqueue_style()`](https://developer.wordpress.org/reference/functions/wp_enqueue_style/). This filter lets you [`unset()`](https://secure.php.net/unset) stylesheets to prevent the plugin from enqueueing them. Use this to tweak your site's performance by removing any stylesheets you know you will not need.
 * `gdoc_enqueued_front_end_scripts` - An array in the form `$handle => array(...)` representing parameters to pass to [`wp_enqueue_script()`](https://developer.wordpress.org/reference/functions/wp_enqueue_script/). This filter lets you [`unset()`](https://secure.php.net/unset) JavaScript scripts to prevent the plugin from enqueuing them. Use this to tweak your site's performance by removing any scripts you know you will not need.
 
 == Registered script and stylesheet handles ==
 
-You can selectively dequeue any script or stylesheet this plugin adds by using the `gdoc_enqueued_front_end_*` filters to remove the scripts with the associated handle. The registered handles are listed here.
+This plugin unconditionally loads numerous scripts in order to make it possible to enhance statically-defined tables (i.e., tables not generated automatically from a remote datasource). For performance reasons, some site administrators prefer not to load these scripts on all pages, so they can selectively dequeue any script or stylesheet this plugin adds by using the `gdoc_enqueued_front_end_*` filters to remove the scripts with the associated handle. The registered handles are listed here.
 
 **Scripts**
 
