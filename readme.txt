@@ -282,6 +282,11 @@ See the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-vi
 
 == Change log ==
 
+= 0.13.0 =
+
+* Compatibility: Officially support WordPress 5.x and the Block Editor. This update removes the deprecated QuickTags integration from the Classic Editor and fixes minor author-side rendering bugs on WP 5.x.
+* Bugfix: Protect against "Undefined index" error when a user enters an incomplete `key` value.
+
 = 0.12.9 =
 
 * Bugfix: Fix incorrect spacing causing invalid HTML table row markup.
@@ -331,9 +336,9 @@ See the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-vi
 
 == Upgrade Notice ==
 
-= 0.12.9 =
+= 0.13.0 =
 
-This is a minor bugfix release.
+This is a maintenance and compatibility update that adds support for the Block Editor in WordPress 5.x and higher.
 
 == Other notes ==
 
