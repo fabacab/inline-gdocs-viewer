@@ -1225,7 +1225,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         $output  = '<div id="' . esc_attr( $chart_id ) . '" class="igsv-chart" title="' . esc_attr( $x['title'] ) . '"';
         $output .= ( empty( $x['style'] ) ) ? '' : ' style="' . esc_attr( $x['style'] ) . '"';
         $output .= ' data-chart-type="' . esc_attr( ucfirst( $x['chart'] ) ) . '"';
-        $output .= ' data-datasource-href="' . esc_attr( $url ) . '&chart=true"';
+        $output .= ' data-datasource-href="' . esc_attr( $url ) . '&amp;chart=true"';
         if ( $chart_opts = $this->getChartOptions( $x ) ) {
             foreach ( $chart_opts as $k => $v ) {
                 if ( ! empty( $v ) ) {
