@@ -396,7 +396,8 @@ class InlineGoogleSpreadsheetViewerPlugin {
             : 'export?format=csv';
         $m = array();
         preg_match( '/\/(edit|view|pubhtml|htmlview).*$/', $atts['key'], $m );
-        $url = str_replace( $m[1], $action, $atts['key'] );
+        $url = str_replace( empty( $m[1] ) ? '' : $m[1], $action, $atts['key'] );
+        var_dump($url);
         if ( $atts['gid'] ) {
             $url .= '&gid=' . $atts['gid'];
         }
