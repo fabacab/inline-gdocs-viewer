@@ -7,7 +7,7 @@
  * * Plugin Name: Inline Google Spreadsheet Viewer
  * * Plugin URI: https://wordpress.org/plugins/inline-google-spreadsheet-viewer/
  * * Description: Retrieves data from a public Google Spreadsheet or CSV file and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
- * * Version: 0.13.0
+ * * Version: 0.13.1
  * * Author: Meitar Moscovitz <meitarm+wordpress@gmail.com>
  * * Author URI: https://maymay.net/
  * * Text Domain: inline-gdocs-viewer
@@ -17,7 +17,7 @@
  *
  * @license https://www.gnu.org/licenses/gpl-3.0.en.html
  *
- * @copyright Copyright (c) 2010-2017 by Meitar "maymay" Moscovitz
+ * @copyright Copyright (c) 2010-2019 by Meitar "maymay" Moscovitz
  *
  * @package WordPress\Plugin\InlineGoogleSpreadsheetViewer
  */
@@ -391,7 +391,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
         $atts['key'] .= ( empty( $parts['host'] ) ) ? 'docs.google.com' : $parts['host'];
         $atts['key'] .= $path;
         $action = ( $atts['query'] || $atts['chart'] )
-            ? 'gviz/tq?tqx=out:csv&tq=' . rawurlencode( $atts['query'] )
+            ? 'gviz/tq?tqx=out:csv&tq=' . rawurlencode( $atts['query'] ) . '&headers=' . absint( $atts['csv_headers'] )
             : 'export?format=csv';
         $m = array();
         preg_match( '/\/(edit|view|pubhtml|htmlview).*$/', $atts['key'], $m );
@@ -842,6 +842,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
             'height'   => false,
             'style'    => false,
             'strip'    => 0,                    // If spreadsheet, how many rows to omit from top
+            'csv_headers' => 0,                 // Whether to include headers in Google Sheet CSV
             'header_cols' => 0,                 // Number of columns to write as <th> elements
             'header_rows' => 1,                 // Number of rows in <thead>
             'footer_rows' => 0,                 // Number of rows in <tfoot>

@@ -3,8 +3,8 @@ Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 4.0
-Tested up to: 5.1.1
-Stable tag: 0.13.0
+Tested up to: 5.3
+Stable tag: 0.13.1
 License: GPL-3.0
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -282,6 +282,10 @@ See the [Other Notes](https://wordpress.org/plugins/inline-google-spreadsheet-vi
 
 == Change log ==
 
+= 0.13.1 =
+
+* Enhancement: New `csv_headers` shortcode attribute adds support for Google Sheet Query Language HTTP endpoint `headers` parameter. Using `csv_headers=1` in your shortcode may help if you find headers exported from a Google Sheet are missing.
+
 = 0.13.0 =
 
 * Compatibility: Officially support WordPress 5.x and the Block Editor. This update removes the deprecated QuickTags integration from the Classic Editor and fixes minor author-side rendering bugs on WP 5.x.
@@ -381,6 +385,7 @@ This plugin provides one shortcode (`gdoc`) that can do many things through a co
     * `FixedHeader-footer` freezes the table footer (its `<tfoot>` content) to the bottom of the window while scrolling vertically.
     * `FixedHeader-left` or `FixedHeader-right` freezes the left- or right-most column of the table while scrolling horizontally. (You will also need to set `datatables_scroll_x="true"` in your shortcode to enable horizontal scrolling.)
     * `FixedColumns-left-N` or `FixedColumns-right-N` freezes the left- or right-most `N` columns in the table, respectively. For example, `class="FixedColumns-left-3"` will freeze the three left-most columns.
+* `csv_headers` - Whether or not to include textual headers in Google Sheet CSV exports when using `query` or `chart`. (Default: `0`, which is to exclude them, which is equivalent to the Google default. Use `1` to include them.)
 * `expire_in` - How long to cache responses for, in seconds. Set this to `0` to cache forever. (Default: `600`, which is ten minutes.)
 * `footer_rows` - A number specifying how many trailing rows to place in the output's `<tfoot>` element. (Default: `0`.)
 * `header_cols` - A number specifying how many column cells should be written with `<th>` elements. (Default: `0`.)
