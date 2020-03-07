@@ -3,7 +3,7 @@ Contributors: meitar
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=TJLPJYXHSRBEE&lc=US&item_name=Inline%20Google%20Spreadsheet%20Viewer&item_number=Inline%20Google%20Spreadsheet%20Viewer&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted
 Tags: Google Docs, Google, Spreadsheet, Google Apps Script, Web Apps, shortcode, Chart, data, visualization, infographics, embed, live preview, infoviz, tables, datatables, csv
 Requires at least: 4.0
-Tested up to: 5.3
+Tested up to: 5.4
 Stable tag: 0.13.1
 License: GPL-3.0
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -27,6 +27,27 @@ Easily turn data stored in a [Google Spreadsheet](https://sheets.google.com/), [
 Paste the URL of your public [Google Spreadsheet](https://support.google.com/docs/answer/37579?hl=en) or [Google Apps Script Web App](https://developers.google.com/apps-script/guides/web) on its own line in your WordPress post or page, then save your post. That's it. :) Your data will appear in a sorted, searchable HTML table. Web App output will be displayed using the HTML defined by the Web App. See the [screenshots](https://wordpress.org/plugins/inline-google-spreadsheet-viewer/screenshots/) for an example.
 
 If using a Google Spreadsheet, the spreadsheet must be shared using either the "Public on the web" or "Anyone with the link" options [(learn how to share your spreadsheet)](https://support.google.com/drive/?p=visibility_options&hl=en_US). Currently, private Google Spreadsheets or Spreadsheets shared with "Specific people" are not supported. Web Apps must be deployed with the "Anyone, even anonymous" [access permissions](https://developers.google.com/apps-script/guides/web#permissions). CSV files must be available to the public, without the need to log in to the site where they're hosted.
+
+= Getting support =
+
+This document is the only support document for this plugin.
+
+Due the sheer volume of repetitive posts asking questions that have already been answered in this document or by earlier postings on the support forum, I no longer volunteer any of my time to give support to users of this plugin under any circumstances beyond the documentation I have already produced.
+
+In other words:
+
+* Do not email me expecting a reply. I will delete your email.
+* Do not post on the support forum expecting a reply from me. I will not read your posting and will therefore not respond.
+
+There are more than ten years of questions and answers to those questions covering almost every conceivable use case and situation in which this plugin has been used or is likely to ever be used on the support forum that I have been present for. The meager amount of donations I receive for this plugin does not even register against the fathomingly high amount of effort I have put into monitoring support queries for this plugin. Worse, this effort was often in vain because the answers to the questions almost every single person who asked a question was seeking was already answered in this document or in a previous posting already. Enough is enough.
+
+Your *only* options to get support for this plugin are:
+
+* actually read this document, or
+* use the Internet to search for answers previously answered elsewhere, or
+* seek help from someone other than me.
+
+Hopefully, since no one can actually get my support any longer, more of them will do the thing they should have done in the first place and actually read this document, saving everyone involved a lot of time.
 
 = User guide =
 
