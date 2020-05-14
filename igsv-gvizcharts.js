@@ -3,8 +3,6 @@
  *
  * @file Loads and draws Google Chart API visualizations.
  * @license GPL-3.0
- * @author Meitar Moscovitz <meitarm+wordpress@gmail.com>
- * @copyright Copyright 2017 by Meitar "maymay" Moscovitz
  */
 
 (function () { // start immediately-invoked function expresion (IIFE)

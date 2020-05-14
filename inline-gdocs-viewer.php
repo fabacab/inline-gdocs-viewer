@@ -8,16 +8,12 @@
  * * Plugin URI: https://wordpress.org/plugins/inline-google-spreadsheet-viewer/
  * * Description: Retrieves data from a public Google Spreadsheet or CSV file and displays it as an HTML table or interactive chart. <strong>Like this plugin? Please <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer&amp;item_number=Inline%20Google%20Spreadsheet%20Viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted" title="Send a donation to the developer of Inline Google Spreadsheet Viewer">donate</a>. &hearts; Thank you!</strong>
  * * Version: 0.13.2
- * * Author: Meitar Moscovitz <meitarm+wordpress@gmail.com>
- * * Author URI: https://maymay.net/
  * * Text Domain: inline-gdocs-viewer
  * * Domain Path: /languages
  *
  * @link https://developer.wordpress.org/plugins/the-basics/header-requirements/
  *
  * @license https://www.gnu.org/licenses/gpl-3.0.en.html
- *
- * @copyright Copyright (c) 2010-2019 by Meitar "maymay" Moscovitz
  *
  * @package WordPress\Plugin\InlineGoogleSpreadsheetViewer
  */
@@ -1335,7 +1331,7 @@ class InlineGoogleSpreadsheetViewerPlugin {
 <div class="donation-appeal">
     <p style="text-align: center; font-style: italic; margin: 1em 3em;"><?php print sprintf(
 esc_html__( 'Inline Google Spreadsheet Viewer is provided as free software, but sadly grocery stores do not offer free food. If you like this plugin, please consider %1$s to its %2$s. &hearts; Thank you!', 'inline-gdocs-viewer' ),
-'<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=meitarm%40gmail%2ecom&lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer%20WordPress%20Plugin&amp;item_number=inline%2dgdocs%2dviewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted">' . esc_html__( 'making a donation', 'inline-gdocs-viewer' ) . '</a>',
+'<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=TJLPJYXHSRBEE&amp;lc=US&amp;item_name=Inline%20Google%20Spreadsheet%20Viewer%20WordPress%20Plugin&amp;item_number=inline-gdocs-viewer&amp;currency_code=USD&amp;bn=PP%2dDonationsBF%3abtn_donate_SM%2egif%3aNonHosted">' . esc_html__( 'making a donation', 'inline-gdocs-viewer' ) . '</a>',
 '<a href="http://Cyberbusking.org/">' . esc_html__( 'houseless, jobless, nomadic developer', 'inline-gdocs-viewer' ) . '</a>'
 );?></p>
 </div>

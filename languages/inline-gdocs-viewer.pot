@@ -426,7 +426,7 @@ msgid ""
 msgstr ""
 
 #. Author of the plugin/theme
-msgid "Meitar Moscovitz <meitarm+wordpress@gmail.com>"
+msgid "The Author"
 msgstr ""
 
 #. Author URI of the plugin/theme
